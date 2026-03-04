@@ -1,0 +1,189 @@
+{
+  "projectType": "sdk-library",
+  "projectName": "Theme UI",
+  "projectDescription": "A constraint-based design system framework for building themeable React applications with the sx prop",
+  "theme": "willow",
+  "primaryColor": "#040404",
+  "lightColor": null,
+  "darkColor": null,
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "installation",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "core-concepts/theming",
+              "core-concepts/sx-prop",
+              "core-concepts/theme-spec",
+              "core-concepts/color-modes",
+              "core-concepts/responsive-styles"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/jsx-pragma",
+              "guides/variants",
+              "guides/typescript",
+              "guides/custom-components",
+              "guides/mdx",
+              "guides/gatsby-plugin"
+            ]
+          },
+          {
+            "group": "Components",
+            "pages": [
+              "components/overview",
+              "components/layout",
+              "components/typography",
+              "components/forms",
+              "components/ui-elements"
+            ]
+          },
+          {
+            "group": "Presets",
+            "pages": [
+              "presets/overview",
+              "presets/using-presets"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Core",
+            "pages": [
+              "api/theme-ui-provider",
+              "api/use-theme-ui",
+              "api/jsx",
+              "api/merge"
+            ]
+          },
+          {
+            "group": "Styling",
+            "pages": [
+              "api/css",
+              "api/get",
+              "api/sx-prop"
+            ]
+          },
+          {
+            "group": "Color Modes",
+            "pages": [
+              "api/use-color-mode",
+              "api/initialize-color-mode"
+            ]
+          },
+          {
+            "group": "Components",
+            "pages": [
+              "api/components/box",
+              "api/components/flex",
+              "api/components/grid",
+              "api/components/button",
+              "api/components/text",
+              "api/components/heading",
+              "api/components/link",
+              "api/components/image",
+              "api/components/card",
+              "api/components/forms"
+            ]
+          },
+          {
+            "group": "Packages",
+            "pages": [
+              "api/packages/core",
+              "api/packages/css",
+              "api/packages/components",
+              "api/packages/color-modes",
+              "api/packages/mdx",
+              "api/packages/theme-provider"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Migration",
+        "groups": [
+          {
+            "group": "Guides",
+            "pages": [
+              "migration/v0-16",
+              "migration/v0-15",
+              "migration/v0-14"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Theme-based styling with constraint-based design scales",
+    "The sx prop for theme-aware inline styles",
+    "Built-in dark mode and color mode support",
+    "Comprehensive component library with layout primitives",
+    "TypeScript support with strong type inference",
+    "MDX integration for styled content",
+    "Responsive array-based style syntax",
+    "Gatsby plugin for seamless integration",
+    "Theme specification compatibility",
+    "Multiple preset themes"
+  ],
+  "publicApiSurface": [
+    "ThemeUIProvider",
+    "ThemeProvider",
+    "useThemeUI",
+    "useColorMode",
+    "jsx",
+    "css",
+    "get",
+    "merge",
+    "Box",
+    "Flex",
+    "Grid",
+    "Button",
+    "Text",
+    "Heading",
+    "Link",
+    "Image",
+    "Card",
+    "Input",
+    "Select",
+    "Textarea",
+    "Label",
+    "Checkbox",
+    "Radio",
+    "Switch",
+    "Slider",
+    "Container",
+    "NavLink",
+    "Alert",
+    "Badge",
+    "Avatar",
+    "Spinner",
+    "Progress",
+    "Donut",
+    "IconButton",
+    "MenuButton",
+    "Close",
+    "Divider",
+    "Embed",
+    "AspectRatio",
+    "AspectImage",
+    "InitializeColorMode",
+    "Global",
+    "BaseStyles"
+  ]
+}
