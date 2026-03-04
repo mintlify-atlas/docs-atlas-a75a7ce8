@@ -1,0 +1,414 @@
+---
+title: Color Modes
+description: Implement dark mode and multiple color schemes with Theme UI's color mode support
+---
+
+Theme UI provides built-in support for multiple color modes, including dark mode, with automatic persistence to localStorage and media query detection.
+
+## Basic Color Modes Setup
+
+Define color modes in your theme:
+
+```javascript
+const theme = {
+  config: {
+    initialColorModeName: 'light',
+  },
+  colors: {
+    text: '#000',
+    background: '#fff',
+    primary: '#07c',
+    modes: {
+      dark: {
+        text: '#fff',
+        background: '#000',
+        primary: '#0cf'
+      }
+    }
+  }
+}
+```
+
+## The useColorMode Hook
+
+Use the `useColorMode` hook to read and update the current color mode:
+
+```typescript
+export function useColorMode<T extends string = string>(): [
+  T,
+  Dispatch<SetStateAction<T>>
+]
+```
+
+Example:
+
+```jsx
+import { useColorMode } from '@theme-ui/color-modes'
+
+function ColorModeToggle() {
+  const [colorMode, setColorMode] = useColorMode()
+  
+  return (
+    <button
+      onClick={() => {
+        setColorMode(colorMode === 'light' ? 'dark' : 'light')
+      }}
+    >
+      Toggle {colorMode === 'light' ? 'Dark' : 'Light'} Mode
+    </button>
+  )
+}
+```
+
+## Color Mode Provider
+
+Wrap your app with `ColorModeProvider`:
+
+```jsx
+import { ThemeProvider } from '@theme-ui/core'
+import { ColorModeProvider } from '@theme-ui/color-modes'
+import theme from './theme'
+
+function App() {
+  return (
+    <ThemeProvider theme={theme}>
+      <ColorModeProvider>
+        {/* Your app */}
+      </ColorModeProvider>
+    </ThemeProvider>
+  )
+}
+```
+
+## Configuration Options
+
+### initialColorModeName
+
+Set the default color mode:
+
+```javascript
+const theme = {
+  config: {
+    initialColorModeName: 'light'
+  }
+}
+```
+
+<Warning>
+Do not use a key from `theme.colors.modes` as the `initialColorModeName`. It should be a unique name for your base color mode.
+</Warning>
+
+### useColorSchemeMediaQuery
+
+Detect the user's system preference:
+
+```javascript
+const theme = {
+  config: {
+    initialColorModeName: 'light',
+    useColorSchemeMediaQuery: true  // or 'system' or 'initial'
+  }
+}
+```
+
+Options:
+- `false` (default): Don't detect system preference
+- `true` or `'initial'`: Detect on initial load only
+- `'system'`: Always follow system preference with live updates
+
+Example from Theme UI source:
+
+```typescript
+const { initialColorModeName, useColorSchemeMediaQuery, useLocalStorage } =
+  outerTheme.config || outerTheme
+
+let [colorMode, setColorMode] = useState(() => {
+  const preferredMode =
+    useColorSchemeMediaQuery !== false && getPreferredColorScheme()
+
+  return preferredMode || initialColorModeName
+})
+```
+
+### useLocalStorage
+
+Persist color mode to localStorage:
+
+```javascript
+const theme = {
+  config: {
+    useLocalStorage: true  // default
+  }
+}
+```
+
+Set to `false` to disable persistence:
+
+```javascript
+const theme = {
+  config: {
+    useLocalStorage: false
+  }
+}
+```
+
+From the source code:
+
+```typescript
+const storage = {
+  get: () => {
+    try {
+      return window.localStorage.getItem('theme-ui-color-mode')
+    } catch (err) {
+      console.warn(
+        'localStorage is disabled and color mode might not work as expected.',
+        'Please check your Site Settings.',
+        err
+      )
+    }
+  },
+  set: (value: string) => {
+    try {
+      window.localStorage.setItem('theme-ui-color-mode', value)
+    } catch (err) {
+      console.warn(
+        'localStorage is disabled and color mode might not work as expected.',
+        'Please check your Site Settings.',
+        err
+      )
+    }
+  },
+}
+```
+
+### printColorModeName
+
+Set a specific color mode for printing:
+
+```javascript
+const theme = {
+  config: {
+    initialColorModeName: 'dark',
+    printColorModeName: 'light'  // Use light mode when printing
+  }
+}
+```
+
+### useCustomProperties
+
+Enable or disable CSS custom properties (CSS variables):
+
+```javascript
+const theme = {
+  config: {
+    useCustomProperties: true  // default
+  }
+}
+```
+
+Set to `false` for legacy browser support (IE11):
+
+```javascript
+const theme = {
+  config: {
+    useCustomProperties: false
+  }
+}
+```
+
+## Multiple Color Modes
+
+Define multiple color modes beyond just light and dark:
+
+```javascript
+const theme = {
+  config: {
+    initialColorModeName: 'light'
+  },
+  colors: {
+    text: '#000',
+    background: '#fff',
+    primary: '#07c',
+    modes: {
+      dark: {
+        text: '#fff',
+        background: '#000',
+        primary: '#0cf'
+      },
+      sepia: {
+        text: '#433422',
+        background: '#f1e7d0',
+        primary: '#d97706'
+      },
+      high-contrast: {
+        text: '#000',
+        background: '#fff',
+        primary: '#00f'
+      }
+    }
+  }
+}
+```
+
+Toggle between modes:
+
+```jsx
+function ColorModePicker() {
+  const [colorMode, setColorMode] = useColorMode()
+  
+  return (
+    <div>
+      <button onClick={() => setColorMode('light')}>Light</button>
+      <button onClick={() => setColorMode('dark')}>Dark</button>
+      <button onClick={() => setColorMode('sepia')}>Sepia</button>
+      <button onClick={() => setColorMode('high-contrast')}>High Contrast</button>
+      <p>Current mode: {colorMode}</p>
+    </div>
+  )
+}
+```
+
+## Media Query Detection
+
+Theme UI automatically detects the `prefers-color-scheme` media query:
+
+```typescript
+const DARK_QUERY = '(prefers-color-scheme: dark)'
+const LIGHT_QUERY = '(prefers-color-scheme: light)'
+
+const getPreferredColorScheme = (): 'dark' | 'light' | null => {
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    if (window.matchMedia(DARK_QUERY).matches) {
+      return 'dark'
+    }
+    if (window.matchMedia(LIGHT_QUERY).matches) {
+      return 'light'
+    }
+  }
+  return null
+}
+```
+
+## Example: Complete Color Mode Setup
+
+Here's a complete example from the Theme UI source:
+
+```typescript
+import { makeTheme } from '@theme-ui/css/utils'
+
+export const theme = makeTheme({
+  config: {
+    initialColorModeName: 'light',
+    useColorSchemeMediaQuery: true,
+  },
+  colors: {
+    text: '#000',
+    background: '#fff',
+    primary: '#07c',
+    secondary: '#b0b',
+    modes: {
+      dark: {
+        text: '#fff',
+        background: '#222',
+        primary: '#0cf',
+        secondary: '#faf',
+      },
+    },
+  },
+  fonts: {
+    body: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    heading: 'sans-serif',
+  },
+  styles: {
+    root: {
+      fontFamily: 'body',
+      color: 'text',
+      bg: 'background',
+    },
+  },
+})
+```
+
+## Accessing Color Values
+
+When using CSS custom properties (default), colors are converted to CSS variables:
+
+```jsx
+import { useThemeUI } from '@theme-ui/core'
+
+function MyComponent() {
+  const { theme } = useThemeUI()
+  
+  // theme.colors contains CSS custom properties
+  console.log(theme.colors.primary)  // 'var(--theme-ui-colors-primary)'
+  
+  // Use rawColors to access original values
+  console.log(theme.rawColors.primary)  // '#07c'
+  
+  return <div>Primary: {theme.rawColors.primary}</div>
+}
+```
+
+<Note>
+When `useCustomProperties` is enabled, use `theme.rawColors` to access the original color values, as `theme.colors` will contain CSS custom property references.
+</Note>
+
+## Preventing Flash on Load
+
+Theme UI includes a script to prevent color mode flash during SSR:
+
+```typescript
+export const InitializeColorMode = () =>
+  jsx('script', {
+    key: 'theme-ui-no-flash',
+    dangerouslySetInnerHTML: {
+      __html: `(function() { try {
+        var mode = localStorage.getItem('theme-ui-color-mode');
+        if (!mode) return
+        document.documentElement.classList.add('theme-ui-' + mode);
+      } catch (e) {} })();`,
+    },
+  })
+```
+
+Add this to your document head in SSR frameworks:
+
+```jsx
+// Next.js _document.js
+import { InitializeColorMode } from '@theme-ui/color-modes'
+
+export default function Document() {
+  return (
+    <Html>
+      <Head>
+        <InitializeColorMode />
+      </Head>
+      <body>
+        <Main />
+        <NextScript />
+      </body>
+    </Html>
+  )
+}
+```
+
+## TypeScript Support
+
+Type-safe color mode with TypeScript:
+
+```typescript
+type ColorMode = 'light' | 'dark' | 'sepia'
+
+function ColorModeToggle() {
+  const [colorMode, setColorMode] = useColorMode<ColorMode>()
+  
+  // colorMode is typed as 'light' | 'dark' | 'sepia'
+  const nextMode: ColorMode = colorMode === 'light' ? 'dark' : 'light'
+  
+  return (
+    <button onClick={() => setColorMode(nextMode)}>
+      Current: {colorMode}
+    </button>
+  )
+}
+```

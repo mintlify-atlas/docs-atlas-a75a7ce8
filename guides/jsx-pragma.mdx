@@ -1,0 +1,243 @@
+---
+title: JSX Pragma
+description: Using the JSX pragma comment with Theme UI, jsx runtime vs classic runtime
+---
+
+The JSX pragma is how Theme UI enables the `sx` prop on all HTML elements. This guide covers how to configure your project to use the `sx` prop.
+
+## JSX Automatic Runtime (Recommended)
+
+Theme UI supports React's automatic JSX runtime, which is the recommended approach for modern React applications. With automatic runtime, you don't need to import React in every file.
+
+### Configuration
+
+Add the `jsxImportSource` comment at the top of your file:
+
+```jsx
+/** @jsxImportSource theme-ui */
+
+export function App() {
+  return (
+    <div sx={{ color: 'primary', padding: 3 }}>
+      Hello, Theme UI!
+    </div>
+  )
+}
+```
+
+<Note>
+The `@jsxImportSource` pragma must be at the very top of your file, before any imports.
+</Note>
+
+### TypeScript Configuration
+
+For TypeScript projects, update your `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "theme-ui"
+  }
+}
+```
+
+This sets Theme UI as the default JSX import source for all files. You can still override it per-file using the `@jsxImportSource` comment.
+
+### Next.js Example
+
+```tsx filename="pages/_app.tsx"
+/** @jsxImportSource theme-ui */
+import { ThemeUIProvider } from 'theme-ui'
+import { theme } from '../lib/theme'
+import type { AppProps } from 'next/app'
+
+export default function MyApp({ Component, pageProps }: AppProps) {
+  return (
+    <ThemeUIProvider theme={theme}>
+      <main
+        sx={{
+          border: '1px solid',
+          borderColor: 'text',
+          padding: 3,
+          borderRadius: 1,
+          maxWidth: 768,
+          mx: 'auto',
+        }}
+      >
+        <Component {...pageProps} />
+      </main>
+    </ThemeUIProvider>
+  )
+}
+```
+
+## How It Works
+
+Theme UI provides its own JSX runtime that wraps Emotion's JSX functions. When you use the `@jsxImportSource` pragma, your JSX is transformed using Theme UI's custom runtime.
+
+### Implementation Details
+
+The Theme UI JSX runtime processes the `sx` prop before passing elements to Emotion:
+
+```ts filename="packages/core/src/jsx-runtime.ts"
+import {
+  jsx as emotionJsx,
+  jsxs as emotionJsxs,
+} from '@emotion/react/jsx-runtime'
+import { parseProps } from './parseProps'
+
+export const jsx = <P>(
+  type: ElementType<P>,
+  props: P,
+  key?: string
+): ThemeUIJSX.Element => emotionJsx(type, parseProps(props), key)
+
+export const jsxs = <P>(
+  type: ElementType<P>,
+  props: P,
+  key?: string
+): ThemeUIJSX.Element => emotionJsxs(type, parseProps(props), key)
+```
+
+The `parseProps` function converts the `sx` prop into Emotion's `css` prop:
+
+```tsx filename="packages/core/src/parseProps.tsx"
+import { css } from '@theme-ui/css'
+
+const getCSS = (props: any) => (theme: any) => {
+  const styles = css(props.sx)(theme)
+  const raw = typeof props.css === 'function' ? props.css(theme) : props.css
+  return [styles, raw]
+}
+
+export function parseProps(props: any) {
+  if (!props || (!props.sx && !props.css)) return props
+
+  const next: Record<string, unknown> = {}
+
+  for (let key in props) {
+    if (key === 'sx') continue
+    next[key] = props[key]
+  }
+
+  next.css = getCSS(props)
+  return next
+}
+```
+
+## Using @theme-ui/core
+
+For minimal bundle size, you can use `@theme-ui/core` which provides the essential JSX runtime without additional components:
+
+```jsx
+/** @jsxImportSource @theme-ui/core */
+import { ThemeProvider } from '@theme-ui/core'
+
+export function App() {
+  return (
+    <ThemeProvider theme={{ colors: { primary: '#33e' } }}>
+      <h1 sx={{ color: 'primary' }}>Hello</h1>
+    </ThemeProvider>
+  )
+}
+```
+
+<Note>
+`@theme-ui/core` doesn't add global or root styles. Use the full `theme-ui` package if you need those features.
+</Note>
+
+## Classic JSX Runtime (Legacy)
+
+<Warning>
+The classic JSX pragma is deprecated. Use the automatic runtime instead.
+</Warning>
+
+If you're using an older React version (< 17), you can use the classic JSX pragma:
+
+```jsx
+/** @jsx jsx */
+import { jsx } from 'theme-ui'
+
+export function App() {
+  return (
+    <div sx={{ color: 'primary' }}>
+      Hello, Theme UI!
+    </div>
+  )
+}
+```
+
+## Troubleshooting
+
+### TypeScript Errors
+
+If you're getting TypeScript errors with the `sx` prop, make sure you're using TypeScript 5.1.2 or newer:
+
+```bash
+npm install typescript@latest
+npm install @types/react@latest
+```
+
+<Note>
+Theme UI v0.16+ requires TypeScript 5.1.2+ and `@types/react` published after June 1, 2023.
+</Note>
+
+### Mixing Runtimes
+
+You can mix both the automatic runtime and explicit `css` prop usage:
+
+```jsx
+/** @jsxImportSource theme-ui */
+import { css } from '@emotion/react'
+
+// Both work together
+const Component = () => (
+  <div>
+    <div sx={{ color: 'primary' }}>Using sx prop</div>
+    <div css={css`display: block;`}>Using css prop</div>
+  </div>
+)
+```
+
+### CSS Prop vs SX Prop
+
+The `sx` prop is transformed into the `css` prop at build time. You can use both:
+
+- `sx` - Theme-aware, has access to theme values
+- `css` - Raw Emotion styles, useful for complex CSS
+
+```jsx
+<div
+  sx={{ color: 'primary' }}  // Uses theme.colors.primary
+  css={{ fontFamily: 'Arial' }}  // Raw CSS
+/>
+```
+
+## Migration Guide
+
+Moving from the classic runtime to automatic runtime:
+
+<CodeGroup>
+```jsx Before (Classic)
+/** @jsx jsx */
+import { jsx } from 'theme-ui'
+
+function Component() {
+  return <div sx={{ color: 'primary' }}>Hello</div>
+}
+```
+
+```jsx After (Automatic)
+/** @jsxImportSource theme-ui */
+
+function Component() {
+  return <div sx={{ color: 'primary' }}>Hello</div>
+}
+```
+</CodeGroup>
+
+The main differences:
+1. Change `@jsx jsx` to `@jsxImportSource theme-ui`
+2. Remove the `import { jsx } from 'theme-ui'` statement
+3. No other code changes needed!

@@ -1,0 +1,596 @@
+---
+title: 'Form Components'
+description: 'Form controls including Input, Textarea, Select, Checkbox, Radio, Switch, Slider, and Field components'
+---
+
+Theme UI provides a comprehensive set of form components with built-in styling and theme integration.
+
+## Input
+
+The Input component is a text input field with theme-aware styling.
+
+### Import
+
+```jsx
+import { Input } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Input placeholder="Enter text..." />
+```
+
+### Props
+
+<ParamField path="autofillBackgroundColor" type="string" default="'background'">
+  Theme color key for autofill background color
+</ParamField>
+
+<ParamField path="variant" type="string" default="'input'">
+  Form variant from `theme.forms`
+</ParamField>
+
+Input accepts all standard HTML input attributes and Box props.
+
+### Default Styles
+
+```js
+{
+  display: 'block',
+  width: '100%',
+  p: 2,
+  appearance: 'none',
+  fontSize: 'inherit',
+  lineHeight: 'inherit',
+  border: '1px solid',
+  borderRadius: 4,
+  color: 'inherit',
+  bg: 'transparent'
+}
+```
+
+### Examples
+
+```jsx
+<Input type="text" placeholder="Name" mb={3} />
+<Input type="email" placeholder="Email" mb={3} />
+<Input type="password" placeholder="Password" />
+```
+
+---
+
+## Textarea
+
+The Textarea component is a multi-line text input.
+
+### Import
+
+```jsx
+import { Textarea } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Textarea rows={4} placeholder="Enter message..." />
+```
+
+### Props
+
+<ParamField path="variant" type="string" default="'textarea'">
+  Form variant from `theme.forms`
+</ParamField>
+
+Textarea accepts all standard HTML textarea attributes and Box props.
+
+### Default Styles
+
+```js
+{
+  display: 'block',
+  width: '100%',
+  p: 2,
+  appearance: 'none',
+  fontSize: 'inherit',
+  lineHeight: 'inherit',
+  border: '1px solid',
+  borderRadius: 4,
+  color: 'inherit',
+  bg: 'transparent',
+  fieldSizing: 'content'
+}
+```
+
+### Examples
+
+```jsx
+<Textarea 
+  rows={6}
+  placeholder="Enter your message..."
+  sx={{ resize: 'vertical' }}
+/>
+```
+
+---
+
+## Select
+
+The Select component is a dropdown select field with a custom arrow icon.
+
+### Import
+
+```jsx
+import { Select } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Select>
+  <option>Option 1</option>
+  <option>Option 2</option>
+  <option>Option 3</option>
+</Select>
+```
+
+### Props
+
+<ParamField path="arrow" type="React.ReactElement">
+  Custom arrow icon element (default is a down chevron)
+</ParamField>
+
+<ParamField path="variant" type="string" default="'select'">
+  Form variant from `theme.forms`
+</ParamField>
+
+Select accepts all standard HTML select attributes and Box props.
+
+### Default Styles
+
+```js
+{
+  display: 'block',
+  width: '100%',
+  p: 2,
+  paddingRight: 4,
+  appearance: 'none',
+  fontSize: 'inherit',
+  lineHeight: 'inherit',
+  border: '1px solid',
+  borderRadius: 4,
+  color: 'inherit',
+  backgroundColor: 'background'
+}
+```
+
+### Examples
+
+```jsx
+<Select defaultValue="option2">
+  <option value="option1">Option 1</option>
+  <option value="option2">Option 2</option>
+  <option value="option3">Option 3</option>
+</Select>
+```
+
+---
+
+## Label
+
+The Label component is used to label form inputs.
+
+### Import
+
+```jsx
+import { Label } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Label htmlFor="name">Name</Label>
+<Input id="name" />
+```
+
+### Props
+
+<ParamField path="variant" type="string" default="'label'">
+  Form variant from `theme.forms`
+</ParamField>
+
+Label accepts all standard HTML label attributes and Box props.
+
+### Default Styles
+
+```js
+{
+  width: '100%',
+  display: 'flex'
+}
+```
+
+### Examples
+
+```jsx
+<Label htmlFor="email" mb={2}>Email Address</Label>
+<Input id="email" type="email" />
+```
+
+---
+
+## Checkbox
+
+The Checkbox component is a styled checkbox input with custom icons.
+
+### Import
+
+```jsx
+import { Checkbox } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Label>
+  <Checkbox />
+  Accept terms and conditions
+</Label>
+```
+
+### Props
+
+<ParamField path="variant" type="string" default="'checkbox'">
+  Form variant from `theme.forms`
+</ParamField>
+
+Checkbox accepts all standard HTML input checkbox attributes and Box props.
+
+### Default Styles
+
+The checkbox uses custom SVG icons for checked and unchecked states:
+
+```js
+{
+  mr: 2,
+  borderRadius: 4,
+  color: 'gray',
+  flexShrink: 0,
+  'input:checked ~ &': {
+    color: 'primary'
+  },
+  'input:focus ~ &': {
+    color: 'primary',
+    bg: 'highlight'
+  }
+}
+```
+
+### Examples
+
+```jsx
+<Label>
+  <Checkbox defaultChecked />
+  Subscribe to newsletter
+</Label>
+
+<Label>
+  <Checkbox />
+  I agree to the terms
+</Label>
+```
+
+---
+
+## Radio
+
+The Radio component is a styled radio input with custom icons.
+
+### Import
+
+```jsx
+import { Radio } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Label>
+  <Radio name="choice" value="a" />
+  Option A
+</Label>
+<Label>
+  <Radio name="choice" value="b" />
+  Option B
+</Label>
+```
+
+### Props
+
+<ParamField path="variant" type="string" default="'radio'">
+  Form variant from `theme.forms`
+</ParamField>
+
+Radio accepts all standard HTML input radio attributes and Box props.
+
+### Default Styles
+
+The radio uses custom SVG icons for checked and unchecked states:
+
+```js
+{
+  mr: 2,
+  borderRadius: 9999,
+  color: 'gray',
+  flexShrink: 0,
+  'input:checked ~ &': {
+    color: 'primary'
+  },
+  'input:focus ~ &': {
+    bg: 'highlight'
+  }
+}
+```
+
+### Examples
+
+```jsx
+<Box>
+  <Label mb={2}>
+    <Radio name="size" value="small" defaultChecked />
+    Small
+  </Label>
+  <Label mb={2}>
+    <Radio name="size" value="medium" />
+    Medium
+  </Label>
+  <Label>
+    <Radio name="size" value="large" />
+    Large
+  </Label>
+</Box>
+```
+
+---
+
+## Switch
+
+The Switch component is a toggle switch input.
+
+### Import
+
+```jsx
+import { Switch } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Switch label="Enable notifications" />
+```
+
+### Props
+
+<ParamField path="label" type="string">
+  Label text for the switch
+</ParamField>
+
+<ParamField path="variant" type="string" default="'switch'">
+  Form variant from `theme.forms`
+</ParamField>
+
+Switch accepts all standard HTML input checkbox attributes and Box props.
+
+### Default Styles
+
+```js
+{
+  position: 'relative',
+  flexShrink: 0,
+  bg: 'gray',
+  borderRadius: 18,
+  height: 22,
+  width: 44,
+  mr: 2,
+  'input:checked ~ &': {
+    bg: 'primary'
+  }
+}
+```
+
+### Examples
+
+```jsx
+<Switch label="Dark mode" />
+<Switch label="Enable feature" defaultChecked />
+```
+
+---
+
+## Slider
+
+The Slider component is a range input slider.
+
+### Import
+
+```jsx
+import { Slider } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Slider min={0} max={100} defaultValue={50} />
+```
+
+### Props
+
+<ParamField path="variant" type="string" default="'slider'">
+  Form variant from `theme.forms`
+</ParamField>
+
+Slider accepts all standard HTML input range attributes and Box props.
+
+### Default Styles
+
+```js
+{
+  display: 'block',
+  width: '100%',
+  height: 4,
+  my: 2,
+  cursor: 'pointer',
+  appearance: 'none',
+  borderRadius: 9999,
+  color: 'inherit',
+  bg: 'gray',
+  ':focus': {
+    outline: 'none',
+    color: 'primary'
+  }
+}
+```
+
+### Examples
+
+```jsx
+<Box>
+  <Label>Volume</Label>
+  <Slider min={0} max={100} defaultValue={75} />
+</Box>
+
+<Box>
+  <Label>Opacity</Label>
+  <Slider min={0} max={1} step={0.1} defaultValue={0.5} />
+</Box>
+```
+
+---
+
+## Field
+
+The Field component combines a Label and an input control into a single component.
+
+### Import
+
+```jsx
+import { Field } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Field label="Email" name="email" type="email" />
+```
+
+### Props
+
+<ParamField path="label" type="string">
+  Text for the Label component
+</ParamField>
+
+<ParamField path="name" type="string">
+  Used for the name, id, and htmlFor attributes
+</ParamField>
+
+<ParamField path="as" type="React.ElementType" default="Input">
+  Form control component to render (Input, Textarea, Select, etc.)
+</ParamField>
+
+Field accepts all props of the control component specified by the `as` prop.
+
+### Examples
+
+#### Text Input Field
+
+```jsx
+<Field 
+  label="Full Name" 
+  name="name" 
+  placeholder="John Doe"
+  mb={3}
+/>
+```
+
+#### Textarea Field
+
+```jsx
+<Field 
+  label="Message" 
+  name="message" 
+  as={Textarea}
+  rows={4}
+  mb={3}
+/>
+```
+
+#### Select Field
+
+```jsx
+<Field 
+  label="Country" 
+  name="country" 
+  as={Select}
+  mb={3}
+>
+  <option>United States</option>
+  <option>Canada</option>
+  <option>Mexico</option>
+</Field>
+```
+
+## Complete Form Example
+
+Here's a complete form using multiple form components:
+
+```jsx
+<Box as="form" onSubmit={handleSubmit}>
+  <Field 
+    label="Name" 
+    name="name" 
+    placeholder="Your name"
+    mb={3}
+  />
+  
+  <Field 
+    label="Email" 
+    name="email" 
+    type="email"
+    placeholder="your@email.com"
+    mb={3}
+  />
+  
+  <Field 
+    label="Country" 
+    name="country" 
+    as={Select}
+    mb={3}
+  >
+    <option>Select a country</option>
+    <option>United States</option>
+    <option>Canada</option>
+  </Field>
+  
+  <Box mb={3}>
+    <Label>Notification Preferences</Label>
+    <Label mt={2}>
+      <Checkbox name="email-notifications" />
+      Email notifications
+    </Label>
+    <Label mt={2}>
+      <Checkbox name="sms-notifications" />
+      SMS notifications
+    </Label>
+  </Box>
+  
+  <Field 
+    label="Message" 
+    name="message" 
+    as={Textarea}
+    rows={4}
+    mb={3}
+  />
+  
+  <Button type="submit">Submit</Button>
+</Box>
+```

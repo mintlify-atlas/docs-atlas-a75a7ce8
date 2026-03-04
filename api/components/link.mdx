@@ -1,0 +1,189 @@
+---
+title: Link
+description: Primitive anchor component for navigation and hyperlinks
+---
+
+The Link component is a primitive anchor element with theme-aware styling and variant support.
+
+## Import
+
+```jsx
+import { Link } from 'theme-ui'
+```
+
+## Usage
+
+```jsx
+<Link href="/about">About</Link>
+```
+
+## Props
+
+<ParamField path="href" type="string" required>
+  The URL to link to.
+
+  ```jsx
+  <Link href="/page">Internal Link</Link>
+  <Link href="https://example.com">External Link</Link>
+  ```
+</ParamField>
+
+<ParamField path="variant" type="string" default="'styles.a'">
+  Link variant from `theme.links`. By default uses `theme.styles.a`.
+
+  ```jsx
+  <Link variant="nav">Nav Link</Link>
+  <Link variant="button">Button-styled Link</Link>
+  ```
+</ParamField>
+
+<ParamField path="sx" type="ThemeUIStyleObject">
+  Theme-aware styles for custom link appearance.
+
+  ```jsx
+  <Link
+    href="/page"
+    sx={{
+      color: 'primary',
+      textDecoration: 'none',
+      '&:hover': {
+        textDecoration: 'underline',
+      },
+    }}
+  >
+    Custom Link
+  </Link>
+  ```
+</ParamField>
+
+<ParamField path="target" type="string">
+  HTML target attribute. Use `_blank` for new tab.
+
+  ```jsx
+  <Link href="https://example.com" target="_blank" rel="noopener noreferrer">
+    Open in new tab
+  </Link>
+  ```
+</ParamField>
+
+<ParamField path="rel" type="string">
+  HTML rel attribute for link relationship.
+</ParamField>
+
+### Inherited Props
+
+Link extends Box and accepts:
+- All standard HTML anchor attributes
+- Box spacing props (m, p, mx, my, px, py, etc.)
+- Box color props (color, bg, opacity)
+
+## Examples
+
+### Basic Link
+
+```jsx
+<Link href="/about">About Us</Link>
+```
+
+### External Link
+
+```jsx
+<Link href="https://theme-ui.com" target="_blank" rel="noopener noreferrer">
+  Theme UI Documentation
+</Link>
+```
+
+### Navigation Link
+
+```jsx
+<Link
+  href="/products"
+  variant="nav"
+  sx={{
+    fontSize: 2,
+    fontWeight: 'bold',
+    textDecoration: 'none',
+  }}
+>
+  Products
+</Link>
+```
+
+### Button-styled Link
+
+```jsx
+<Link
+  href="/signup"
+  sx={{
+    display: 'inline-block',
+    px: 4,
+    py: 2,
+    bg: 'primary',
+    color: 'white',
+    textDecoration: 'none',
+    borderRadius: 4,
+    '&:hover': {
+      bg: 'secondary',
+    },
+  }}
+>
+  Sign Up
+</Link>
+```
+
+### Link with Icon
+
+```jsx
+<Link
+  href="/download"
+  sx={{
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 2,
+  }}
+>
+  Download
+  <svg>...</svg>
+</Link>
+```
+
+### Colored Link
+
+```jsx
+<Link href="/info" color="primary">
+  More Info
+</Link>
+```
+
+### Underlined on Hover
+
+```jsx
+<Link
+  href="/page"
+  sx={{
+    textDecoration: 'none',
+    '&:hover': {
+      textDecoration: 'underline',
+    },
+  }}
+>
+  Hover Me
+</Link>
+```
+
+### Active Link Style
+
+```jsx
+<Link
+  href="/current"
+  sx={{
+    color: 'text',
+    '&[aria-current="page"]': {
+      color: 'primary',
+      fontWeight: 'bold',
+    },
+  }}
+>
+  Current Page
+</Link>
+```

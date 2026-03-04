@@ -1,0 +1,157 @@
+---
+title: Box
+description: Layout primitive component with margin, padding, and styling utilities
+---
+
+The Box component is the foundational layout primitive in Theme UI. It provides access to spacing utilities, colors, and the `sx` prop for theme-aware styling.
+
+## Import
+
+```jsx
+import { Box } from 'theme-ui'
+```
+
+## Usage
+
+```jsx
+<Box
+  sx={{
+    padding: 3,
+    backgroundColor: 'primary',
+    borderRadius: 4,
+  }}
+>
+  Content
+</Box>
+```
+
+## Props
+
+The Box component accepts all standard HTML div attributes plus the following:
+
+<ParamField path="as" type="React.ElementType">
+  Render the component as a different HTML element or React component. Defaults to `'div'`.
+
+  ```jsx
+  <Box as="section">Section content</Box>
+  ```
+</ParamField>
+
+<ParamField path="sx" type="ThemeUIStyleObject">
+  Theme-aware style object for applying CSS with access to theme values.
+
+  ```jsx
+  <Box sx={{ color: 'primary', fontSize: [2, 3, 4] }}>
+    Responsive text
+  </Box>
+  ```
+</ParamField>
+
+<ParamField path="variant" type="string">
+  Apply a variant style from `theme.variants`. Use dot notation to access nested variants.
+
+  ```jsx
+  <Box variant="card">Card style</Box>
+  <Box variant="buttons.primary">Button style</Box>
+  ```
+</ParamField>
+
+### Spacing Props
+
+Box includes shorthand props for margin and padding that map to theme space values:
+
+<ParamField path="m | margin" type="ResponsiveValue<string | number>">
+  Margin on all sides.
+</ParamField>
+
+<ParamField path="mt | marginTop" type="ResponsiveValue<string | number>">
+  Margin top.
+</ParamField>
+
+<ParamField path="mr | marginRight" type="ResponsiveValue<string | number>">
+  Margin right.
+</ParamField>
+
+<ParamField path="mb | marginBottom" type="ResponsiveValue<string | number>">
+  Margin bottom.
+</ParamField>
+
+<ParamField path="ml | marginLeft" type="ResponsiveValue<string | number>">
+  Margin left.
+</ParamField>
+
+<ParamField path="mx | marginX" type="ResponsiveValue<string | number>">
+  Margin left and right.
+</ParamField>
+
+<ParamField path="my | marginY" type="ResponsiveValue<string | number>">
+  Margin top and bottom.
+</ParamField>
+
+<ParamField path="p | padding" type="ResponsiveValue<string | number>">
+  Padding on all sides.
+</ParamField>
+
+<ParamField path="pt | paddingTop" type="ResponsiveValue<string | number>">
+  Padding top.
+</ParamField>
+
+<ParamField path="pr | paddingRight" type="ResponsiveValue<string | number>">
+  Padding right.
+</ParamField>
+
+<ParamField path="pb | paddingBottom" type="ResponsiveValue<string | number>">
+  Padding bottom.
+</ParamField>
+
+<ParamField path="pl | paddingLeft" type="ResponsiveValue<string | number>">
+  Padding left.
+</ParamField>
+
+<ParamField path="px | paddingX" type="ResponsiveValue<string | number>">
+  Padding left and right.
+</ParamField>
+
+<ParamField path="py | paddingY" type="ResponsiveValue<string | number>">
+  Padding top and bottom.
+</ParamField>
+
+### Color Props
+
+<ParamField path="color" type="ResponsiveValue<string>">
+  Text color from `theme.colors`.
+</ParamField>
+
+<ParamField path="bg | backgroundColor" type="ResponsiveValue<string>">
+  Background color from `theme.colors`.
+</ParamField>
+
+<ParamField path="opacity" type="ResponsiveValue<number>">
+  CSS opacity value.
+</ParamField>
+
+## Examples
+
+### Responsive Spacing
+
+```jsx
+<Box p={[2, 3, 4]} mx="auto">
+  Padding increases with viewport size
+</Box>
+```
+
+### Color and Background
+
+```jsx
+<Box color="white" bg="primary" p={3}>
+  Themed colors
+</Box>
+```
+
+### Custom Element
+
+```jsx
+<Box as="article" sx={{ maxWidth: 768 }}>
+  Article content
+</Box>
+```

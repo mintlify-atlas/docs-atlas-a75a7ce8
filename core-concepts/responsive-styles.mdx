@@ -1,0 +1,422 @@
+---
+title: Responsive Styles
+description: Use array-based responsive syntax for mobile-first responsive design with Theme UI
+---
+
+Theme UI uses an array-based syntax for responsive styles, enabling mobile-first responsive design with minimal code.
+
+## Array-Based Syntax
+
+Provide an array of values that map to breakpoints:
+
+```jsx
+<Box
+  sx={{
+    fontSize: [1, 2, 3, 4]
+  }}
+/>
+```
+
+This creates responsive styles:
+
+```css
+.element {
+  font-size: 14px;  /* base */
+}
+
+@media screen and (min-width: 40em) {
+  .element {
+    font-size: 16px;
+  }
+}
+
+@media screen and (min-width: 52em) {
+  .element {
+    font-size: 20px;
+  }
+}
+
+@media screen and (min-width: 64em) {
+  .element {
+    font-size: 24px;
+  }
+}
+```
+
+## Breakpoints
+
+Define breakpoints in your theme:
+
+```javascript
+const theme = {
+  breakpoints: ['40em', '52em', '64em']
+}
+```
+
+Default breakpoints from the source code:
+
+```typescript
+export const defaultBreakpoints = [40, 52, 64].map((n) => n + 'em')
+// ['40em', '52em', '64em']
+```
+
+### Custom Breakpoints
+
+You can use any CSS length unit:
+
+```javascript
+const theme = {
+  breakpoints: ['640px', '768px', '1024px', '1280px']
+}
+```
+
+Or with custom media queries:
+
+```javascript
+const theme = {
+  breakpoints: [
+    '@media screen and (min-width: 40em)',
+    '@media screen and (min-width: 52em)',
+    '@media screen and (min-width: 64em)'
+  ]
+}
+```
+
+## Mobile-First Approach
+
+The first value in the array is the base (mobile) style. Each subsequent value applies at the corresponding breakpoint:
+
+```jsx
+<Box
+  sx={{
+    width: ['100%', '50%', '33.333%', '25%']
+  }}
+/>
+```
+
+Breakdown:
+- `100%` - Mobile (default)
+- `50%` - Tablet and up (≥ 40em)
+- `33.333%` - Desktop and up (≥ 52em)
+- `25%` - Large desktop (≥ 64em)
+
+## Responsive Implementation
+
+Here's how Theme UI transforms responsive arrays (from the source code):
+
+```typescript
+const responsive =
+  (styles: ThemeUIStyleObject) =>
+  (theme?: Theme) => {
+    const next = {}
+    const breakpoints = (theme?.breakpoints) || defaultBreakpoints
+    const mediaQueries = [
+      null,
+      ...breakpoints.map((n) =>
+        n.includes('@media') ? n : `@media screen and (min-width: ${n})`
+      ),
+    ]
+
+    for (const k in styles) {
+      const key = k
+      let value = styles[key]
+      
+      if (!Array.isArray(value)) {
+        next[key] = value
+        continue
+      }
+      
+      for (let i = 0; i < value.slice(0, mediaQueries.length).length; i++) {
+        const media = mediaQueries[i]
+        if (!media) {
+          next[key] = value[i]
+          continue
+        }
+        next[media] = next[media] || {}
+        if (value[i] == null) continue
+        next[media][key] = value[i]
+      }
+    }
+    return next
+  }
+```
+
+## Skipping Breakpoints
+
+Use `null` or `undefined` to skip a breakpoint:
+
+```jsx
+<Box
+  sx={{
+    width: ['100%', null, '50%']
+  }}
+/>
+```
+
+This applies:
+- `100%` at mobile
+- No change at first breakpoint
+- `50%` at second breakpoint
+
+## Multiple Responsive Properties
+
+Combine multiple responsive properties:
+
+```jsx
+<Box
+  sx={{
+    fontSize: [1, 2, 3],
+    padding: [2, 3, 4],
+    color: ['primary', 'secondary', 'accent'],
+    display: ['block', 'flex']
+  }}
+/>
+```
+
+## Responsive Typography
+
+```jsx
+<Text
+  sx={{
+    fontSize: [2, 3, 4, 5],
+    lineHeight: ['body', 'body', 'heading'],
+    fontWeight: ['normal', 'normal', 'bold']
+  }}
+>
+  Responsive heading
+</Text>
+```
+
+## Responsive Layout
+
+Create responsive layouts:
+
+```jsx
+<Grid
+  sx={{
+    gridTemplateColumns: ['1fr', '1fr 1fr', '1fr 1fr 1fr', 'repeat(4, 1fr)'],
+    gap: [2, 3, 4]
+  }}
+>
+  <Card>Item 1</Card>
+  <Card>Item 2</Card>
+  <Card>Item 3</Card>
+  <Card>Item 4</Card>
+</Grid>
+```
+
+## Responsive Spacing
+
+```jsx
+<Container
+  sx={{
+    px: [2, 3, 4, 5],
+    py: [3, 4, 5, 6],
+    maxWidth: ['100%', '768px', '1024px', '1280px']
+  }}
+>
+  Content
+</Container>
+```
+
+## Nested Responsive Styles
+
+Responsive arrays work in nested objects:
+
+```jsx
+<Button
+  sx={{
+    fontSize: [1, 2],
+    px: [2, 3],
+    py: [1, 2],
+    ':hover': {
+      transform: ['scale(1.05)', 'scale(1.1)']
+    }
+  }}
+>
+  Hover me
+</Button>
+```
+
+## Responsive Variants
+
+Combine responsive arrays with variants:
+
+```javascript
+const theme = {
+  buttons: {
+    primary: {
+      fontSize: [1, 2, 3],
+      px: [3, 4, 5],
+      py: [2, 2, 3]
+    }
+  }
+}
+```
+
+## Working with Grid and Flexbox
+
+### Responsive Flexbox
+
+```jsx
+<Flex
+  sx={{
+    flexDirection: ['column', 'row'],
+    alignItems: ['stretch', 'center'],
+    justifyContent: ['flex-start', 'space-between'],
+    gap: [2, 3, 4]
+  }}
+>
+  <Box sx={{ flex: ['1', '1', '2'] }}>Main</Box>
+  <Box sx={{ flex: 1 }}>Sidebar</Box>
+</Flex>
+```
+
+### Responsive Grid
+
+```jsx
+<Grid
+  sx={{
+    gridTemplateColumns: [
+      'repeat(1, 1fr)',
+      'repeat(2, 1fr)',
+      'repeat(3, 1fr)',
+      'repeat(4, 1fr)'
+    ],
+    gap: [2, 3, 4]
+  }}
+>
+  {items.map(item => <Card key={item.id}>{item.content}</Card>)}
+</Grid>
+```
+
+## Responsive Display
+
+Show/hide elements at different breakpoints:
+
+```jsx
+<Box>
+  {/* Mobile menu */}
+  <Box sx={{ display: ['block', 'none'] }}>
+    <MobileMenu />
+  </Box>
+  
+  {/* Desktop menu */}
+  <Box sx={{ display: ['none', 'flex'] }}>
+    <DesktopMenu />
+  </Box>
+</Box>
+```
+
+## TypeScript Support
+
+Responsive arrays are fully typed:
+
+```typescript
+import type { ResponsiveStyleValue, ThemeUIStyleObject } from '@theme-ui/css'
+
+// The ResponsiveStyleValue type
+export type ResponsiveStyleValue<T> = 
+  | T 
+  | Array<T | null | undefined>
+
+const styles: ThemeUIStyleObject = {
+  fontSize: [1, 2, 3, 4],        // ResponsiveStyleValue<number>
+  color: ['primary', 'secondary'], // ResponsiveStyleValue<string>
+  display: ['none', 'block']      // ResponsiveStyleValue<string>
+}
+```
+
+## Best Practices
+
+### Start Mobile-First
+
+Always define the mobile style first:
+
+```jsx
+// Good
+<Box sx={{ fontSize: [1, 2, 3] }} />
+
+// Not ideal - requires null for mobile
+<Box sx={{ fontSize: [null, 2, 3] }} />
+```
+
+### Use Consistent Breakpoints
+
+Define breakpoints that match your design system:
+
+```javascript
+const theme = {
+  breakpoints: [
+    '640px',   // sm
+    '768px',   // md
+    '1024px',  // lg
+    '1280px'   // xl
+  ]
+}
+```
+
+### Combine with Theme Scales
+
+Use theme values in responsive arrays:
+
+```jsx
+<Box
+  sx={{
+    fontSize: [0, 1, 2, 3],  // Maps to theme.fontSizes
+    p: [2, 3, 4, 5],         // Maps to theme.space
+    color: ['text', 'primary'] // Maps to theme.colors
+  }}
+/>
+```
+
+## Real-World Example
+
+A complete responsive card component:
+
+```jsx
+<Card
+  sx={{
+    // Layout
+    display: 'flex',
+    flexDirection: ['column', 'row'],
+    
+    // Spacing
+    p: [3, 4, 5],
+    gap: [2, 3, 4],
+    
+    // Typography
+    fontSize: [1, 2],
+    
+    // Borders
+    borderRadius: [1, 2],
+    borderWidth: [1, 1, 2],
+    
+    // Shadows
+    boxShadow: ['small', 'medium', 'large'],
+    
+    // Responsive image
+    '& img': {
+      width: ['100%', '200px', '300px'],
+      height: ['200px', 'auto'],
+      objectFit: ['cover', 'contain']
+    },
+    
+    // Responsive hover
+    ':hover': {
+      transform: ['scale(1.02)', 'scale(1.05)'],
+      boxShadow: ['medium', 'large', 'xlarge']
+    }
+  }}
+>
+  <img src="image.jpg" alt="Card" />
+  <div>
+    <h3>Card Title</h3>
+    <p>Card content goes here.</p>
+  </div>
+</Card>
+```
+
+<Note>
+Responsive arrays provide a concise, mobile-first way to create responsive designs without writing media queries manually.
+</Note>

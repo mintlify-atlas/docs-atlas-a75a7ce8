@@ -1,0 +1,442 @@
+---
+title: Theme Specification
+description: The System UI Theme Specification defines standard scales and conventions for interoperable theme objects
+---
+
+Theme UI follows the [System UI Theme Specification](https://system-ui.com/theme), which defines standard scales and conventions for theme objects. This specification enables themes to be interoperable across different libraries and tools.
+
+## Theme Interface
+
+The complete `Theme` type definition:
+
+```typescript
+export interface Theme {
+  // Breakpoints for responsive styles
+  breakpoints?: Array<string>
+  mediaQueries?: { [size: string]: string }
+  
+  // Space scale for margin, padding, etc.
+  space?: Scale<CSS.Property.Margin<number | string>>
+  
+  // Typography scales
+  fonts?: Scale<CSS.Property.FontFamily>
+  fontSizes?: Scale<CSS.Property.FontSize<number>>
+  fontWeights?: Scale<CSS.Property.FontWeight>
+  lineHeights?: Scale<CSS.Property.LineHeight<TLengthStyledSystem>>
+  letterSpacings?: Scale<CSS.Property.LetterSpacing<TLengthStyledSystem>>
+  
+  // Sizing
+  sizes?: Scale<CSS.Property.Height<{}> | CSS.Property.Width<{}>>
+  
+  // Border scales
+  borders?: Scale<CSS.Property.Border<{}>>
+  borderStyles?: Scale<CSS.Property.Border<{}>>
+  borderWidths?: Scale<CSS.Property.BorderWidth<TLengthStyledSystem>>
+  radii?: Scale<CSS.Property.BorderRadius<TLengthStyledSystem>>
+  
+  // Shadows and depth
+  shadows?: Scale<CSS.Property.BoxShadow>
+  zIndices?: Scale<CSS.Property.ZIndex>
+  
+  // Color scale (with color modes support)
+  colors?: ColorModesScale
+  rawColors?: ColorModesScale
+  
+  // Animation
+  transitions?: Scale<CSS.Property.Transition>
+  opacities?: Scale<CSS.Property.Opacity>
+  
+  // Text and color styles
+  colorStyles?: Scale<ThemeUICSSProperties>
+  textStyles?: Scale<ThemeUICSSProperties>
+  
+  // Configuration
+  config?: ThemeUIConfig
+  
+  // Element styles
+  styles?: ThemeStyles
+  
+  // Component variants
+  buttons?: Record<string, ThemeUIStyleObject>
+  text?: Record<string, ThemeUIStyleObject>
+  links?: Record<string, ThemeUIStyleObject>
+  images?: Record<string, ThemeUIStyleObject>
+  cards?: Record<string, ThemeUIStyleObject>
+  layout?: Record<string, ThemeUIStyleObject>
+  forms?: Record<string, ThemeUIStyleObject>
+  grids?: Record<string, ThemeUIStyleObject>
+  badges?: Record<string, ThemeUIStyleObject>
+  alerts?: Record<string, ThemeUIStyleObject>
+  messages?: Record<string, ThemeUIStyleObject>
+}
+```
+
+## Scale Type
+
+Scales can be defined as arrays or objects:
+
+```typescript
+export type Scale<T> = T[] | ScaleDict<T>
+
+export interface ScaleDict<T> {
+  [K: string]: T | T[] | NestedScaleDict<T> | undefined
+  [I: number]: T
+}
+```
+
+## Required vs Optional Fields
+
+All theme properties are optional. Theme UI provides sensible defaults:
+
+```typescript
+const defaultTheme = {
+  space: [0, 4, 8, 16, 32, 64, 128, 256, 512],
+  fontSizes: [12, 14, 16, 20, 24, 32, 48, 64, 72],
+}
+
+const defaultBreakpoints = [40, 52, 64].map(n => n + 'em')
+// ['40em', '52em', '64em']
+```
+
+## Color Modes Scale
+
+The colors scale has special support for color modes:
+
+```typescript
+export interface ColorMode extends ScaleDict<CSS.Property.Color> {
+  background?: ColorOrNestedColorScale
+  text?: ColorOrNestedColorScale
+  primary?: ColorOrNestedColorScale
+  secondary?: ColorOrNestedColorScale
+  accent?: ColorOrNestedColorScale
+  highlight?: ColorOrNestedColorScale
+  muted?: ColorOrNestedColorScale
+}
+
+export type ColorModesScale = ColorMode & {
+  modes?: {
+    [k: string]: ColorMode
+  }
+}
+```
+
+Example:
+
+```javascript
+const theme = {
+  colors: {
+    text: '#000',
+    background: '#fff',
+    primary: '#07c',
+    secondary: '#609',
+    modes: {
+      dark: {
+        text: '#fff',
+        background: '#000',
+        primary: '#0cf',
+        secondary: '#f0f'
+      }
+    }
+  }
+}
+```
+
+## Configuration Object
+
+The `config` object controls Theme UI behavior:
+
+```typescript
+export interface ThemeUIConfig {
+  /**
+   * Enable/disable custom CSS properties/variables
+   */
+  useCustomProperties?: boolean
+
+  /**
+   * Initial color mode name
+   */
+  initialColorModeName?: string
+
+  /**
+   * Color mode for printing
+   */
+  printColorModeName?: string
+
+  /**
+   * Apply theme.styles.root to <html> element
+   */
+  useRootStyles?: boolean
+
+  /**
+   * Initialize color mode from prefers-color-scheme
+   * 'system' | 'initial' | true | false
+   */
+  useColorSchemeMediaQuery?: 'system' | 'initial' | true | false
+
+  /**
+   * Add global box-sizing: border-box
+   */
+  useBorderBox?: boolean
+
+  /**
+   * Save color mode to localStorage
+   */
+  useLocalStorage?: boolean
+}
+```
+
+Example:
+
+```javascript
+const theme = {
+  config: {
+    initialColorModeName: 'light',
+    useColorSchemeMediaQuery: true,
+    useLocalStorage: true,
+    useRootStyles: true
+  }
+}
+```
+
+## Theme Styles
+
+The `styles` object defines base element styles:
+
+```typescript
+export interface ThemeStyles {
+  root?: ThemeUIStyleObject     // Applied to <html> or <body>
+  // Typography
+  h1?: ThemeUIStyleObject
+  h2?: ThemeUIStyleObject
+  h3?: ThemeUIStyleObject
+  h4?: ThemeUIStyleObject
+  h5?: ThemeUIStyleObject
+  h6?: ThemeUIStyleObject
+  p?: ThemeUIStyleObject
+  a?: ThemeUIStyleObject
+  em?: ThemeUIStyleObject
+  strong?: ThemeUIStyleObject
+  // Code
+  pre?: ThemeUIStyleObject
+  code?: ThemeUIStyleObject
+  inlineCode?: ThemeUIStyleObject
+  // Lists
+  ul?: ThemeUIStyleObject
+  ol?: ThemeUIStyleObject
+  li?: ThemeUIStyleObject
+  // Other
+  blockquote?: ThemeUIStyleObject
+  hr?: ThemeUIStyleObject
+  table?: ThemeUIStyleObject
+  th?: ThemeUIStyleObject
+  td?: ThemeUIStyleObject
+  tr?: ThemeUIStyleObject
+  img?: ThemeUIStyleObject
+  // Custom
+  [key: string]: ThemeUIStyleObject | undefined
+}
+```
+
+Example:
+
+```javascript
+const theme = {
+  styles: {
+    root: {
+      fontFamily: 'body',
+      lineHeight: 'body',
+      fontWeight: 'body',
+    },
+    h1: {
+      fontSize: 5,
+      fontFamily: 'heading',
+      fontWeight: 'heading',
+      lineHeight: 'heading',
+      mt: 0,
+      mb: 3
+    },
+    a: {
+      color: 'primary',
+      textDecoration: 'none',
+      ':hover': {
+        textDecoration: 'underline'
+      }
+    }
+  }
+}
+```
+
+## Scale Conventions
+
+### Space Scale Convention
+
+Use powers of two or a consistent rhythm:
+
+```javascript
+// Powers of two
+space: [0, 4, 8, 16, 32, 64, 128, 256, 512]
+
+// 4px rhythm
+space: [0, 4, 8, 12, 16, 20, 24, 28, 32]
+
+// Named scale
+space: {
+  none: 0,
+  xs: 4,
+  sm: 8,
+  md: 16,
+  lg: 32,
+  xl: 64
+}
+```
+
+### Font Size Scale Convention
+
+Define a typographic scale:
+
+```javascript
+// Modular scale
+fontSizes: [12, 14, 16, 20, 24, 32, 48, 64, 72]
+
+// Named scale
+fontSizes: {
+  xs: 12,
+  sm: 14,
+  base: 16,
+  lg: 20,
+  xl: 24,
+  '2xl': 32,
+  '3xl': 48
+}
+```
+
+### Color Scale Convention
+
+Organize colors by purpose:
+
+```javascript
+colors: {
+  // Base colors
+  text: '#000',
+  background: '#fff',
+  
+  // Brand colors
+  primary: '#07c',
+  secondary: '#609',
+  accent: '#f80',
+  
+  // UI colors
+  muted: '#f6f6f6',
+  highlight: '#efeffe',
+  
+  // Feedback colors
+  success: '#0a0',
+  error: '#e00',
+  warning: '#f80',
+  info: '#07c',
+  
+  // Gray scale
+  gray: ['#fafafa', '#f0f0f0', '#e0e0e0', '#ccc', '#999', '#666', '#333']
+}
+```
+
+## Nested Scales
+
+Nested scales allow grouping related values:
+
+```javascript
+const theme = {
+  colors: {
+    primary: {
+      __default: '#00f',
+      light: '#33f',
+      dark: '#00a'
+    },
+    gray: {
+      __default: '#666',
+      light: '#ccc',
+      dark: '#333'
+    }
+  }
+}
+```
+
+The `__default` key is used when accessing the parent:
+
+```jsx
+<Box sx={{ color: 'primary' }} />
+// Uses primary.__default: #00f
+
+<Box sx={{ color: 'primary.light' }} />
+// Uses primary.light: #33f
+```
+
+## Component Variants
+
+Component variants are reusable style objects:
+
+```javascript
+const theme = {
+  buttons: {
+    primary: {
+      color: 'white',
+      bg: 'primary',
+      fontWeight: 'bold',
+      borderRadius: 2,
+      cursor: 'pointer',
+      '&:hover': {
+        bg: 'primaryHover'
+      }
+    },
+    secondary: {
+      color: 'text',
+      bg: 'muted',
+      border: '1px solid',
+      borderColor: 'gray.3'
+    },
+    ghost: {
+      color: 'primary',
+      bg: 'transparent',
+      border: '1px solid',
+      borderColor: 'primary'
+    }
+  },
+  text: {
+    heading: {
+      fontFamily: 'heading',
+      fontWeight: 'heading',
+      lineHeight: 'heading'
+    },
+    caps: {
+      textTransform: 'uppercase',
+      letterSpacing: '0.1em'
+    }
+  }
+}
+```
+
+## Breakpoints
+
+Breakpoints define responsive design boundaries:
+
+```javascript
+// Array format (mobile-first)
+breakpoints: ['40em', '52em', '64em']
+
+// Named breakpoints
+breakpoints: ['640px', '768px', '1024px', '1280px']
+```
+
+Use with responsive arrays:
+
+```jsx
+<Box sx={{ fontSize: [1, 2, 3, 4] }} />
+// fontSize: 14px (mobile)
+// fontSize: 16px (> 640px)
+// fontSize: 20px (> 768px)
+// fontSize: 24px (> 1024px)
+```
+
+<Note>
+Following the Theme Specification ensures your themes work consistently across different Theme UI applications and can be shared or extended easily.
+</Note>

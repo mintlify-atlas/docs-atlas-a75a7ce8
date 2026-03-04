@@ -1,0 +1,481 @@
+---
+title: Variants
+description: Creating and using variants in Theme UI for reusable component styles
+---
+
+Variants allow you to define reusable style combinations in your theme that can be applied to components with a single prop. They're useful for creating consistent design patterns across your application.
+
+## What Are Variants?
+
+Variants are named style objects stored in your theme that can be referenced by name. They provide a way to apply complex, predefined styles to components without repeating code.
+
+```jsx
+const theme = {
+  buttons: {
+    primary: {
+      color: 'white',
+      bg: 'primary',
+      fontWeight: 'bold',
+      padding: 3,
+      borderRadius: 2,
+    },
+    secondary: {
+      color: 'text',
+      bg: 'secondary',
+      padding: 3,
+      borderRadius: 2,
+    },
+  },
+}
+
+// Use the variant
+<button sx={{ variant: 'buttons.primary' }}>Click me</button>
+```
+
+## Theme.styles - MDX Element Styles
+
+The `theme.styles` object is a special variant location for styling MDX elements and content. These styles are automatically applied to matching HTML elements within MDX.
+
+### Basic Usage
+
+```jsx
+const theme = {
+  styles: {
+    // Heading styles
+    h1: {
+      fontSize: 5,
+      fontWeight: 'bold',
+      color: 'heading',
+      marginTop: 4,
+      marginBottom: 3,
+    },
+    h2: {
+      fontSize: 4,
+      fontWeight: 'bold',
+      color: 'heading',
+      marginTop: 3,
+      marginBottom: 2,
+    },
+    // Paragraph styles
+    p: {
+      fontSize: 2,
+      lineHeight: 'body',
+      marginBottom: 3,
+    },
+    // Link styles
+    a: {
+      color: 'primary',
+      textDecoration: 'none',
+      ':hover': {
+        textDecoration: 'underline',
+      },
+    },
+    // Code block styles
+    pre: {
+      fontFamily: 'monospace',
+      fontSize: 1,
+      padding: 3,
+      bg: 'muted',
+      borderRadius: 2,
+      overflow: 'auto',
+    },
+    code: {
+      fontFamily: 'monospace',
+      fontSize: 'inherit',
+    },
+    inlineCode: {
+      fontFamily: 'monospace',
+      color: 'secondary',
+      bg: 'muted',
+      px: 1,
+      borderRadius: 1,
+    },
+    // List styles
+    ul: {
+      paddingLeft: 4,
+      marginBottom: 3,
+    },
+    ol: {
+      paddingLeft: 4,
+      marginBottom: 3,
+    },
+    li: {
+      marginBottom: 1,
+    },
+    // Other elements
+    blockquote: {
+      borderLeft: '4px solid',
+      borderColor: 'primary',
+      paddingLeft: 3,
+      fontStyle: 'italic',
+      color: 'text',
+    },
+    hr: {
+      border: 0,
+      borderBottom: '1px solid',
+      borderColor: 'muted',
+      marginY: 4,
+    },
+    table: {
+      width: '100%',
+      borderCollapse: 'collapse',
+      marginBottom: 3,
+    },
+    th: {
+      textAlign: 'left',
+      borderBottom: '2px solid',
+      borderColor: 'muted',
+      paddingY: 2,
+      paddingX: 3,
+    },
+    td: {
+      borderBottom: '1px solid',
+      borderColor: 'muted',
+      paddingY: 2,
+      paddingX: 3,
+    },
+  },
+}
+```
+
+### Root Styles
+
+The `root` style is special - it's applied to the `<html>` element:
+
+```jsx
+const theme = {
+  styles: {
+    root: {
+      fontFamily: 'body',
+      lineHeight: 'body',
+      fontWeight: 'body',
+    },
+  },
+}
+```
+
+<Note>
+By default, `theme.styles.root` is applied to the `html` element. Set `theme.config.useRootStyles: false` to disable this behavior.
+</Note>
+
+## Component Variants
+
+Theme UI provides predefined variant locations for built-in components. Each component looks for its variants in a specific place in the theme.
+
+### Button Variants
+
+```jsx
+const theme = {
+  buttons: {
+    primary: {
+      color: 'white',
+      bg: 'primary',
+      '&:hover': {
+        bg: 'primaryHover',
+      },
+    },
+    secondary: {
+      color: 'text',
+      bg: 'secondary',
+    },
+    outline: {
+      color: 'primary',
+      bg: 'transparent',
+      boxShadow: 'inset 0 0 0 2px',
+    },
+  },
+}
+
+// Usage
+import { Button } from 'theme-ui'
+
+<Button variant="primary">Primary</Button>
+<Button variant="secondary">Secondary</Button>
+<Button variant="outline">Outline</Button>
+```
+
+### Card Variants
+
+```jsx
+const theme = {
+  cards: {
+    primary: {
+      padding: 3,
+      borderRadius: 2,
+      bg: 'background',
+      boxShadow: '0 0 8px rgba(0, 0, 0, 0.125)',
+    },
+    compact: {
+      padding: 2,
+      borderRadius: 1,
+      bg: 'muted',
+    },
+  },
+}
+
+import { Card } from 'theme-ui'
+
+<Card variant="primary">Default card</Card>
+<Card variant="compact">Compact card</Card>
+```
+
+### Text Variants
+
+```jsx
+const theme = {
+  text: {
+    heading: {
+      fontFamily: 'heading',
+      fontWeight: 'heading',
+      lineHeight: 'heading',
+    },
+    caps: {
+      textTransform: 'uppercase',
+      letterSpacing: '0.1em',
+    },
+    small: {
+      fontSize: 0,
+    },
+  },
+}
+
+import { Text } from 'theme-ui'
+
+<Text variant="heading">Heading Text</Text>
+<Text variant="caps">Uppercase Text</Text>
+<Text variant="small">Small Text</Text>
+```
+
+### Available Variant Locations
+
+Theme UI recognizes these variant locations:
+
+<Tabs>
+  <Tab title="Layout">
+    - `layout` - Container component variants
+    - `grids` - Grid component variants
+  </Tab>
+  <Tab title="Typography">
+    - `text` - Text component variants
+    - `links` - Link component variants
+  </Tab>
+  <Tab title="UI Elements">
+    - `buttons` - Button component variants
+    - `badges` - Badge component variants
+    - `cards` - Card component variants
+    - `images` - Image component variants
+    - `alerts` - Alert component variants
+    - `messages` - Message component variants
+  </Tab>
+  <Tab title="Forms">
+    - `forms.label` - Label styles
+    - `forms.input` - Input styles
+    - `forms.select` - Select styles
+    - `forms.textarea` - Textarea styles
+    - `forms.radio` - Radio styles
+    - `forms.checkbox` - Checkbox styles
+    - `forms.slider` - Slider styles
+  </Tab>
+</Tabs>
+
+## Custom Variants
+
+You can create custom variant locations for your own components:
+
+```jsx
+const theme = {
+  // Custom variant location
+  cards: {
+    feature: {
+      padding: 4,
+      borderRadius: 3,
+      bg: 'primary',
+      color: 'white',
+    },
+  },
+}
+
+// Use with Box component
+import { Box } from 'theme-ui'
+
+<Box __themeKey="cards" variant="feature">
+  Featured Content
+</Box>
+```
+
+## Using Variants with sx Prop
+
+You can reference variants in the `sx` prop:
+
+```jsx
+// Reference a variant directly
+<div sx={{ variant: 'buttons.primary' }}>Styled like a button</div>
+
+// Combine variant with additional styles
+<div
+  sx={{
+    variant: 'text.heading',
+    color: 'secondary', // Override the variant's color
+  }}
+>
+  Custom Heading
+</div>
+```
+
+## Variant Helper Function
+
+The `themed` helper extracts styles from `theme.styles`:
+
+```tsx filename="From @theme-ui/mdx"
+import { themed } from '@theme-ui/mdx'
+
+const getHeadingStyles = themed('h1')
+
+// Use in a component
+function CustomHeading({ theme }) {
+  const styles = getHeadingStyles(theme)
+  return <h1 css={styles}>Custom Heading</h1>
+}
+```
+
+## Nested Variants
+
+Variants can reference other scales in your theme:
+
+```jsx
+const theme = {
+  colors: {
+    primary: '#0066cc',
+    secondary: '#cc0066',
+  },
+  space: [0, 4, 8, 16, 32],
+  radii: {
+    small: 2,
+    medium: 4,
+    large: 8,
+  },
+  buttons: {
+    primary: {
+      color: 'white',
+      bg: 'primary',        // References theme.colors.primary
+      padding: 3,           // References theme.space[3]
+      borderRadius: 'medium', // References theme.radii.medium
+    },
+  },
+}
+```
+
+## Responsive Variants
+
+Variants support responsive arrays:
+
+```jsx
+const theme = {
+  text: {
+    responsive: {
+      fontSize: [2, 3, 4], // Small, medium, large screens
+      lineHeight: [1.5, 1.6, 1.7],
+    },
+  },
+}
+
+<Text variant="responsive">Responsive text</Text>
+```
+
+## TypeScript Support
+
+Extend the Theme type to get autocomplete for your custom variants:
+
+```tsx
+import type { Theme as ThemeUITheme } from 'theme-ui'
+
+interface CustomVariants {
+  cards: {
+    feature: object
+    compact: object
+  }
+}
+
+type Theme = ThemeUITheme & CustomVariants
+
+declare module 'theme-ui' {
+  interface UserThemes {
+    default: Theme
+  }
+}
+```
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Use Semantic Names" icon="tag">
+    Name variants based on their purpose (e.g., `primary`, `danger`) rather than appearance (e.g., `blue`, `red`).
+  </Card>
+  
+  <Card title="Keep Variants Focused" icon="bullseye">
+    Each variant should serve a specific use case. Avoid creating too many variants that differ only slightly.
+  </Card>
+  
+  <Card title="Reference Theme Scales" icon="link">
+    Use theme values in variants instead of hardcoding values for consistency.
+  </Card>
+  
+  <Card title="Document Your Variants" icon="book">
+    Maintain documentation of available variants and their intended use cases.
+  </Card>
+</CardGroup>
+
+## Example: Complete Variant System
+
+```jsx
+const theme = {
+  // Base scales
+  colors: {
+    text: '#000',
+    background: '#fff',
+    primary: '#0066cc',
+    secondary: '#cc0066',
+    muted: '#f6f6f6',
+  },
+  space: [0, 4, 8, 16, 32, 64],
+  
+  // Component variants
+  buttons: {
+    primary: {
+      color: 'white',
+      bg: 'primary',
+      padding: 3,
+      borderRadius: 2,
+      cursor: 'pointer',
+      '&:hover': {
+        bg: 'secondary',
+      },
+    },
+    ghost: {
+      color: 'primary',
+      bg: 'transparent',
+      border: '2px solid',
+      borderColor: 'primary',
+      padding: 3,
+      borderRadius: 2,
+    },
+  },
+  
+  cards: {
+    primary: {
+      padding: 4,
+      bg: 'background',
+      borderRadius: 2,
+      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+    },
+  },
+  
+  // MDX styles
+  styles: {
+    h1: { fontSize: 5, fontWeight: 'bold', marginBottom: 3 },
+    h2: { fontSize: 4, fontWeight: 'bold', marginBottom: 2 },
+    p: { fontSize: 2, lineHeight: 1.6, marginBottom: 3 },
+    a: { color: 'primary', textDecoration: 'none' },
+  },
+}
+```

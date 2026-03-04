@@ -1,0 +1,130 @@
+---
+title: Introduction
+description: Build themeable React applications with constraint-based design principles
+---
+
+# Introduction to Theme UI
+
+Theme UI is a library for creating themeable user interfaces based on constraint-based design principles. It provides a powerful, flexible API for building custom component libraries, design systems, web applications, and more.
+
+## What is Theme UI?
+
+Theme UI, also known as **The Design Graph Framework**, enables developers to create consistent, themeable React applications by:
+
+- Using a theme-based styling system with the `sx` prop
+- Defining design tokens (colors, typography, spacing) in a centralized theme object
+- Applying styles that reference your theme values throughout your application
+- Supporting multiple color modes (like dark mode) out of the box
+- Providing primitive UI components with variant-based styling
+
+<Note>
+Theme UI is the next evolution of [Styled System](https://styled-system.com), from the creators of utility-based, atomic CSS methodologies.
+</Note>
+
+## Key Benefits
+
+### Theme-Based Styling
+
+All styles reference values from a global theme object, making it easy to maintain consistency across your application:
+
+```jsx
+/** @jsxImportSource theme-ui */
+
+export default () => (
+  <div
+    sx={{
+      fontSize: 4,        // picks up theme.fontSizes[4]
+      color: 'primary',   // picks up theme.colors.primary
+      bg: 'background',   // picks up theme.colors.background
+      p: 3,               // picks up theme.space[3]
+    }}
+  >
+    Themed content
+  </div>
+)
+```
+
+### Constraint-Based Design
+
+Theme UI encourages you to define scales for colors, typography, spacing, and other design tokens. This constraint-based approach helps maintain design consistency:
+
+- **Typography scales**: Define font sizes, weights, and families
+- **Color palettes**: Create color systems with semantic naming
+- **Spacing scales**: Use consistent spacing throughout your app
+- **Layout primitives**: Build responsive layouts with ease
+
+### Built-in Color Mode Support
+
+Switch between light and dark modes (or any custom color modes) without additional configuration:
+
+```jsx
+import { useColorMode } from 'theme-ui'
+
+const ColorModeToggle = () => {
+  const [colorMode, setColorMode] = useColorMode()
+  return (
+    <button
+      onClick={() => setColorMode(colorMode === 'dark' ? 'light' : 'dark')}
+    >
+      Toggle {colorMode === 'dark' ? 'Light' : 'Dark'}
+    </button>
+  )
+}
+```
+
+### Mobile-First Responsive Styles
+
+Apply responsive styles using arrays with a mobile-first approach:
+
+```jsx
+/** @jsxImportSource theme-ui */
+
+export default () => (
+  <div
+    sx={{
+      width: ['100%', '50%', '25%'],  // 100% on mobile, 50% on tablet, 25% on desktop
+      fontSize: [2, 3, 4],             // Responsive font sizes
+    }}
+  >
+    Responsive content
+  </div>
+)
+```
+
+### Framework Compatibility
+
+- Built with [Emotion](https://emotion.sh) for scoped styles
+- Works with existing Styled System components
+- Compatible with virtually any UI component library
+- Plugin available for [Gatsby](https://gatsbyjs.org) sites and themes
+- Style [MDX](https://mdxjs.com) content with a simple API
+
+## When to Use Theme UI
+
+Theme UI is ideal for:
+
+- **Design systems**: Building reusable component libraries with theming support
+- **White-label applications**: Apps that need multiple brand themes
+- **Multi-tenant platforms**: Applications serving different customers with unique branding
+- **Dark mode support**: Apps requiring light/dark mode or custom color schemes
+- **Content-heavy sites**: Websites using MDX or Markdown with styled components
+- **Gatsby themes**: Creating distributable, themeable Gatsby themes
+
+<Warning>
+If you only need the `sx` prop without color modes or UI components, consider installing [@theme-ui/core](https://github.com/system-ui/theme-ui/tree/develop/packages/core) for a lighter bundle.
+</Warning>
+
+## Theme Specification
+
+Theme UI follows the [System UI Theme Specification](https://system-ui.com/theme), which provides a standard for defining theme objects. This specification enables interoperability between different styling libraries and tools.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Install Theme UI and its dependencies
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Build your first themed component
+  </Card>
+</CardGroup>

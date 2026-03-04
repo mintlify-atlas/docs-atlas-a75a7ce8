@@ -1,0 +1,152 @@
+---
+title: Text
+description: Primitive typography component for inline and block text
+---
+
+The Text component is a primitive typographic component for rendering styled text elements.
+
+## Import
+
+```jsx
+import { Text } from 'theme-ui'
+```
+
+## Usage
+
+```jsx
+<Text>This is some text</Text>
+```
+
+## Props
+
+<ParamField path="as" type="React.ElementType" default="'span'">
+  Render as a different HTML element.
+
+  ```jsx
+  <Text as="p">Paragraph text</Text>
+  <Text as="div">Block text</Text>
+  <Text as="span">Inline text</Text>
+  ```
+</ParamField>
+
+<ParamField path="variant" type="string" default="'default'">
+  Text variant from `theme.text`. Common variants include `default`, `heading`, `caps`, `small`, etc.
+
+  ```jsx
+  <Text variant="heading">Heading style</Text>
+  <Text variant="caps">ALL CAPS</Text>
+  <Text variant="small">Small text</Text>
+  ```
+</ParamField>
+
+<ParamField path="sx" type="ThemeUIStyleObject">
+  Theme-aware styles for custom typography.
+
+  ```jsx
+  <Text
+    sx={{
+      fontSize: 4,
+      fontWeight: 'bold',
+      color: 'primary',
+    }}
+  >
+    Styled text
+  </Text>
+  ```
+</ParamField>
+
+### Inherited Props
+
+Text extends Box and accepts:
+- All standard HTML span attributes (or attributes for the element specified with `as`)
+- Box spacing props (m, p, mx, my, px, py, etc.)
+- Box color props (color, bg, opacity)
+
+## Typography Props
+
+These can be applied via the `sx` prop:
+
+- `fontFamily`: Maps to `theme.fonts`
+- `fontSize`: Maps to `theme.fontSizes`
+- `fontWeight`: Maps to `theme.fontWeights`
+- `lineHeight`: Maps to `theme.lineHeights`
+- `letterSpacing`: Maps to `theme.letterSpacings`
+- `textAlign`, `textDecoration`, `textTransform`, etc.
+
+## Examples
+
+### Basic Text
+
+```jsx
+<Text>Simple text content</Text>
+```
+
+### Paragraph Text
+
+```jsx
+<Text as="p" sx={{ mb: 3 }}>
+  This is a paragraph with margin bottom.
+</Text>
+```
+
+### Colored Text
+
+```jsx
+<Text color="primary">Primary colored text</Text>
+<Text color="secondary">Secondary colored text</Text>
+```
+
+### Responsive Font Size
+
+```jsx
+<Text sx={{ fontSize: [2, 3, 4] }}>
+  Font size increases with viewport
+</Text>
+```
+
+### Bold Text
+
+```jsx
+<Text sx={{ fontWeight: 'bold' }}>
+  Bold text
+</Text>
+```
+
+### Custom Typography
+
+```jsx
+<Text
+  sx={{
+    fontFamily: 'heading',
+    fontSize: 3,
+    fontWeight: 'medium',
+    lineHeight: 'tight',
+    letterSpacing: 'wide',
+  }}
+>
+  Custom typography
+</Text>
+```
+
+### Text with Icon
+
+```jsx
+<Text sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+  <Icon />
+  Text with icon
+</Text>
+```
+
+### Truncated Text
+
+```jsx
+<Text
+  sx={{
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  }}
+>
+  This text will be truncated if too long
+</Text>
+```

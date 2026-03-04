@@ -1,97 +1,279 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: Theme UI Documentation
+description: Build themeable React apps based on constraint-based design principles
+mode: custom
 ---
 
-## Setting up
+<div className="relative bg-gradient-to-br from-[#0f1117] via-[#1a1d27] to-[#0f1117] dark:from-[#0f1117] dark:via-[#1a1d27] dark:to-[#0f1117] text-white py-20 overflow-hidden">
+  <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.05),transparent_50%)]"></div>
+  <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(255,255,255,0.03),transparent_50%)]"></div>
+  
+  <div className="relative max-w-7xl mx-auto px-6 sm:px-8">
+    <div className="flex flex-col lg:flex-row items-center gap-12">
+      <div className="flex-1 text-center lg:text-left">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+          The Design Graph Framework
+        </h1>
+        <p className="text-lg sm:text-xl text-gray-300 dark:text-gray-300 mb-8 max-w-2xl mx-auto lg:mx-0">
+          Build themeable user interfaces with constraint-based design principles. Theme UI provides a powerful styling system for creating design systems, component libraries, and custom themes.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+          <a 
+            href="/quickstart" 
+            className="inline-flex items-center justify-center px-6 py-3 bg-white dark:bg-white text-black dark:text-black font-semibold rounded-lg hover:bg-gray-100 dark:hover:bg-gray-100 transition-colors no-underline"
+          >
+            Get Started
+            <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+          <a 
+            href="/api/theme-ui-provider" 
+            className="inline-flex items-center justify-center px-6 py-3 bg-white/10 dark:bg-white/10 text-white dark:text-white font-semibold rounded-lg border border-white/30 dark:border-white/30 hover:bg-white/20 dark:hover:bg-white/20 hover:border-white/50 dark:hover:border-white/50 transition-colors no-underline"
+          >
+            API Reference
+          </a>
+        </div>
+      </div>
+      <div className="flex-1 hidden lg:block">
+        <div className="bg-[#1a1d27] dark:bg-[#1a1d27] rounded-2xl p-6 border border-[#27272a] dark:border-[#27272a] shadow-2xl">
+          <pre className="text-sm text-gray-300 dark:text-gray-300 overflow-x-auto">
+{`/** @jsxImportSource theme-ui */
 
-Get your documentation site up and running in minutes.
+const theme = {
+  colors: {
+    text: '#000',
+    background: '#fff',
+    primary: '#33e',
+  },
+  fonts: {
+    body: 'system-ui, sans-serif',
+    heading: 'inherit',
+  },
+}
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+export default () => (
+  <div sx={{
+    fontSize: 4,
+    color: 'primary',
+    bg: 'background'
+  }}>
+    Hello, Theme UI
+  </div>
+)`}
+          </pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-## Make it yours
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">Quick Start</h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8">Get up and running with Theme UI in minutes</p>
+  
+  <Steps>
+    <Step title="Install Theme UI">
+      Install the package and its peer dependencies using your preferred package manager.
+      
+      <CodeGroup>
+      ```bash npm
+      npm install theme-ui @emotion/react
+      ```
+      ```bash yarn
+      yarn add theme-ui @emotion/react
+      ```
+      ```bash pnpm
+      pnpm add theme-ui @emotion/react
+      ```
+      </CodeGroup>
+    </Step>
+    
+    <Step title="Create a theme">
+      Define your theme object with colors, typography, spacing, and other design tokens.
+      
+      ```js theme.js
+      export default {
+        fonts: {
+          body: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          heading: '"Avenir Next", sans-serif',
+          monospace: 'Menlo, monospace',
+        },
+        colors: {
+          text: '#000',
+          background: '#fff',
+          primary: '#33e',
+          secondary: '#119',
+          muted: '#f6f6f6',
+        },
+        fontSizes: [12, 14, 16, 20, 24, 32, 48, 64, 96],
+        space: [0, 4, 8, 16, 32, 64, 128, 256, 512],
+      }
+      ```
+    </Step>
+    
+    <Step title="Add the ThemeUIProvider">
+      Wrap your application with the `ThemeUIProvider` component to make your theme available throughout your app.
+      
+      ```jsx App.jsx
+      import { ThemeUIProvider } from 'theme-ui'
+      import theme from './theme'
+      
+      export default function App() {
+        return (
+          <ThemeUIProvider theme={theme}>
+            <YourApp />
+          </ThemeUIProvider>
+        )
+      }
+      ```
+    </Step>
+    
+    <Step title="Use the sx prop">
+      Add the JSX pragma comment and start using the `sx` prop for theme-aware styling.
+      
+      ```jsx Button.jsx
+      /** @jsxImportSource theme-ui */
+      
+      export default function Button({ children }) {
+        return (
+          <button
+            sx={{
+              bg: 'primary',
+              color: 'white',
+              px: 4,
+              py: 2,
+              fontSize: 2,
+              borderRadius: 4,
+              cursor: 'pointer',
+              '&:hover': {
+                bg: 'secondary',
+              },
+            }}
+          >
+            {children}
+          </button>
+        )
+      }
+      ```
+      
+      <Note>
+        The `sx` prop automatically references values from your theme object, enabling consistent styling across your entire application.
+      </Note>
+    </Step>
+  </Steps>
+</div>
 
-Design a docs site that looks great and empowers your users.
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">Core Features</h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8">Everything you need to build themeable applications</p>
+  
+  <CardGroup cols={2}>
+    <Card title="Constraint-Based Design" icon="palette" href="/core-concepts/theming">
+      Build UIs with design scales for colors, typography, and spacing that enforce consistency.
+    </Card>
+    <Card title="The sx Prop" icon="paintbrush" href="/core-concepts/sx-prop">
+      Theme-aware styling with inline style objects that reference your design tokens.
+    </Card>
+    <Card title="Dark Mode Built-In" icon="moon" href="/core-concepts/color-modes">
+      First-class support for color modes with automatic persistence and media query detection.
+    </Card>
+    <Card title="Responsive Styles" icon="mobile" href="/core-concepts/responsive-styles">
+      Mobile-first responsive design with array-based syntax for breakpoint values.
+    </Card>
+    <Card title="Component Library" icon="puzzle-piece" href="/components/overview">
+      Pre-built components for layouts, typography, forms, and UI elements.
+    </Card>
+    <Card title="TypeScript Support" icon="code" href="/guides/typescript">
+      Strong type inference for themes and style objects with full TypeScript definitions.
+    </Card>
+  </CardGroup>
+</div>
 
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">Explore by Topic</h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8">Deep dive into specific areas of Theme UI</p>
+  
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <a href="/core-concepts/theming" className="group block rounded-2xl border border-gray-200 dark:border-[#27272a] overflow-hidden hover:border-[#040404] dark:hover:border-[#040404] transition-colors no-underline">
+      <div className="h-40 bg-gradient-to-br from-[#1a1d27] to-[#242838] dark:from-[#1a1d27] dark:to-[#242838] flex items-center justify-center">
+        <svg className="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+        </svg>
+      </div>
+      <div className="p-6 bg-white dark:bg-[#1a1d27]">
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-[#040404] dark:group-hover:text-[#040404] transition-colors">
+          Theming Guide
+        </h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+          Learn how to create and customize themes with design scales, variants, and style objects.
+        </p>
+        <span className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-[#040404] dark:group-hover:text-[#040404] inline-flex items-center transition-colors">
+          Learn more
+          <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </span>
+      </div>
+    </a>
+    
+    <a href="/guides/mdx" className="group block rounded-2xl border border-gray-200 dark:border-[#27272a] overflow-hidden hover:border-[#040404] dark:hover:border-[#040404] transition-colors no-underline">
+      <div className="h-40 bg-gradient-to-br from-[#1a1d27] to-[#242838] dark:from-[#1a1d27] dark:to-[#242838] flex items-center justify-center">
+        <svg className="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      </div>
+      <div className="p-6 bg-white dark:bg-[#1a1d27]">
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-[#040404] dark:group-hover:text-[#040404] transition-colors">
+          MDX Integration
+        </h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+          Style MDX content with theme-aware components using the Themed components API.
+        </p>
+        <span className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-[#040404] dark:group-hover:text-[#040404] inline-flex items-center transition-colors">
+          Learn more
+          <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </span>
+      </div>
+    </a>
+  </div>
+</div>
 
-## Create beautiful pages
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">Resources</h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8">Additional resources to help you succeed</p>
+  
+  <CardGroup cols={3}>
+    <Card title="GitHub Repository" icon="github" href="https://github.com/system-ui/theme-ui">
+      View the source code, report issues, and contribute to Theme UI.
+    </Card>
+    <Card title="Discord Community" icon="discord" href="https://discord.gg/theme-ui">
+      Join the community to ask questions and share your projects.
+    </Card>
+    <Card title="Theme Specification" icon="file-lines" href="https://system-ui.com/theme">
+      Learn about the System UI theme specification for interoperability.
+    </Card>
+  </CardGroup>
+</div>
 
-Everything you need to create world-class documentation.
-
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
-
-## Need inspiration?
-
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+<div className="mt-20 mb-16 max-w-5xl mx-auto px-6">
+  <div className="bg-gradient-to-br from-[#1a1d27] to-[#242838] dark:from-[#1a1d27] dark:to-[#242838] rounded-2xl p-8 sm:p-12 text-center border border-[#27272a] dark:border-[#27272a]">
+    <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+      Ready to build themeable UIs?
+    </h2>
+    <p className="text-lg text-gray-300 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
+      Start building constraint-based design systems with Theme UI today.
+    </p>
+    <a 
+      href="/quickstart" 
+      className="inline-flex items-center justify-center px-8 py-4 bg-white dark:bg-white text-black dark:text-black font-semibold rounded-lg hover:bg-gray-100 dark:hover:bg-gray-100 transition-colors no-underline text-lg"
+    >
+      Get Started
+      <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+      </svg>
+    </a>
+  </div>
+</div>

@@ -1,0 +1,309 @@
+---
+title: Theming
+description: Learn how Theme UI's theme object structure works, including design scales and theme-aware styling
+---
+
+Theme UI is built on the idea of using design scales for styling. A theme object contains collections of design tokens organized into scales like colors, fonts, and spacing values.
+
+## Theme Object Structure
+
+The `Theme` type defines the complete structure of a Theme UI theme:
+
+```typescript
+export interface Theme {
+  // Design scales
+  colors?: ColorModesScale
+  space?: Scale<CSS.Property.Margin<number | string>>
+  fonts?: Scale<CSS.Property.FontFamily>
+  fontSizes?: Scale<CSS.Property.FontSize<number>>
+  fontWeights?: Scale<CSS.Property.FontWeight>
+  lineHeights?: Scale<CSS.Property.LineHeight<TLengthStyledSystem>>
+  letterSpacings?: Scale<CSS.Property.LetterSpacing<TLengthStyledSystem>>
+  sizes?: Scale<CSS.Property.Height<{}> | CSS.Property.Width<{}>>
+  borders?: Scale<CSS.Property.Border<{}>>
+  borderStyles?: Scale<CSS.Property.Border<{}>>
+  borderWidths?: Scale<CSS.Property.BorderWidth<TLengthStyledSystem>>
+  radii?: Scale<CSS.Property.BorderRadius<TLengthStyledSystem>>
+  shadows?: Scale<CSS.Property.BoxShadow>
+  zIndices?: Scale<CSS.Property.ZIndex>
+  transitions?: Scale<CSS.Property.Transition>
+  opacities?: Scale<CSS.Property.Opacity>
+  
+  // Configuration
+  config?: ThemeUIConfig
+  
+  // Breakpoints
+  breakpoints?: Array<string>
+  mediaQueries?: { [size: string]: string }
+  
+  // Element styles
+  styles?: ThemeStyles
+  
+  // Component variants
+  buttons?: Record<string, ThemeUIStyleObject>
+  text?: Record<string, ThemeUIStyleObject>
+  links?: Record<string, ThemeUIStyleObject>
+  images?: Record<string, ThemeUIStyleObject>
+  cards?: Record<string, ThemeUIStyleObject>
+  layout?: Record<string, ThemeUIStyleObject>
+  forms?: Record<string, ThemeUIStyleObject>
+  badges?: Record<string, ThemeUIStyleObject>
+  alerts?: Record<string, ThemeUIStyleObject>
+  // ... and more
+}
+```
+
+## Design Scales
+
+Design scales are collections of related values stored as arrays or objects. Theme UI uses these scales to provide consistent styling across your application.
+
+### Space Scale
+
+The space scale is used for margin, padding, and other spatial properties:
+
+```javascript
+const theme = {
+  space: [0, 4, 8, 16, 32, 64, 128, 256, 512]
+}
+```
+
+You can reference these values by index:
+
+```jsx
+<Box sx={{ m: 2, p: 3 }} />
+// margin: 8px, padding: 16px
+```
+
+### Color Scale
+
+Colors can be defined as flat or nested objects:
+
+```javascript
+const theme = {
+  colors: {
+    text: '#000',
+    background: '#fff',
+    primary: '#07c',
+    secondary: '#609',
+    muted: '#f6f6f6'
+  }
+}
+```
+
+### Font Scales
+
+```javascript
+const theme = {
+  fonts: {
+    body: 'system-ui, -apple-system, sans-serif',
+    heading: 'Georgia, serif',
+    monospace: 'Menlo, monospace'
+  },
+  fontSizes: [12, 14, 16, 20, 24, 32, 48, 64, 72],
+  fontWeights: {
+    body: 400,
+    heading: 700,
+    bold: 700
+  },
+  lineHeights: {
+    body: 1.5,
+    heading: 1.125
+  }
+}
+```
+
+### Other Scales
+
+```javascript
+const theme = {
+  // Border radius
+  radii: [0, 4, 8, 16],
+  
+  // Box shadows
+  shadows: {
+    small: '0 1px 3px rgba(0,0,0,0.12)',
+    medium: '0 4px 6px rgba(0,0,0,0.16)',
+    large: '0 10px 20px rgba(0,0,0,0.19)'
+  },
+  
+  // Z-index values
+  zIndices: {
+    dropdown: 1000,
+    modal: 1050,
+    tooltip: 1100
+  },
+  
+  // Transitions
+  transitions: {
+    fast: '150ms ease-in-out',
+    normal: '300ms ease-in-out'
+  }
+}
+```
+
+## Nested Scales with `__default`
+
+Theme UI supports nested scales with a special `__default` key for shorthand access:
+
+```javascript
+const theme = {
+  colors: {
+    primary: {
+      __default: '#00f',
+      light: '#33f',
+      dark: '#00a'
+    }
+  }
+}
+```
+
+Usage:
+
+```jsx
+<Box sx={{ color: 'primary' }} />
+// color: #00f (uses __default)
+
+<Box sx={{ color: 'primary.light' }} />
+// color: #33f
+```
+
+## Scale Mappings
+
+Theme UI automatically maps CSS properties to theme scales:
+
+```typescript
+export const scales = {
+  // Colors
+  color: 'colors',
+  backgroundColor: 'colors',
+  borderColor: 'colors',
+  
+  // Space
+  margin: 'space',
+  marginTop: 'space',
+  padding: 'space',
+  gap: 'space',
+  
+  // Typography
+  fontFamily: 'fonts',
+  fontSize: 'fontSizes',
+  fontWeight: 'fontWeights',
+  lineHeight: 'lineHeights',
+  letterSpacing: 'letterSpacings',
+  
+  // Borders
+  borderRadius: 'radii',
+  borderWidth: 'borderWidths',
+  
+  // Shadows and sizing
+  boxShadow: 'shadows',
+  width: 'sizes',
+  height: 'sizes',
+  
+  // ... and many more
+}
+```
+
+## Example Theme
+
+Here's a complete example theme from the Theme UI codebase:
+
+```typescript
+import { makeTheme } from '@theme-ui/css/utils'
+
+export const theme = makeTheme({
+  config: {
+    initialColorModeName: 'light',
+    useColorSchemeMediaQuery: true,
+  },
+  colors: {
+    text: '#000',
+    background: '#fff',
+    primary: '#07c',
+    secondary: '#b0b',
+    modes: {
+      dark: {
+        text: '#fff',
+        background: '#222',
+        primary: '#0cf',
+        secondary: '#faf',
+      },
+    },
+  },
+  fonts: {
+    body: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    heading: 'sans-serif',
+  },
+  radii: [0, 4],
+  styles: {
+    root: {
+      fontFamily: 'body',
+      color: 'text',
+      bg: 'background',
+      p: 4,
+    },
+    a: {
+      color: 'primary',
+      fontWeight: 'bold',
+      textDecoration: 'none',
+      ':hover': {
+        color: 'secondary',
+        textDecoration: 'underline',
+      },
+    },
+  },
+  buttons: {
+    primary: {
+      cursor: 'pointer',
+    },
+  },
+})
+```
+
+## Using the Theme
+
+Wrap your application with `ThemeProvider`:
+
+```jsx
+import { ThemeProvider } from '@theme-ui/core'
+import theme from './theme'
+
+function App() {
+  return (
+    <ThemeProvider theme={theme}>
+      {/* Your app */}
+    </ThemeProvider>
+  )
+}
+```
+
+Access the theme in components:
+
+```jsx
+import { useThemeUI } from '@theme-ui/core'
+
+function MyComponent() {
+  const { theme } = useThemeUI()
+  return <div>Primary color: {theme.colors.primary}</div>
+}
+```
+
+## Merging Themes
+
+You can merge multiple theme objects:
+
+```typescript
+import { merge } from '@theme-ui/core'
+
+const baseTheme = { /* ... */ }
+const customTheme = { /* ... */ }
+
+const mergedTheme = merge(baseTheme, customTheme)
+
+// Merge multiple themes
+const multiMerged = merge.all(theme1, theme2, theme3)
+```
+
+<Note>
+Theme values are automatically applied when using the `sx` prop, making it easy to create consistent, theme-aware components.
+</Note>

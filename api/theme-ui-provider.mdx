@@ -1,0 +1,155 @@
+---
+title: ThemeUIProvider
+description: Root component that provides theme context with color modes and root styles
+---
+
+The `ThemeUIProvider` component is the primary way to add a theme to your application. It wraps the core `ThemeProvider` and adds color mode support and global root styles.
+
+## Import
+
+```tsx
+import { ThemeUIProvider } from 'theme-ui'
+```
+
+## Signature
+
+```tsx
+function ThemeUIProvider(props: ThemeProviderProps): JSX.Element
+```
+
+<ParamField path="props" type="ThemeProviderProps">
+  Props for the ThemeUIProvider component
+  
+  <ParamField path="theme" type="Theme | ((outerTheme: Theme) => Theme)" required>
+    Theme object or function that receives the outer theme and returns a new theme
+  </ParamField>
+  
+  <ParamField path="children" type="React.ReactNode">
+    Child components that will have access to the theme context
+  </ParamField>
+</ParamField>
+
+## Usage
+
+### Basic Usage
+
+```tsx
+import { ThemeUIProvider } from 'theme-ui'
+
+const theme = {
+  colors: {
+    primary: 'tomato',
+    background: 'white',
+    text: 'black',
+  },
+  fonts: {
+    body: 'Georgia, serif',
+  },
+}
+
+function App() {
+  return (
+    <ThemeUIProvider theme={theme}>
+      <div sx={{ color: 'primary' }}>
+        Hello Theme UI
+      </div>
+    </ThemeUIProvider>
+  )
+}
+```
+
+### Functional Theme
+
+You can pass a function to merge with an outer theme:
+
+```tsx
+<ThemeUIProvider theme={{ colors: { primary: 'tomato' } }}>
+  <ThemeUIProvider theme={(outerTheme) => ({
+    ...outerTheme,
+    colors: {
+      ...outerTheme.colors,
+      secondary: 'cyan',
+    },
+  })}>
+    <Component />
+  </ThemeUIProvider>
+</ThemeUIProvider>
+```
+
+### With Root Styles
+
+The `ThemeUIProvider` automatically applies root styles from `theme.styles.root`:
+
+```tsx
+const theme = {
+  fonts: {
+    body: 'Georgia, serif',
+  },
+  lineHeights: {
+    body: 1.5,
+  },
+  fontWeights: {
+    body: 500,
+  },
+  styles: {
+    root: {
+      fontFamily: 'body',
+      fontWeight: 'body',
+      lineHeight: 'body',
+    },
+  },
+}
+
+<ThemeUIProvider theme={theme}>
+  <App />
+</ThemeUIProvider>
+```
+
+## Features
+
+### Automatic Root Styles
+
+At the top level, `ThemeUIProvider` injects global styles that:
+
+- Set `box-sizing: border-box` on all elements (unless `config.useBorderBox` is `false`)
+- Apply `styles.root` variant to the `html` element
+- Reset body margin to `0`
+
+### Color Mode Support
+
+Wraps children with `ColorModeProvider` for automatic color mode support. See the [Color Modes documentation](/theming/color-modes) for details.
+
+### Nested Providers
+
+You can nest multiple `ThemeUIProvider` components to merge themes. Inner themes are deeply merged with outer themes:
+
+```tsx
+<ThemeUIProvider theme={{ colors: { primary: 'tomato' } }}>
+  <ThemeUIProvider theme={{ colors: { secondary: 'cyan' } }}>
+    {/* Has access to both primary and secondary colors */}
+    <Component />
+  </ThemeUIProvider>
+</ThemeUIProvider>
+```
+
+## Configuration
+
+Control provider behavior through `theme.config`:
+
+<ParamField path="config.useRootStyles" type="boolean" default="true">
+  Whether to apply root styles from `theme.styles.root`
+</ParamField>
+
+<ParamField path="config.useBorderBox" type="boolean" default="true">
+  Whether to set `box-sizing: border-box` on all elements
+</ParamField>
+
+<ParamField path="config.useCustomProperties" type="boolean" default="true">
+  Whether to use CSS custom properties for color values
+</ParamField>
+
+## Related
+
+- [useThemeUI](/api/use-theme-ui) - Access theme context in components
+- [ThemeProvider](/api/theme-provider) - Core provider without color modes
+- [Color Modes](/theming/color-modes) - Working with color modes

@@ -1,0 +1,329 @@
+---
+title: '@theme-ui/theme-provider'
+description: Complete ThemeUIProvider with color modes and root styles
+---
+
+The `@theme-ui/theme-provider` package provides the full-featured `ThemeUIProvider` component that combines the core theme provider with color mode support and root styles.
+
+## Installation
+
+```bash
+npm install @theme-ui/theme-provider @emotion/react
+```
+
+<Note>
+This package is included in the main `theme-ui` package. You typically don't need to install it separately. The main `theme-ui` package re-exports `ThemeUIProvider`.
+</Note>
+
+## When to Use
+
+This package is primarily for internal use. You would only install it directly if you're:
+- Building a custom Theme UI configuration
+- Using specific Theme UI packages without the umbrella package
+- Need the provider without other Theme UI utilities
+
+For most projects, use the `theme-ui` package which includes this provider:
+
+```jsx
+import { ThemeUIProvider } from 'theme-ui'
+```
+
+## Exports
+
+### Components
+
+#### `ThemeUIProvider`
+
+The main provider component that sets up Theme UI for your application.
+
+```jsx
+import { ThemeUIProvider } from '@theme-ui/theme-provider'
+import theme from './theme'
+
+function App({ children }) {
+  return (
+    <ThemeUIProvider theme={theme}>
+      {children}
+    </ThemeUIProvider>
+  )
+}
+```
+
+**Props:**
+- `theme`: `Theme` - Your theme object
+- `children`: `React.ReactNode` - Child components
+
+**Features:**
+- Provides theme context to all child components
+- Enables color mode functionality
+- Applies root styles to `<html>` and `<body>`
+- Sets up CSS custom properties
+- Configures border-box box-sizing by default
+
+#### `ThemeProvider` (deprecated)
+
+A deprecated alias for `ThemeUIProvider`.
+
+```jsx
+// Deprecated - use ThemeUIProvider instead
+import { ThemeProvider } from '@theme-ui/theme-provider'
+```
+
+<Warning>
+`ThemeProvider` is deprecated to avoid confusion with Emotion's ThemeProvider. Use `ThemeUIProvider` instead. The `ThemeProvider` export will be removed in a future version.
+</Warning>
+
+## What It Does
+
+The `ThemeUIProvider` combines several features:
+
+### 1. Core Theme Provider
+
+Provides theme context from `@theme-ui/core`:
+
+```jsx
+// Internally uses:
+import { ThemeProvider as CoreProvider } from '@theme-ui/core'
+```
+
+### 2. Color Mode Support
+
+Adds color mode functionality from `@theme-ui/color-modes`:
+
+```jsx
+// Internally includes:
+import { ColorModeProvider } from '@theme-ui/color-modes'
+```
+
+### 3. Root Styles
+
+Applies global root styles to your application:
+
+```jsx
+// Applies these styles:
+{
+  '*': {
+    boxSizing: 'border-box',  // Can be disabled
+  },
+  html: {
+    variant: 'styles.root',    // Uses theme.styles.root
+  },
+  body: {
+    margin: 0,
+  },
+}
+```
+
+## Usage
+
+### Basic Setup
+
+```jsx
+import { ThemeUIProvider } from '@theme-ui/theme-provider'
+
+const theme = {
+  colors: {
+    text: '#000',
+    background: '#fff',
+    primary: '#07c',
+  },
+  fonts: {
+    body: 'system-ui, sans-serif',
+    heading: 'Georgia, serif',
+  },
+}
+
+function App() {
+  return (
+    <ThemeUIProvider theme={theme}>
+      <YourApp />
+    </ThemeUIProvider>
+  )
+}
+```
+
+### With Root Styles
+
+```jsx
+const theme = {
+  styles: {
+    root: {
+      fontFamily: 'body',
+      lineHeight: 'body',
+      fontWeight: 'body',
+    },
+  },
+}
+
+<ThemeUIProvider theme={theme}>
+  <App />
+</ThemeUIProvider>
+```
+
+### With Color Modes
+
+```jsx
+const theme = {
+  colors: {
+    text: '#000',
+    background: '#fff',
+    primary: '#07c',
+    modes: {
+      dark: {
+        text: '#fff',
+        background: '#000',
+        primary: '#0cf',
+      },
+    },
+  },
+}
+
+<ThemeUIProvider theme={theme}>
+  <App />
+</ThemeUIProvider>
+```
+
+### Nested Providers
+
+You can nest providers to override theme values in specific sections:
+
+```jsx
+<ThemeUIProvider theme={baseTheme}>
+  <Page>
+    <ThemeUIProvider theme={sectionTheme}>
+      <Section />
+    </ThemeUIProvider>
+  </Page>
+</ThemeUIProvider>
+```
+
+## Configuration
+
+Configure provider behavior in your theme:
+
+```javascript
+const theme = {
+  config: {
+    // Use CSS custom properties for theme values
+    useCustomProperties: true,
+    
+    // Apply border-box to all elements
+    useBorderBox: true,
+    
+    // Apply root styles to <html>
+    useRootStyles: true,
+    
+    // Color mode settings
+    initialColorModeName: 'light',
+    useColorSchemeMediaQuery: true,
+    useLocalStorage: true,
+  },
+}
+```
+
+### Configuration Options
+
+#### `useCustomProperties`
+
+**Type:** `boolean`  
+**Default:** `true`
+
+Generate CSS custom properties for theme values:
+
+```javascript
+// When true, generates:
+:root {
+  --theme-ui-colors-primary: #07c;
+  --theme-ui-colors-text: #000;
+}
+```
+
+#### `useBorderBox`
+
+**Type:** `boolean`  
+**Default:** `true`
+
+Apply `box-sizing: border-box` to all elements:
+
+```javascript
+// When true, applies:
+* {
+  box-sizing: border-box;
+}
+```
+
+#### `useRootStyles`
+
+**Type:** `boolean`  
+**Default:** `true`
+
+Apply `theme.styles.root` to the `<html>` element:
+
+```javascript
+// When true and theme.styles.root exists:
+html {
+  // styles from theme.styles.root
+}
+```
+
+#### Color Mode Options
+
+See [@theme-ui/color-modes](/api/packages/color-modes) for color mode configuration.
+
+## Implementation Details
+
+### Root Styles Logic
+
+Root styles are only applied:
+- On the top-level provider (not nested providers)
+- When `useRootStyles` is not `false`
+- When `theme.styles.root` exists (for root variant)
+
+### Multiple Versions Warning
+
+If multiple versions of `@emotion/react` are detected, a warning is logged in development mode.
+
+## Dependencies
+
+The package depends on:
+
+```json
+{
+  "dependencies": {
+    "@theme-ui/color-modes": "workspace:^",
+    "@theme-ui/core": "workspace:^",
+    "@theme-ui/css": "workspace:^"
+  },
+  "peerDependencies": {
+    "@emotion/react": "^11.13.3",
+    "react": ">=18"
+  }
+}
+```
+
+## TypeScript Types
+
+```typescript
+import type { ThemeProviderProps } from '@theme-ui/theme-provider'
+
+interface ThemeProviderProps {
+  theme: Theme
+  children?: React.ReactNode
+}
+```
+
+## Notes
+
+- This is primarily an internal package
+- Most users should import from `theme-ui` instead
+- Combines core provider, color modes, and root styles
+- Requires React 18 or higher
+- Requires `@emotion/react` as a peer dependency
+- No side effects - safe for tree-shaking
+
+## Related
+
+- [@theme-ui/core](/api/packages/core) - Core theme provider without extras
+- [@theme-ui/color-modes](/api/packages/color-modes) - Color mode utilities
+- [theme-ui](/api/theme-ui) - Main package documentation
+- [Getting Started](/getting-started) - Setup guide

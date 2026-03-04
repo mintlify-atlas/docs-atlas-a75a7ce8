@@ -1,0 +1,161 @@
+---
+title: Heading
+description: Primitive heading component with semantic heading levels
+---
+
+The Heading component is a primitive component for rendering semantic headings (h1-h6) with theme-aware typography.
+
+## Import
+
+```jsx
+import { Heading } from 'theme-ui'
+```
+
+## Usage
+
+```jsx
+<Heading>Default Heading</Heading>
+```
+
+## Props
+
+<ParamField path="as" type="'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'" default="'h2'">
+  Semantic heading level. Defaults to `h2`.
+
+  ```jsx
+  <Heading as="h1">Page Title</Heading>
+  <Heading as="h2">Section Title</Heading>
+  <Heading as="h3">Subsection Title</Heading>
+  ```
+</ParamField>
+
+<ParamField path="variant" type="string" default="'heading'">
+  Text variant from `theme.text`. The default `heading` variant uses `theme.text.heading`.
+
+  ```jsx
+  <Heading variant="heading">Default heading style</Heading>
+  <Heading variant="display">Display style</Heading>
+  <Heading variant="caps">ALL CAPS HEADING</Heading>
+  ```
+</ParamField>
+
+<ParamField path="sx" type="ThemeUIStyleObject">
+  Theme-aware styles for custom heading appearance.
+
+  ```jsx
+  <Heading
+    sx={{
+      fontSize: 6,
+      color: 'primary',
+      mb: 3,
+    }}
+  >
+    Custom Heading
+  </Heading>
+  ```
+</ParamField>
+
+### Inherited Props
+
+Heading extends Box and accepts:
+- All standard HTML heading attributes
+- Box spacing props (m, p, mx, my, px, py, etc.)
+- Box color props (color, bg, opacity)
+
+## Default Styles
+
+The Heading component includes these base styles:
+
+```js
+{
+  fontFamily: 'heading',
+  fontWeight: 'heading',
+  lineHeight: 'heading',
+}
+```
+
+These map to `theme.fonts.heading`, `theme.fontWeights.heading`, and `theme.lineHeights.heading`.
+
+## Examples
+
+### Semantic Headings
+
+```jsx
+<Heading as="h1">Main Page Title</Heading>
+<Heading as="h2">Section Heading</Heading>
+<Heading as="h3">Subsection</Heading>
+```
+
+### Responsive Heading
+
+```jsx
+<Heading
+  as="h1"
+  sx={{
+    fontSize: [4, 5, 6],
+  }}
+>
+  Responsive Title
+</Heading>
+```
+
+### Colored Heading
+
+```jsx
+<Heading color="primary">
+  Primary Colored Heading
+</Heading>
+```
+
+### Custom Heading
+
+```jsx
+<Heading
+  as="h2"
+  sx={{
+    fontFamily: 'body',
+    fontWeight: 'normal',
+    fontSize: 5,
+    color: 'secondary',
+    mb: 4,
+  }}
+>
+  Custom Styled Heading
+</Heading>
+```
+
+### Heading with Underline
+
+```jsx
+<Heading
+  sx={{
+    pb: 2,
+    borderBottom: '2px solid',
+    borderColor: 'primary',
+  }}
+>
+  Underlined Heading
+</Heading>
+```
+
+### Centered Heading
+
+```jsx
+<Heading sx={{ textAlign: 'center' }}>
+  Centered Heading
+</Heading>
+```
+
+### Heading with Gradient
+
+```jsx
+<Heading
+  sx={{
+    background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+  }}
+>
+  Gradient Heading
+</Heading>
+```

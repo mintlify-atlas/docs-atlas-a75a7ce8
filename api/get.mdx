@@ -1,0 +1,351 @@
+---
+title: 'get'
+description: 'Utility function for extracting values from deeply nested theme objects with __default key support'
+---
+
+# get
+
+The `get` function extracts values from deeply nested objects using dot notation paths. It's used internally by Theme UI to resolve theme values and supports the special `__default` key for nested theme scales.
+
+## Function Signature
+
+```typescript
+function get(
+  obj: object,
+  path: string | number | undefined,
+  fallback?: unknown,
+  p?: number,
+  undef?: unknown
+): any
+```
+
+## Parameters
+
+<ParamField path="obj" type="object" required>
+  The object to extract values from (typically a theme, variant, or style object).
+</ParamField>
+
+<ParamField path="path" type="string | number | undefined" required>
+  Path to the desired value. Can be:
+  - Dot-separated string (e.g., `'colors.primary.light'`)
+  - Number for array access
+  - `undefined` returns the fallback
+</ParamField>
+
+<ParamField path="fallback" type="any">
+  Default value returned if the path is not found in the object. If not provided and path is not found, returns `undefined`.
+</ParamField>
+
+<ParamField path="p" type="number">
+  Internal parameter for iteration (not intended for direct use).
+</ParamField>
+
+<ParamField path="undef" type="unknown">
+  Internal parameter for undefined checks (not intended for direct use).
+</ParamField>
+
+## Returns
+
+<ResponseField name="value" type="any">
+  The value at the specified path. If the value is an object with a `__default` key, returns the value of that key. Returns the fallback value if the path doesn't exist.
+</ResponseField>
+
+## How It Works
+
+### Basic Path Resolution
+
+The function traverses the object using dot notation:
+
+```javascript
+import { get } from '@theme-ui/css'
+
+const theme = {
+  colors: {
+    primary: '#07c',
+    text: '#000'
+  },
+  space: [0, 4, 8, 16, 32]
+}
+
+get(theme, 'colors.primary')  // → '#07c'
+get(theme, 'space.2')          // → 8
+get(theme, 'space.10', 0)      // → 0 (fallback)
+```
+
+### The `__default` Key
+
+When a path resolves to an object containing the special `__default` key, `get` returns the value of that key instead of the object itself:
+
+```javascript
+const theme = {
+  colors: {
+    primary: {
+      __default: '#07c',
+      light: '#39f',
+      dark: '#05a'
+    }
+  }
+}
+
+get(theme, 'colors.primary')        // → '#07c' (from __default)
+get(theme, 'colors.primary.light')  // → '#39f'
+get(theme, 'colors.primary.dark')   // → '#05a'
+```
+
+### Array Access
+
+Arrays can be accessed using numeric indices:
+
+```javascript
+const theme = {
+  space: [0, 4, 8, 16, 32, 64],
+  fontSizes: [12, 14, 16, 20, 24, 32]
+}
+
+get(theme, 'space.0')      // → 0
+get(theme, 'space.3')      // → 16
+get(theme, 'fontSizes.2')  // → 16
+```
+
+You can also pass the number directly:
+
+```javascript
+get(theme.space, 3)  // → 16
+get(theme.space, 10, 0)  // → 0 (fallback, index doesn't exist)
+```
+
+### Fallback Values
+
+When a path doesn't exist, the fallback value is returned:
+
+```javascript
+const theme = {
+  colors: {
+    primary: '#07c'
+  }
+}
+
+get(theme, 'colors.secondary', '#639')  // → '#639'
+get(theme, 'colors.accent')             // → undefined
+get(theme, 'spacing.1', 4)              // → 4
+```
+
+## The `THEME_UI_DEFAULT_KEY`
+
+The `__default` key is exported as a constant:
+
+```javascript
+import { THEME_UI_DEFAULT_KEY } from '@theme-ui/css'
+
+console.log(THEME_UI_DEFAULT_KEY)  // → '__default'
+
+const theme = {
+  colors: {
+    primary: {
+      [THEME_UI_DEFAULT_KEY]: '#07c',
+      light: '#39f'
+    }
+  }
+}
+```
+
+## Use Cases
+
+### Nested Color Scales
+
+Create color palettes with multiple shades:
+
+```javascript
+const theme = {
+  colors: {
+    blue: {
+      __default: '#0066cc',
+      50: '#e6f2ff',
+      100: '#b3d9ff',
+      200: '#80bfff',
+      500: '#0066cc',
+      900: '#003366'
+    }
+  }
+}
+
+get(theme, 'colors.blue')      // → '#0066cc'
+get(theme, 'colors.blue.100')  // → '#b3d9ff'
+get(theme, 'colors.blue.900')  // → '#003366'
+```
+
+### Typography Scales
+
+```javascript
+const theme = {
+  fonts: {
+    body: 'system-ui, sans-serif',
+    heading: 'Georgia, serif',
+    mono: {
+      __default: 'Menlo, monospace',
+      code: 'Monaco, monospace',
+      terminal: 'Courier New, monospace'
+    }
+  }
+}
+
+get(theme, 'fonts.mono')          // → 'Menlo, monospace'
+get(theme, 'fonts.mono.code')     // → 'Monaco, monospace'
+```
+
+### Safe Property Access
+
+Use `get` to safely access potentially undefined paths:
+
+```javascript
+const userTheme = {}  // User hasn't defined a theme
+
+// Instead of: userTheme.colors?.primary || '#07c'
+const primaryColor = get(userTheme, 'colors.primary', '#07c')
+
+// Instead of: userTheme.space?.[3] || 16
+const spacing = get(userTheme, 'space.3', 16)
+```
+
+### Variant Extraction
+
+```javascript
+const theme = {
+  buttons: {
+    primary: {
+      color: 'white',
+      bg: 'primary',
+      padding: 3
+    },
+    secondary: {
+      color: 'text',
+      bg: 'secondary',
+      padding: 2
+    }
+  }
+}
+
+const primaryButton = get(theme, 'buttons.primary')
+// → { color: 'white', bg: 'primary', padding: 3 }
+
+const buttonPadding = get(theme, 'buttons.primary.padding', 2)
+// → 3
+```
+
+## Examples
+
+### Basic Usage
+
+```javascript
+import { get } from '@theme-ui/css'
+
+const theme = {
+  colors: {
+    primary: '#07c',
+    secondary: '#639'
+  }
+}
+
+const primary = get(theme, 'colors.primary')
+const accent = get(theme, 'colors.accent', '#f90')
+```
+
+### With Nested Scales
+
+```javascript
+const theme = {
+  colors: {
+    primary: {
+      __default: '#07c',
+      light: '#39f',
+      dark: '#05a'
+    }
+  }
+}
+
+// Get default value
+const primary = get(theme, 'colors.primary')  // '#07c'
+
+// Get nested value
+const primaryLight = get(theme, 'colors.primary.light')  // '#39f'
+```
+
+### Dynamic Paths
+
+```javascript
+const theme = {
+  space: [0, 4, 8, 16, 32]
+}
+
+const getSpacing = (scale) => get(theme, `space.${scale}`, 0)
+
+getSpacing(2)   // → 8
+getSpacing(10)  // → 0 (fallback)
+```
+
+### In Custom Components
+
+```javascript
+import { get } from '@theme-ui/css'
+import { useTheme } from '@theme-ui/core'
+
+function CustomButton({ variant = 'primary' }) {
+  const theme = useTheme()
+  const buttonStyles = get(theme, `buttons.${variant}`, {})
+  
+  return <button sx={buttonStyles}>Click me</button>
+}
+```
+
+## Internal Usage
+
+The `get` function is used internally by the `css` function for:
+
+- Resolving theme values (e.g., `color: 'primary'` → `color: theme.colors.primary`)
+- Accessing scale values by index (e.g., `padding: 3` → `padding: theme.space[3]`)
+- Handling negative values for margins and positioning
+- Processing variant references
+
+## Edge Cases
+
+### Numeric String Paths
+
+```javascript
+const arr = [10, 20, 30]
+
+get(arr, '1')   // → 20 (string '1' works for arrays)
+get(arr, 1)     // → 20
+```
+
+### Undefined Paths
+
+```javascript
+get(theme, undefined, 'default')  // → 'default'
+get(theme, '')                     // → theme (empty string returns obj)
+```
+
+### Deep Nesting
+
+```javascript
+const theme = {
+  components: {
+    buttons: {
+      variants: {
+        primary: {
+          states: {
+            hover: { bg: 'blue' }
+          }
+        }
+      }
+    }
+  }
+}
+
+get(theme, 'components.buttons.variants.primary.states.hover.bg')
+// → 'blue'
+```
+
+## Related
+
+- [css](/api/css) - Main styling function that uses `get` internally
+- [sx prop](/api/sx-prop) - Component styling that relies on theme lookups

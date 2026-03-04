@@ -1,0 +1,348 @@
+---
+title: 'css'
+description: 'Core function that processes Theme UI style objects with theme lookups and responsive arrays'
+---
+
+# css
+
+The `css` function is the core styling utility in Theme UI. It processes style objects, performs theme lookups, handles responsive arrays, and transforms shorthand properties into their full CSS equivalents.
+
+## Function Signature
+
+```typescript
+function css<TTheme extends Theme>(
+  args: ThemeUIStyleObject<TTheme> = {}
+): (props: { theme: Theme } | Theme) => CSSObject
+```
+
+## Parameters
+
+<ParamField path="args" type="ThemeUIStyleObject<TTheme>">
+  Style object containing CSS properties, aliases, and theme-aware values. Can be:
+  - Plain style object with CSS properties
+  - Function that receives the theme and returns a style object
+  - Object with responsive arrays for mobile-first styling
+  - Object with variant references
+</ParamField>
+
+## Returns
+
+<ResponseField name="function" type="(props) => CSSObject">
+  Returns a function that accepts a theme object (or `{ theme }` prop object) and returns the final CSS object with all transformations applied.
+</ResponseField>
+
+## How It Works
+
+### 1. Theme Lookups
+
+The `css` function automatically looks up values from theme scales based on the CSS property:
+
+```javascript
+import { css } from '@theme-ui/css'
+
+const theme = {
+  colors: {
+    primary: '#07c',
+    secondary: '#639'
+  },
+  space: [0, 4, 8, 16, 32]
+}
+
+const styles = css({
+  color: 'primary',      // → '#07c'
+  padding: 3,            // → 16
+  margin: 2              // → 8
+})(theme)
+```
+
+### 2. Responsive Arrays
+
+Arrays are transformed into mobile-first media queries using the theme's breakpoints:
+
+```javascript
+const styles = css({
+  fontSize: [1, 2, 3],
+  padding: [2, 3, 4]
+})(theme)
+
+// Transforms to:
+// {
+//   fontSize: theme.fontSizes[1],
+//   '@media screen and (min-width: 40em)': { fontSize: theme.fontSizes[2] },
+//   '@media screen and (min-width: 52em)': { fontSize: theme.fontSizes[3] }
+// }
+```
+
+### 3. Property Aliases
+
+Shorthand properties are expanded to their full CSS equivalents:
+
+```javascript
+const styles = css({
+  bg: 'primary',    // → backgroundColor: theme.colors.primary
+  m: 2,             // → margin: theme.space[2]
+  px: 3,            // → paddingLeft + paddingRight: theme.space[3]
+  py: 2             // → paddingTop + paddingBottom: theme.space[2]
+})(theme)
+```
+
+#### Available Aliases
+
+- `bg` → `backgroundColor`
+- `m` → `margin`
+- `mt` → `marginTop`
+- `mr` → `marginRight`
+- `mb` → `marginBottom`
+- `ml` → `marginLeft`
+- `mx` → `marginX` (expands to left + right)
+- `my` → `marginY` (expands to top + bottom)
+- `p` → `padding`
+- `pt` → `paddingTop`
+- `pr` → `paddingRight`
+- `pb` → `paddingBottom`
+- `pl` → `paddingLeft`
+- `px` → `paddingX` (expands to left + right)
+- `py` → `paddingY` (expands to top + bottom)
+
+### 4. Multiple Properties
+
+Some properties expand to multiple CSS properties:
+
+```javascript
+const styles = css({
+  marginX: 2,    // → marginLeft: 8, marginRight: 8
+  paddingY: 3,   // → paddingTop: 16, paddingBottom: 16
+  size: 100      // → width: 100, height: 100
+})(theme)
+```
+
+#### Available Multiples
+
+- `marginX` → `marginLeft`, `marginRight`
+- `marginY` → `marginTop`, `marginBottom`
+- `paddingX` → `paddingLeft`, `paddingRight`
+- `paddingY` → `paddingTop`, `paddingBottom`
+- `scrollMarginX` → `scrollMarginLeft`, `scrollMarginRight`
+- `scrollMarginY` → `scrollMarginTop`, `scrollMarginBottom`
+- `scrollPaddingX` → `scrollPaddingLeft`, `scrollPaddingRight`
+- `scrollPaddingY` → `scrollPaddingTop`, `scrollPaddingBottom`
+- `size` → `width`, `height`
+
+### 5. Negative Values
+
+Certain properties (margins, positioning) support negative values:
+
+```javascript
+const styles = css({
+  marginTop: -2,        // → -8 (negates theme.space[2])
+  marginLeft: '-2',     // → -8 (string form)
+  top: -1               // → -4
+})(theme)
+```
+
+### 6. Nested Scales with `__default`
+
+Theme scales can be nested with a `__default` key:
+
+```javascript
+const theme = {
+  colors: {
+    primary: {
+      __default: '#07c',
+      light: '#39f',
+      dark: '#05a'
+    }
+  }
+}
+
+const styles = css({
+  color: 'primary',        // → '#07c' (uses __default)
+  bg: 'primary.light'      // → '#39f'
+})(theme)
+```
+
+### 7. Variant References
+
+Reference predefined variants from the theme:
+
+```javascript
+const theme = {
+  buttons: {
+    primary: {
+      color: 'white',
+      bg: 'primary',
+      padding: 3,
+      borderRadius: 2
+    }
+  }
+}
+
+const styles = css({
+  variant: 'buttons.primary',
+  fontSize: 2  // Additional styles merged with variant
+})(theme)
+```
+
+## Theme Scale Mappings
+
+The `css` function maps CSS properties to theme scales automatically:
+
+<AccordionGroup>
+  <Accordion title="Colors">
+    Maps to `theme.colors`:
+    - `color`
+    - `backgroundColor`, `background`
+    - `borderColor`, `borderTopColor`, `borderBottomColor`, `borderLeftColor`, `borderRightColor`
+    - `borderBlockColor`, `borderBlockEndColor`, `borderBlockStartColor`
+    - `borderInlineColor`, `borderInlineEndColor`, `borderInlineStartColor`
+    - `caretColor`
+    - `columnRuleColor`
+    - `outlineColor`
+    - `textDecorationColor`
+    - `accentColor`
+    - `fill`, `stroke` (SVG)
+  </Accordion>
+
+  <Accordion title="Space">
+    Maps to `theme.space`:
+    - `margin`, `marginTop`, `marginRight`, `marginBottom`, `marginLeft`
+    - `marginX`, `marginY`
+    - `marginBlock`, `marginBlockEnd`, `marginBlockStart`
+    - `marginInline`, `marginInlineEnd`, `marginInlineStart`
+    - `padding`, `paddingTop`, `paddingRight`, `paddingBottom`, `paddingLeft`
+    - `paddingX`, `paddingY`
+    - `paddingBlock`, `paddingBlockEnd`, `paddingBlockStart`
+    - `paddingInline`, `paddingInlineEnd`, `paddingInlineStart`
+    - `top`, `right`, `bottom`, `left`
+    - `inset`, `insetBlock`, `insetBlockEnd`, `insetBlockStart`
+    - `insetInline`, `insetInlineEnd`, `insetInlineStart`
+    - `scrollMargin`, `scrollMarginTop`, `scrollMarginRight`, `scrollMarginBottom`, `scrollMarginLeft`
+    - `scrollMarginX`, `scrollMarginY`
+    - `scrollPadding`, `scrollPaddingTop`, `scrollPaddingRight`, `scrollPaddingBottom`, `scrollPaddingLeft`
+    - `scrollPaddingX`, `scrollPaddingY`
+    - `gap`, `gridGap`, `columnGap`, `gridColumnGap`, `rowGap`, `gridRowGap`
+  </Accordion>
+
+  <Accordion title="Typography">
+    - `fontFamily` → `theme.fonts`
+    - `fontSize` → `theme.fontSizes`
+    - `fontWeight` → `theme.fontWeights`
+    - `lineHeight` → `theme.lineHeights`
+    - `letterSpacing` → `theme.letterSpacings`
+  </Accordion>
+
+  <Accordion title="Borders">
+    - `border`, `borderTop`, `borderRight`, `borderBottom`, `borderLeft` → `theme.borders`
+    - `borderBlock`, `borderBlockEnd`, `borderBlockStart` → `theme.borders`
+    - `borderInline`, `borderInlineEnd`, `borderInlineStart` → `theme.borders`
+    - `borderWidth`, `borderTopWidth`, `borderBottomWidth`, `borderLeftWidth`, `borderRightWidth` → `theme.borderWidths`
+    - `borderBlockWidth`, `borderBlockEndWidth`, `borderBlockStartWidth` → `theme.borderWidths`
+    - `borderInlineWidth`, `borderInlineEndWidth`, `borderInlineStartWidth` → `theme.borderWidths`
+    - `borderStyle`, `borderTopStyle`, `borderBottomStyle`, `borderLeftStyle`, `borderRightStyle` → `theme.borderStyles`
+    - `borderBlockStyle`, `borderBlockEndStyle`, `borderBlockStartStyle` → `theme.borderStyles`
+    - `borderInlineStyle`, `borderInlineEndStyle`, `borderInlineStartStyle` → `theme.borderStyles`
+    - `columnRuleWidth` → `theme.borderWidths`
+  </Accordion>
+
+  <Accordion title="Radii">
+    Maps to `theme.radii`:
+    - `borderRadius`
+    - `borderTopLeftRadius`, `borderTopRightRadius`
+    - `borderBottomLeftRadius`, `borderBottomRightRadius`
+    - `borderEndEndRadius`, `borderEndStartRadius`
+    - `borderStartEndRadius`, `borderStartStartRadius`
+  </Accordion>
+
+  <Accordion title="Sizes">
+    Maps to `theme.sizes`:
+    - `width`, `minWidth`, `maxWidth`
+    - `height`, `minHeight`, `maxHeight`
+    - `flexBasis`
+    - `size`
+    - `blockSize`, `minBlockSize`, `maxBlockSize`
+    - `inlineSize`, `minInlineSize`, `maxInlineSize`
+    - `columnWidth`
+  </Accordion>
+
+  <Accordion title="Other Scales">
+    - `boxShadow`, `textShadow` → `theme.shadows`
+    - `zIndex` → `theme.zIndices`
+    - `opacity` → `theme.opacities`
+    - `transition` → `theme.transitions`
+  </Accordion>
+</AccordionGroup>
+
+## Default Theme
+
+If no theme is provided, `css` uses these defaults:
+
+```javascript
+{
+  space: [0, 4, 8, 16, 32, 64, 128, 256, 512],
+  fontSizes: [12, 14, 16, 20, 24, 32, 48, 64, 72]
+}
+```
+
+## Default Breakpoints
+
+When no breakpoints are defined in the theme:
+
+```javascript
+['40em', '52em', '64em']
+```
+
+## Examples
+
+### Basic Usage
+
+```javascript
+import { css } from '@theme-ui/css'
+
+const styles = css({
+  color: 'primary',
+  bg: 'background',
+  padding: 3,
+  fontSize: 2
+})
+
+const element = <div css={styles(theme)} />
+```
+
+### Responsive Styles
+
+```javascript
+const styles = css({
+  fontSize: [1, 2, 3, 4],
+  padding: [2, 3, 4],
+  width: ['100%', '80%', '60%', '50%']
+})
+```
+
+### Nested Styles
+
+```javascript
+const styles = css({
+  color: 'text',
+  ':hover': {
+    color: 'primary'
+  },
+  '& > a': {
+    textDecoration: 'none'
+  }
+})
+```
+
+### Function Form
+
+```javascript
+const styles = css((theme) => ({
+  color: theme.colors.primary,
+  fontSize: theme.fontSizes[2],
+  padding: theme.space[3]
+}))
+```
+
+## Related
+
+- [get](/api/get) - Extract values from theme objects
+- [sx prop](/api/sx-prop) - Component-level styling with the sx prop

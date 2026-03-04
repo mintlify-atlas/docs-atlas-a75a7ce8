@@ -1,0 +1,445 @@
+---
+title: 'Using Presets'
+description: 'Learn how to install, use, and customize Theme UI presets'
+---
+
+## Installation
+
+You can install presets in two ways:
+
+### Install the Presets Package
+
+The `@theme-ui/presets` package includes all available presets:
+
+```bash
+npm install @theme-ui/presets
+```
+
+Then import the preset you want to use:
+
+```javascript
+import { funk } from '@theme-ui/presets'
+```
+
+### Install Individual Preset Packages
+
+You can also install individual preset packages to reduce bundle size:
+
+```bash
+npm install @theme-ui/preset-funk
+```
+
+Then import the preset:
+
+```javascript
+import funk from '@theme-ui/preset-funk'
+```
+
+## Basic Usage
+
+To use a preset, spread it into your theme configuration:
+
+```jsx
+import { ThemeUIProvider } from 'theme-ui'
+import { funk } from '@theme-ui/presets'
+
+const theme = {
+  ...funk,
+}
+
+export default function App({ children }) {
+  return (
+    <ThemeUIProvider theme={theme}>
+      {children}
+    </ThemeUIProvider>
+  )
+}
+```
+
+That's it! Your application will now use the Funk preset's colors, typography, and styles.
+
+## Customizing Presets
+
+Presets are designed to be customized. You can override any part of a preset to match your design requirements.
+
+### Override Specific Values
+
+You can override individual values while keeping the rest of the preset:
+
+```javascript
+import { funk } from '@theme-ui/presets'
+
+const theme = {
+  ...funk,
+  colors: {
+    ...funk.colors,
+    primary: '#0066cc', // Custom primary color
+    secondary: '#663399', // Custom secondary color
+  },
+}
+```
+
+### Override Fonts
+
+Change the font families while keeping other preset values:
+
+```javascript
+import { base } from '@theme-ui/presets'
+
+const theme = {
+  ...base,
+  fonts: {
+    body: '"Inter", system-ui, sans-serif',
+    heading: '"Playfair Display", serif',
+    monospace: '"Fira Code", monospace',
+  },
+}
+```
+
+### Add Custom Styles
+
+Extend the preset's styles with your own:
+
+```javascript
+import { dark } from '@theme-ui/presets'
+
+const theme = {
+  ...dark,
+  styles: {
+    ...dark.styles,
+    h1: {
+      ...dark.styles.h1,
+      textTransform: 'uppercase',
+      letterSpacing: '0.1em',
+    },
+  },
+}
+```
+
+### Add Custom Variants
+
+Add your own component variants while keeping preset styles:
+
+```javascript
+import { swiss } from '@theme-ui/presets'
+
+const theme = {
+  ...swiss,
+  buttons: {
+    primary: {
+      color: 'white',
+      bg: 'primary',
+      fontWeight: 'bold',
+      borderRadius: 4,
+      '&:hover': {
+        bg: 'secondary',
+      },
+    },
+    secondary: {
+      color: 'text',
+      bg: 'muted',
+      fontWeight: 'bold',
+      borderRadius: 4,
+    },
+  },
+}
+```
+
+## Extending Presets
+
+You can build on top of presets by importing them in your own preset files.
+
+### Extend from Base
+
+Many Theme UI presets extend from the `base` preset:
+
+```javascript
+import base from '@theme-ui/preset-base'
+import { makeTheme } from '@theme-ui/css/utils'
+
+export const myTheme = makeTheme({
+  ...base,
+  colors: {
+    ...base.colors,
+    primary: '#ff6b6b',
+    secondary: '#4ecdc4',
+  },
+  fonts: {
+    body: '"Montserrat", sans-serif',
+    heading: '"Bebas Neue", sans-serif',
+  },
+})
+```
+
+### Merge Multiple Presets
+
+You can combine values from multiple presets using deepmerge or object spreading:
+
+```javascript
+import { merge } from 'theme-ui'
+import { tailwind } from '@theme-ui/presets'
+import { dark } from '@theme-ui/presets'
+
+const theme = merge(tailwind, {
+  colors: dark.colors, // Use dark theme colors
+})
+```
+
+<Note>
+The `merge` function from Theme UI performs a deep merge of theme objects, which is useful when combining presets.
+</Note>
+
+### Create a Custom Preset
+
+You can create your own reusable preset:
+
+```javascript
+// my-preset.js
+import { makeTheme } from '@theme-ui/css/utils'
+import { base } from '@theme-ui/presets'
+
+const heading = {
+  fontFamily: 'heading',
+  fontWeight: 'heading',
+  lineHeight: 'heading',
+}
+
+export const myPreset = makeTheme({
+  ...base,
+  colors: {
+    text: '#1a202c',
+    background: '#ffffff',
+    primary: '#3182ce',
+    secondary: '#805ad5',
+    accent: '#d53f8c',
+    muted: '#f7fafc',
+  },
+  fonts: {
+    body: '"Inter", system-ui, sans-serif',
+    heading: '"Poppins", sans-serif',
+    monospace: '"Fira Code", monospace',
+  },
+  fontWeights: {
+    body: 400,
+    heading: 700,
+    bold: 600,
+  },
+  styles: {
+    ...base.styles,
+    h1: {
+      ...heading,
+      fontSize: [5, 6, 7],
+      color: 'primary',
+    },
+    h2: {
+      ...heading,
+      fontSize: [4, 5, 6],
+    },
+    // Add more custom styles...
+  },
+})
+```
+
+Then use your custom preset:
+
+```javascript
+import { myPreset } from './my-preset'
+
+const theme = {
+  ...myPreset,
+}
+```
+
+## Color Modes with Presets
+
+Some presets like `system` include built-in color modes. You can also add color modes to any preset:
+
+```javascript
+import { base } from '@theme-ui/presets'
+
+const theme = {
+  ...base,
+  colors: {
+    ...base.colors,
+    modes: {
+      dark: {
+        text: '#ffffff',
+        background: '#000000',
+        primary: '#3cf',
+        secondary: '#e0f',
+        muted: '#191919',
+      },
+    },
+  },
+}
+```
+
+Learn more about [color modes](/theming/color-modes).
+
+## Best Practices
+
+### Start with a Preset
+
+Using a preset is a great way to get started quickly. Choose one that closely matches your design aesthetic:
+
+- For a minimal starting point: use `base`
+- For dark themes: use `dark` or `deep`
+- For comprehensive design systems: use `tailwind` or `bootstrap`
+- For unique aesthetics: try `funk`, `swiss`, or `sketchy`
+
+### Customize Gradually
+
+Don't override everything at once. Start with the preset and gradually customize:
+
+1. Use the preset as-is initially
+2. Adjust colors to match your brand
+3. Customize typography if needed
+4. Add custom component variants
+5. Fine-tune spacing and sizing
+
+### Keep Your Overrides Organized
+
+Organize your theme customizations in a logical structure:
+
+```javascript
+import { base } from '@theme-ui/presets'
+
+// Brand colors
+const colors = {
+  ...base.colors,
+  primary: '#yourPrimary',
+  secondary: '#yourSecondary',
+}
+
+// Typography
+const typography = {
+  fonts: {
+    body: 'YourFont, sans-serif',
+    heading: 'YourHeadingFont, serif',
+  },
+  fontWeights: {
+    ...base.fontWeights,
+    heading: 800,
+  },
+}
+
+// Compose theme
+const theme = {
+  ...base,
+  colors,
+  ...typography,
+  // Additional customizations...
+}
+```
+
+### Use TypeScript
+
+For better autocompletion and type safety, use TypeScript:
+
+```typescript
+import type { Theme } from 'theme-ui'
+import { base } from '@theme-ui/presets'
+
+const theme: Theme = {
+  ...base,
+  colors: {
+    ...base.colors,
+    primary: '#3182ce',
+  },
+}
+
+export default theme
+```
+
+## Examples
+
+### Minimal Customization
+
+Just change the colors:
+
+```javascript
+import { swiss } from '@theme-ui/presets'
+
+const theme = {
+  ...swiss,
+  colors: {
+    ...swiss.colors,
+    primary: '#e63946',
+    secondary: '#457b9d',
+  },
+}
+```
+
+### Extensive Customization
+
+Override multiple aspects:
+
+```javascript
+import { base } from '@theme-ui/presets'
+
+const theme = {
+  ...base,
+  colors: {
+    ...base.colors,
+    text: '#2d3748',
+    background: '#f7fafc',
+    primary: '#4299e1',
+    secondary: '#ed8936',
+    accent: '#9f7aea',
+    muted: '#e2e8f0',
+  },
+  fonts: {
+    body: '"Nunito", sans-serif',
+    heading: '"Raleway", sans-serif',
+    monospace: '"Source Code Pro", monospace',
+  },
+  fontSizes: [12, 14, 16, 18, 24, 32, 48, 64, 72],
+  space: [0, 4, 8, 12, 16, 24, 32, 48, 64, 96],
+  radii: {
+    default: 8,
+    circle: 99999,
+  },
+  shadows: {
+    sm: '0 1px 3px rgba(0,0,0,0.12)',
+    md: '0 4px 6px rgba(0,0,0,0.1)',
+    lg: '0 10px 20px rgba(0,0,0,0.15)',
+  },
+}
+```
+
+### Combining Preset Features
+
+Mix colors from one preset with styles from another:
+
+```javascript
+import { merge } from 'theme-ui'
+import { tailwind, dark } from '@theme-ui/presets'
+
+const theme = merge(tailwind, {
+  colors: dark.colors,
+  styles: {
+    ...tailwind.styles,
+    h1: {
+      ...tailwind.styles.h1,
+      color: 'primary',
+    },
+  },
+})
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Presets Overview" icon="grid" href="/presets/overview">
+    Explore all available presets
+  </Card>
+  <Card title="Theming" icon="palette" href="/theming">
+    Learn about the theme specification
+  </Card>
+  <Card title="Color Modes" icon="moon" href="/theming/color-modes">
+    Add dark mode and color modes
+  </Card>
+  <Card title="Components" icon="component" href="/components">
+    Build UI with Theme UI components
+  </Card>
+</CardGroup>

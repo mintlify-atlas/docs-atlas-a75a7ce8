@@ -1,0 +1,334 @@
+---
+title: 'Layout Components'
+description: 'Layout primitives including Box, Flex, Grid, and Container for building responsive layouts'
+---
+
+Layout components are the foundational building blocks for structuring your UI. They provide flexible, theme-aware containers with powerful styling capabilities.
+
+## Box
+
+The Box component is the most fundamental layout primitive. It's a div element with support for system props and the `sx` prop for theme-aware styling.
+
+### Import
+
+```jsx
+import { Box } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Box
+  p={3}
+  bg="background"
+  sx={{
+    borderRadius: 4,
+    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+  }}
+>
+  Box content
+</Box>
+```
+
+### Props
+
+<ParamField path="as" type="React.ElementType">
+  Render the Box as a different HTML element or component
+</ParamField>
+
+<ParamField path="variant" type="string">
+  Variant style from `theme.variants`
+</ParamField>
+
+<ParamField path="sx" type="ThemeUIStyleObject">
+  Theme-aware style object
+</ParamField>
+
+<ParamField path="css" type="Interpolation">
+  Emotion css prop for additional styles
+</ParamField>
+
+#### System Props
+
+Box supports a wide range of system props for common CSS properties:
+
+**Spacing:**
+- `margin`, `m` - margin
+- `marginTop`, `mt` - margin-top
+- `marginRight`, `mr` - margin-right
+- `marginBottom`, `mb` - margin-bottom
+- `marginLeft`, `ml` - margin-left
+- `marginX`, `mx` - horizontal margin
+- `marginY`, `my` - vertical margin
+- `padding`, `p` - padding
+- `paddingTop`, `pt` - padding-top
+- `paddingRight`, `pr` - padding-right
+- `paddingBottom`, `pb` - padding-bottom
+- `paddingLeft`, `pl` - padding-left
+- `paddingX`, `px` - horizontal padding
+- `paddingY`, `py` - vertical padding
+
+**Color:**
+- `color` - text color
+- `backgroundColor`, `bg` - background color
+- `opacity` - opacity
+
+### Examples
+
+#### Basic Box
+
+```jsx
+<Box p={4} bg="muted">
+  A simple box with padding and background color
+</Box>
+```
+
+#### Responsive Spacing
+
+```jsx
+<Box
+  p={[2, 3, 4]} // Different padding at different breakpoints
+  m={[1, 2, 3]}
+>
+  Responsive box
+</Box>
+```
+
+#### As Different Element
+
+```jsx
+<Box as="section" p={4}>
+  Rendered as a section element
+</Box>
+```
+
+---
+
+## Flex
+
+The Flex component extends Box with `display: flex` by default, making it easy to create flexbox layouts.
+
+### Import
+
+```jsx
+import { Flex } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Flex sx={{ alignItems: 'center', gap: 3 }}>
+  <Box>Item 1</Box>
+  <Box>Item 2</Box>
+  <Box>Item 3</Box>
+</Flex>
+```
+
+### Props
+
+Flex accepts all Box props and automatically applies `display: flex`.
+
+### Examples
+
+#### Horizontal Layout
+
+```jsx
+<Flex sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+  <Box>Left</Box>
+  <Box>Right</Box>
+</Flex>
+```
+
+#### Vertical Stack
+
+```jsx
+<Flex sx={{ flexDirection: 'column', gap: 2 }}>
+  <Box>Item 1</Box>
+  <Box>Item 2</Box>
+  <Box>Item 3</Box>
+</Flex>
+```
+
+#### Centered Content
+
+```jsx
+<Flex
+  sx={{
+    height: '100vh',
+    alignItems: 'center',
+    justifyContent: 'center'
+  }}
+>
+  <Box>Centered content</Box>
+</Flex>
+```
+
+---
+
+## Grid
+
+The Grid component creates CSS Grid layouts with a simple API for defining columns and gaps.
+
+### Import
+
+```jsx
+import { Grid } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Grid columns={[1, 2, 3]} gap={3}>
+  <Box>Grid item 1</Box>
+  <Box>Grid item 2</Box>
+  <Box>Grid item 3</Box>
+  <Box>Grid item 4</Box>
+</Grid>
+```
+
+### Props
+
+<ParamField path="width" type="ResponsiveStyleValue<string | number>">
+  Minimum width of child elements. Creates auto-fit or auto-fill grid columns.
+</ParamField>
+
+<ParamField path="columns" type="ResponsiveStyleValue<string | number>">
+  Number of columns to use for the layout. Cannot be used with `width` prop.
+</ParamField>
+
+<ParamField path="gap" type="ResponsiveStyleValue<string | number>" default="3">
+  Space between grid items (uses theme spacing scale)
+</ParamField>
+
+<ParamField path="repeat" type="'fit' | 'fill'" default="'fit'">
+  Auto-repeat track behavior (auto-fit or auto-fill)
+</ParamField>
+
+Grid also accepts all Box props.
+
+### Examples
+
+#### Responsive Columns
+
+```jsx
+<Grid columns={[1, 2, 3]} gap={4}>
+  <Card>Card 1</Card>
+  <Card>Card 2</Card>
+  <Card>Card 3</Card>
+</Grid>
+```
+
+#### Fixed Width Columns
+
+```jsx
+<Grid width="200px" gap={3}>
+  <Box>Auto-fit columns with min-width 200px</Box>
+  <Box>Grid will create as many columns as fit</Box>
+  <Box>Responsive without media queries</Box>
+</Grid>
+```
+
+#### Custom Gap
+
+```jsx
+<Grid columns={2} gap={[2, 3, 4]}>
+  <Box>Item with responsive gap</Box>
+  <Box>Gap increases at larger breakpoints</Box>
+</Grid>
+```
+
+---
+
+## Container
+
+The Container component creates a centered layout with a maximum width, perfect for page content.
+
+### Import
+
+```jsx
+import { Container } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Container>
+  <Heading>Page Title</Heading>
+  <Paragraph>Page content...</Paragraph>
+</Container>
+```
+
+### Props
+
+Container accepts all Box props. It uses the `container` variant from `theme.layout` by default.
+
+<ParamField path="variant" type="string" default="'container'">
+  Variant from `theme.layout`
+</ParamField>
+
+### Default Styles
+
+The Container component applies these default styles:
+
+```js
+{
+  width: '100%',
+  maxWidth: 'container', // from theme.sizes.container
+  mx: 'auto' // centers the container
+}
+```
+
+### Examples
+
+#### Basic Container
+
+```jsx
+<Container py={4}>
+  <Heading>Welcome</Heading>
+  <Paragraph>This content is centered with max-width.</Paragraph>
+</Container>
+```
+
+#### Custom Variant
+
+Define variants in your theme:
+
+```js
+// theme.js
+export default {
+  layout: {
+    container: {
+      maxWidth: '1200px',
+      px: 3
+    },
+    narrow: {
+      maxWidth: '768px',
+      px: 3
+    }
+  }
+}
+```
+
+Then use the variant:
+
+```jsx
+<Container variant="narrow">
+  Narrow container content
+</Container>
+```
+
+#### Full-Width Sections
+
+```jsx
+<Box>
+  <Box bg="primary" color="white">
+    <Container py={5}>
+      <Heading>Hero Section</Heading>
+    </Container>
+  </Box>
+  
+  <Container py={4}>
+    <Heading>Main Content</Heading>
+  </Container>
+</Box>
+```

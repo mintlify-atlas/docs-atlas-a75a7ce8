@@ -1,0 +1,356 @@
+---
+title: The sx Prop
+description: Learn how the sx prop enables theme-aware styling with automatic scale lookups, responsive arrays, and CSS pseudo-selectors
+---
+
+The `sx` prop is the primary way to style elements with Theme UI. It provides theme-aware styling with automatic lookups to your theme's design scales.
+
+## Basic Usage
+
+The `sx` prop accepts a style object with CSS properties:
+
+```jsx
+<div
+  sx={{
+    color: 'primary',
+    bg: 'background',
+    p: 3,
+    borderRadius: 4
+  }}
+>
+  Hello World
+</div>
+```
+
+## Theme Lookups
+
+The `sx` prop automatically maps CSS properties to theme scales:
+
+```typescript
+// These properties map to theme scales:
+export const scales = {
+  color: 'colors',
+  backgroundColor: 'colors',
+  borderColor: 'colors',
+  margin: 'space',
+  marginTop: 'space',
+  padding: 'space',
+  paddingLeft: 'space',
+  fontFamily: 'fonts',
+  fontSize: 'fontSizes',
+  fontWeight: 'fontWeights',
+  lineHeight: 'lineHeights',
+  letterSpacing: 'letterSpacings',
+  border: 'borders',
+  borderWidth: 'borderWidths',
+  borderStyle: 'borderStyles',
+  borderRadius: 'radii',
+  boxShadow: 'shadows',
+  textShadow: 'shadows',
+  zIndex: 'zIndices',
+  width: 'sizes',
+  height: 'sizes',
+  // ... and more
+}
+```
+
+### Example with Theme
+
+Given this theme:
+
+```javascript
+const theme = {
+  colors: {
+    primary: '#07c',
+    background: '#fff'
+  },
+  space: [0, 4, 8, 16, 32],
+  radii: [0, 4, 8]
+}
+```
+
+This component:
+
+```jsx
+<Box
+  sx={{
+    color: 'primary',      // → #07c (from theme.colors)
+    bg: 'background',      // → #fff (from theme.colors)
+    p: 3,                  // → 16px (from theme.space[3])
+    borderRadius: 1        // → 4px (from theme.radii[1])
+  }}
+/>
+```
+
+## Property Aliases
+
+Theme UI provides shorthand aliases for common CSS properties:
+
+```typescript
+const aliases = {
+  bg: 'backgroundColor',
+  m: 'margin',
+  mt: 'marginTop',
+  mr: 'marginRight',
+  mb: 'marginBottom',
+  ml: 'marginLeft',
+  mx: 'marginX',  // marginLeft + marginRight
+  my: 'marginY',  // marginTop + marginBottom
+  p: 'padding',
+  pt: 'paddingTop',
+  pr: 'paddingRight',
+  pb: 'paddingBottom',
+  pl: 'paddingLeft',
+  px: 'paddingX', // paddingLeft + paddingRight
+  py: 'paddingY'  // paddingTop + paddingBottom
+}
+```
+
+Example usage:
+
+```jsx
+<Box
+  sx={{
+    bg: 'primary',
+    px: 3,        // paddingLeft: 16px, paddingRight: 16px
+    my: 2         // marginTop: 8px, marginBottom: 8px
+  }}
+/>
+```
+
+## Nested Selectors
+
+You can use nested selectors for more complex styling:
+
+```jsx
+<div
+  sx={{
+    color: 'text',
+    '& a': {
+      color: 'primary',
+      textDecoration: 'none'
+    },
+    '& > p': {
+      mb: 3
+    }
+  }}
+/>
+```
+
+## Pseudo-Selectors
+
+All CSS pseudo-selectors are supported:
+
+```jsx
+<button
+  sx={{
+    bg: 'primary',
+    color: 'white',
+    ':hover': {
+      bg: 'secondary'
+    },
+    ':focus': {
+      outline: '2px solid',
+      outlineColor: 'primary'
+    },
+    ':active': {
+      transform: 'scale(0.98)'
+    },
+    ':disabled': {
+      opacity: 0.5,
+      cursor: 'not-allowed'
+    }
+  }}
+>
+  Click me
+</button>
+```
+
+### Example from Theme UI Source
+
+Here's a real example from the Theme UI codebase:
+
+```javascript
+const theme = {
+  styles: {
+    a: {
+      color: 'primary',
+      textDecoration: 'none',
+      bg: 'primary05',
+      p: 1,
+      borderRadius: '2px',
+      ':hover': {
+        p: 2,
+        m: -1,
+        borderRadius: '4px',
+      },
+    },
+  },
+}
+```
+
+## Media Queries
+
+You can use media queries directly:
+
+```jsx
+<div
+  sx={{
+    fontSize: 2,
+    '@media screen and (min-width: 40em)': {
+      fontSize: 3
+    },
+    '@media screen and (min-width: 52em)': {
+      fontSize: 4
+    }
+  }}
+/>
+```
+
+<Note>
+For responsive styles, use [responsive arrays](/core-concepts/responsive-styles) instead of media queries for a cleaner syntax.
+</Note>
+
+## Nested Scale Access
+
+Access nested values in theme scales using dot notation:
+
+```javascript
+const theme = {
+  colors: {
+    primary: {
+      __default: '#00f',
+      light: '#33f',
+      dark: '#00a'
+    }
+  }
+}
+```
+
+```jsx
+<Box sx={{ color: 'primary.light' }} />
+// color: #33f
+```
+
+## Negative Values
+
+Use negative values for margins and positioning:
+
+```jsx
+<Box
+  sx={{
+    mt: -3,      // Negative value from theme.space[3]
+    ml: '-16px'  // Negative pixel value
+  }}
+/>
+```
+
+With theme values:
+
+```javascript
+const theme = {
+  space: [0, 4, 8, 16, 32]
+}
+```
+
+```jsx
+<Box sx={{ mt: -2 }} />
+// marginTop: -8px (negative of theme.space[2])
+```
+
+## Raw CSS Values
+
+You can use raw CSS values that won't be transformed:
+
+```jsx
+<div
+  sx={{
+    color: '#f00',           // Raw hex color
+    padding: '1rem',         // Raw CSS value
+    width: '50%',            // Raw percentage
+    fontSize: 'inherit'      // CSS keyword
+  }}
+/>
+```
+
+## The `css` Function
+
+The `sx` prop uses the `css` function internally. You can use it directly:
+
+```typescript
+import { css } from '@theme-ui/css'
+
+const styles = css({
+  color: 'primary',
+  bg: 'background',
+  p: 3
+})
+
+const result = styles({ theme })
+// Returns plain CSS object
+```
+
+## Variants
+
+Apply pre-defined style variants from your theme:
+
+```javascript
+const theme = {
+  buttons: {
+    primary: {
+      color: 'white',
+      bg: 'primary',
+      fontWeight: 'bold',
+      borderRadius: 2
+    },
+    secondary: {
+      color: 'text',
+      bg: 'secondary'
+    }
+  }
+}
+```
+
+```jsx
+<button
+  sx={{
+    variant: 'buttons.primary'
+  }}
+>
+  Primary Button
+</button>
+```
+
+## Function Values
+
+Access the theme object directly with function values:
+
+```jsx
+<div
+  sx={{
+    color: theme => theme.colors.primary,
+    margin: theme => theme.space[3] * 2
+  }}
+/>
+```
+
+## Type Safety
+
+The `sx` prop is fully typed in TypeScript:
+
+```typescript
+import type { ThemeUIStyleObject } from '@theme-ui/css'
+
+const styles: ThemeUIStyleObject = {
+  color: 'primary',
+  bg: 'background',
+  p: 3,
+  ':hover': {
+    color: 'secondary'
+  }
+}
+```
+
+<Note>
+The `sx` prop provides a powerful, theme-aware styling API that makes it easy to build consistent, maintainable designs.
+</Note>

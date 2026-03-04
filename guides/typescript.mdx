@@ -1,0 +1,548 @@
+---
+title: TypeScript
+description: TypeScript setup, type definitions, extending theme types, and sx prop types
+---
+
+Theme UI is written in TypeScript and provides comprehensive type definitions. This guide covers TypeScript setup and advanced type customization.
+
+## Requirements
+
+<Warning>
+Theme UI v0.16+ requires TypeScript 5.1.2 or newer and `@types/react` published after June 1, 2023.
+</Warning>
+
+```bash
+npm install typescript@latest @types/react@latest
+```
+
+This requirement exists due to breaking changes in JSX types. See [GitHub issue #2430](https://github.com/system-ui/theme-ui/issues/2430) for details.
+
+## Basic Setup
+
+### tsconfig.json
+
+Configure your TypeScript compiler for Theme UI:
+
+```json filename="tsconfig.json"
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "theme-ui",
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true
+  }
+}
+```
+
+<Note>
+The JSX Automatic Runtime (`react-jsx`) is highly encouraged to minimize friction and avoid type errors.
+</Note>
+
+### File-level JSX Import Source
+
+Override the default JSX import source per file:
+
+```tsx
+/** @jsxImportSource theme-ui */
+
+export function Component() {
+  return <div sx={{ color: 'primary' }}>Hello</div>
+}
+```
+
+## Type Definitions
+
+### SxProp Type
+
+The `SxProp` interface adds the `sx` prop to components:
+
+```tsx filename="packages/core/src/types.ts"
+import { Interpolation } from '@emotion/react'
+import { ThemeUIStyleObject, Theme } from '@theme-ui/css'
+
+export interface SxProp {
+  /**
+   * The sx prop lets you style elements inline, using values from your
+   * theme.
+   */
+  sx?: ThemeUIStyleObject
+  
+  /**
+   * Theme UI uses Emotion's JSX function. You can pass styles directly
+   * using the css prop.
+   */
+  css?: Interpolation<Theme>
+}
+```
+
+### ThemeUIStyleObject
+
+The main type for style objects:
+
+```tsx
+import type { ThemeUIStyleObject } from 'theme-ui'
+
+const styles: ThemeUIStyleObject = {
+  color: 'primary',
+  padding: 3,
+  fontSize: [2, 3, 4], // Responsive array
+  '&:hover': {
+    color: 'secondary',
+  },
+}
+```
+
+### Theme Type
+
+The complete theme interface:
+
+```tsx
+import type { Theme } from 'theme-ui'
+
+const theme: Theme = {
+  colors: {
+    text: '#000',
+    background: '#fff',
+    primary: '#0066cc',
+  },
+  space: [0, 4, 8, 16, 32, 64],
+  fonts: {
+    body: 'system-ui, sans-serif',
+    heading: 'Georgia, serif',
+  },
+  fontSizes: [12, 14, 16, 20, 24, 32, 48],
+}
+```
+
+## Extending Theme Types
+
+Customize the theme type to add autocomplete for your specific theme structure.
+
+### Method 1: Module Augmentation
+
+Extend the global theme type:
+
+```tsx filename="theme.ts"
+import type { Theme as ThemeUITheme } from 'theme-ui'
+
+export const theme = {
+  colors: {
+    text: '#000',
+    background: '#fff',
+    primary: '#0066cc',
+    // Custom colors
+    accent: '#ff6b6b',
+    success: '#51cf66',
+    warning: '#ffd43b',
+    danger: '#ff6b6b',
+  },
+  // Custom button variants
+  buttons: {
+    primary: { /* ... */ },
+    danger: { /* ... */ },
+    ghost: { /* ... */ },
+  },
+} as const
+
+type CustomTheme = typeof theme
+
+// Augment the module
+declare module 'theme-ui' {
+  interface UserThemes {
+    default: CustomTheme
+  }
+}
+
+export type Theme = CustomTheme
+```
+
+Now TypeScript will autocomplete your custom theme values:
+
+```tsx
+import { theme } from './theme'
+
+// TypeScript knows about 'accent', 'success', etc.
+<div sx={{ color: 'accent' }} />
+
+// Autocomplete for custom button variants
+<Button variant="ghost" />
+```
+
+### Method 2: Strict Theme Type
+
+Create a strictly typed theme from scratch:
+
+```tsx filename="theme.ts"
+import type { Theme as BaseTheme } from 'theme-ui'
+
+interface MyTheme extends BaseTheme {
+  colors: {
+    text: string
+    background: string
+    primary: string
+    secondary: string
+    accent: string
+  }
+  buttons: {
+    primary: object
+    secondary: object
+    outline: object
+  }
+}
+
+export const theme: MyTheme = {
+  colors: {
+    text: '#000',
+    background: '#fff',
+    primary: '#0066cc',
+    secondary: '#cc0066',
+    accent: '#ff6b6b',
+  },
+  buttons: {
+    primary: {
+      color: 'white',
+      bg: 'primary',
+    },
+    secondary: {
+      color: 'white',
+      bg: 'secondary',
+    },
+    outline: {
+      color: 'primary',
+      bg: 'transparent',
+      border: '2px solid',
+      borderColor: 'primary',
+    },
+  },
+}
+
+declare module 'theme-ui' {
+  interface UserThemes {
+    default: MyTheme
+  }
+}
+```
+
+## Component Types
+
+### Adding sx to Custom Components
+
+```tsx
+import { SxProp } from 'theme-ui'
+
+interface CardProps extends SxProp {
+  title: string
+  children: React.ReactNode
+}
+
+export function Card({ title, children, sx }: CardProps) {
+  return (
+    <div sx={{ padding: 3, borderRadius: 2, ...sx }}>
+      <h3>{title}</h3>
+      {children}
+    </div>
+  )
+}
+
+// Usage - TypeScript knows about sx prop
+<Card title="Hello" sx={{ bg: 'primary' }}>
+  Content
+</Card>
+```
+
+### Box Component Props
+
+```tsx
+import { BoxProps } from 'theme-ui'
+
+interface CustomBoxProps extends BoxProps {
+  highlight?: boolean
+}
+
+export function CustomBox({ highlight, ...props }: CustomBoxProps) {
+  return (
+    <div
+      {...props}
+      sx={{
+        ...props.sx,
+        bg: highlight ? 'accent' : 'background',
+      }}
+    />
+  )
+}
+```
+
+### Themed Component Type
+
+Type definition for `Themed` components from `@theme-ui/mdx`:
+
+```tsx
+import type { ThemedComponent } from '@theme-ui/mdx'
+
+// ThemedComponent accepts sx prop and HTML props
+const CustomH1: ThemedComponent<'h1'> = (props) => {
+  return <h1 {...props} sx={{ ...props.sx, color: 'primary' }} />
+}
+```
+
+## Responsive Style Values
+
+TypeScript supports responsive arrays:
+
+```tsx
+import type { ResponsiveStyleValue } from 'theme-ui'
+
+type ResponsiveColor = ResponsiveStyleValue<string>
+
+// All of these are valid
+const color1: ResponsiveColor = 'primary'
+const color2: ResponsiveColor = ['primary', 'secondary']
+const color3: ResponsiveColor = ['primary', null, 'accent'] // null skips breakpoint
+```
+
+## Theme-aware Function Types
+
+Style values can be functions that receive the theme:
+
+```tsx
+import type { Theme } from 'theme-ui'
+
+<div
+  sx={{
+    // Function receives typed theme
+    color: (theme: Theme) => theme.colors?.primary,
+    
+    // With destructuring
+    fontSize: ({ fontSizes }) => fontSizes?.[3],
+    
+    // Nested functions
+    '&:hover': (theme) => ({
+      color: theme.colors?.secondary,
+    }),
+  }}
+/>
+```
+
+## Utility Types
+
+### Scale Types
+
+```tsx
+import type { Scale, ScaleDict } from '@theme-ui/css'
+
+// Array or object scale
+type SpaceScale = Scale<number | string>
+
+const space1: SpaceScale = [0, 4, 8, 16, 32]
+const space2: SpaceScale = {
+  small: 4,
+  medium: 8,
+  large: 16,
+}
+```
+
+### Nested Scales with __default
+
+```tsx
+import type { ObjectWithDefault } from '@theme-ui/css'
+
+interface ColorScale extends ObjectWithDefault<string> {
+  light?: string
+  dark?: string
+}
+
+const theme = {
+  colors: {
+    primary: {
+      __default: '#0066cc',
+      light: '#3399ff',
+      dark: '#004080',
+    },
+  },
+}
+
+// Using 'primary' resolves to __default value
+<div sx={{ color: 'primary' }} /> // Uses #0066cc
+<div sx={{ color: 'primary.light' }} /> // Uses #3399ff
+```
+
+## Common Type Errors
+
+### Error: Property 'sx' does not exist
+
+Ensure `@jsxImportSource theme-ui` is at the top of your file:
+
+```tsx
+/** @jsxImportSource theme-ui */
+
+// Now sx prop is available
+export function Component() {
+  return <div sx={{ color: 'primary' }} />
+}
+```
+
+### Error: Type 'string' is not assignable to type 'never'
+
+This happens when TypeScript can't infer theme types. Add explicit types:
+
+```tsx
+import type { Theme } from 'theme-ui'
+
+const theme: Theme = {
+  colors: {
+    primary: '#0066cc' as const, // Add 'as const' for literal types
+  },
+}
+```
+
+### Error: Index signature is missing
+
+When accessing theme values dynamically:
+
+```tsx
+// Instead of this
+const getColor = (name: string, theme: Theme) => theme.colors[name]
+
+// Use this
+const getColor = (name: string, theme: Theme) => {
+  return theme.colors?.[name as keyof typeof theme.colors]
+}
+```
+
+## Advanced Patterns
+
+### Discriminated Union for Variants
+
+```tsx
+type ButtonVariant = 'primary' | 'secondary' | 'outline'
+
+interface ButtonProps {
+  variant?: ButtonVariant
+  children: React.ReactNode
+}
+
+const buttonStyles: Record<ButtonVariant, ThemeUIStyleObject> = {
+  primary: { color: 'white', bg: 'primary' },
+  secondary: { color: 'white', bg: 'secondary' },
+  outline: { color: 'primary', bg: 'transparent' },
+}
+
+export function Button({ variant = 'primary', children }: ButtonProps) {
+  return <button sx={buttonStyles[variant]}>{children}</button>
+}
+```
+
+### Generic Themed Component
+
+```tsx
+import type { ComponentProps, ElementType } from 'react'
+import type { SxProp } from 'theme-ui'
+
+interface PolymorphicProps<T extends ElementType> extends SxProp {
+  as?: T
+}
+
+type Props<T extends ElementType> = PolymorphicProps<T> &
+  Omit<ComponentProps<T>, keyof PolymorphicProps<T>>
+
+function ThemedBox<T extends ElementType = 'div'>({
+  as,
+  sx,
+  ...props
+}: Props<T>) {
+  const Component = as || 'div'
+  return <Component sx={{ padding: 3, ...sx }} {...props} />
+}
+
+// Usage
+<ThemedBox>Div element</ThemedBox>
+<ThemedBox as="section">Section element</ThemedBox>
+<ThemedBox as="a" href="/">Link element</ThemedBox>
+```
+
+### Const Assertion for Strict Typing
+
+```tsx
+export const theme = {
+  colors: {
+    modes: {
+      dark: {
+        text: '#fff',
+        background: '#000',
+      },
+    },
+  },
+  buttons: {
+    primary: {
+      color: 'white',
+      bg: 'primary',
+    },
+  },
+} as const
+
+type Theme = typeof theme
+
+// Now TypeScript knows the exact structure
+declare module 'theme-ui' {
+  interface UserThemes {
+    default: Theme
+  }
+}
+```
+
+## Migration from JavaScript
+
+Converting a JavaScript theme to TypeScript:
+
+<CodeGroup>
+```js Before (JavaScript)
+export const theme = {
+  colors: {
+    text: '#000',
+    primary: '#0066cc',
+  },
+  space: [0, 4, 8, 16],
+}
+```
+
+```tsx After (TypeScript)
+import type { Theme } from 'theme-ui'
+
+export const theme: Theme = {
+  colors: {
+    text: '#000',
+    primary: '#0066cc',
+  },
+  space: [0, 4, 8, 16],
+}
+
+// Optional: Add module augmentation for better autocomplete
+declare module 'theme-ui' {
+  interface UserThemes {
+    default: typeof theme
+  }
+}
+```
+</CodeGroup>
+
+## Resources
+
+<CardGroup cols={2}>
+  <Card title="TypeScript Handbook" icon="book" href="https://www.typescriptlang.org/docs/">
+    Official TypeScript documentation
+  </Card>
+  
+  <Card title="Emotion TypeScript" icon="palette" href="https://emotion.sh/docs/typescript">
+    TypeScript guide for Emotion
+  </Card>
+  
+  <Card title="Theme UI GitHub" icon="github" href="https://github.com/system-ui/theme-ui">
+    Source code and type definitions
+  </Card>
+  
+  <Card title="Migration Guide" icon="arrow-right" href="/migration">
+    Upgrading to latest version
+  </Card>
+</CardGroup>

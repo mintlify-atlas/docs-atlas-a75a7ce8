@@ -1,0 +1,140 @@
+---
+title: Grid
+description: CSS Grid layout component with responsive columns and gap utilities
+---
+
+The Grid component uses CSS Grid to arrange child elements in a tiled layout with automatic responsive behavior.
+
+## Import
+
+```jsx
+import { Grid } from 'theme-ui'
+```
+
+## Usage
+
+```jsx
+<Grid columns={3} gap={4}>
+  <div>Item 1</div>
+  <div>Item 2</div>
+  <div>Item 3</div>
+</Grid>
+```
+
+## Props
+
+<ParamField path="columns" type="ResponsiveValue<string | number>">
+  Number of columns for the grid layout. Cannot be used with the `width` prop.
+
+  ```jsx
+  {/* Fixed 3 columns */}
+  <Grid columns={3}>
+
+  {/* Responsive columns */}
+  <Grid columns={[2, 3, 4]}>
+  ```
+</ParamField>
+
+<ParamField path="width" type="ResponsiveValue<string | number>">
+  Minimum width of child elements. The grid will automatically calculate columns using `auto-fit` or `auto-fill`. Cannot be used with the `columns` prop.
+
+  ```jsx
+  {/* Minimum 200px wide items */}
+  <Grid width={200}>
+
+  {/* Responsive minimum widths */}
+  <Grid width={[150, 200, 250]}>
+  ```
+</ParamField>
+
+<ParamField path="gap" type="ResponsiveValue<string | number>" default="3">
+  Space between grid items. Maps to theme space values.
+
+  ```jsx
+  <Grid gap={4}>
+  <Grid gap={[2, 3, 4]}>
+  ```
+</ParamField>
+
+<ParamField path="repeat" type="'fit' | 'fill'" default="'fit'">
+  Controls auto-repeat behavior:
+  - `fit`: Grid tracks collapse if not filled
+  - `fill`: Grid tracks maintain size even if empty
+
+  ```jsx
+  <Grid width={200} repeat="fill">
+  ```
+</ParamField>
+
+<ParamField path="sx" type="ThemeUIStyleObject">
+  Additional theme-aware styles.
+</ParamField>
+
+<ParamField path="variant" type="string">
+  Apply a variant from `theme.grids`.
+</ParamField>
+
+### Inherited Props
+
+Grid extends Box and accepts all Box props including spacing and color utilities.
+
+## Examples
+
+### Fixed Columns
+
+```jsx
+<Grid columns={3} gap={3}>
+  <div>1</div>
+  <div>2</div>
+  <div>3</div>
+  <div>4</div>
+  <div>5</div>
+  <div>6</div>
+</Grid>
+```
+
+### Responsive Columns
+
+```jsx
+<Grid columns={[1, 2, 3]} gap={4}>
+  <div>Stacks on mobile, 2 columns on tablet, 3 on desktop</div>
+  <div>Item 2</div>
+  <div>Item 3</div>
+</Grid>
+```
+
+### Auto-fit Width
+
+```jsx
+<Grid width={200} gap={3}>
+  <div>Automatically fits as many 200px columns as possible</div>
+  <div>Item 2</div>
+  <div>Item 3</div>
+  <div>Item 4</div>
+</Grid>
+```
+
+### Responsive Gap
+
+```jsx
+<Grid columns={3} gap={[2, 3, 4]}>
+  <div>Gap increases with screen size</div>
+  <div>Item 2</div>
+  <div>Item 3</div>
+</Grid>
+```
+
+### Custom Grid Template
+
+```jsx
+<Grid
+  sx={{
+    gridTemplateColumns: '1fr 2fr 1fr',
+    gap: 3,
+  }}
+>
+  <div>Sidebar</div>
+  <div>Main (2x width)</div>
+  <div>Sidebar</div>
+</Grid>
+```

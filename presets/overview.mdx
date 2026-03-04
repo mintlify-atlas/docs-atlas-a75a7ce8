@@ -1,0 +1,255 @@
+---
+title: 'Presets Overview'
+description: 'Learn about Theme UI presets and explore the available preset packages'
+---
+
+## What are Presets?
+
+Presets are pre-configured theme objects that provide a complete design system out of the box. They include colors, typography, spacing, and styles for common elements, allowing you to quickly start building with Theme UI without having to define every design token yourself.
+
+Each preset can be used as-is or customized to match your design requirements. They serve as excellent starting points or references for creating your own themes.
+
+## Available Presets
+
+Theme UI includes several built-in presets, each with its own design aesthetic:
+
+<CardGroup cols={2}>
+  <Card title="Base" icon="square" href="#base">
+    A minimal, foundational preset with sensible defaults
+  </Card>
+  <Card title="System" icon="display" href="#system">
+    Uses system fonts and includes dark mode support
+  </Card>
+  <Card title="Funk" icon="palette" href="#funk">
+    A colorful preset with Poppins font
+  </Card>
+  <Card title="Future" icon="rocket" href="#future">
+    Modern and forward-looking design
+  </Card>
+  <Card title="Roboto" icon="font" href="#roboto">
+    Clean design using Roboto font family
+  </Card>
+  <Card title="Dark" icon="moon" href="#dark">
+    Dark theme with vibrant accent colors
+  </Card>
+  <Card title="Deep" icon="water" href="#deep">
+    Deep purple dark theme
+  </Card>
+  <Card title="Swiss" icon="mountain" href="#swiss">
+    Swiss design inspired, clean and minimal
+  </Card>
+  <Card title="Tosh" icon="brush" href="#tosh">
+    Macintosh-inspired retro design
+  </Card>
+  <Card title="Bootstrap" icon="bootstrap" href="#bootstrap">
+    Familiar Bootstrap design system
+  </Card>
+  <Card title="Bulma" icon="box" href="#bulma">
+    Based on the Bulma CSS framework (WIP)
+  </Card>
+  <Card title="Tailwind" icon="wind" href="#tailwind">
+    Complete Tailwind CSS design tokens
+  </Card>
+  <Card title="Sketchy" icon="pen" href="#sketchy">
+    Hand-drawn, sketchy appearance
+  </Card>
+  <Card title="Polaris" icon="star" href="#polaris">
+    Shopify Polaris design system
+  </Card>
+</CardGroup>
+
+## How Presets Work
+
+Presets are simply JavaScript objects that conform to the Theme UI theme specification. They export a theme object with properties like:
+
+- `colors` - Color palette and semantic color tokens
+- `fonts` - Font family declarations
+- `fontSizes` - Typographic scale
+- `fontWeights` - Font weight values
+- `lineHeights` - Line height values
+- `space` - Spacing scale for margins and padding
+- `sizes` - Width and height values
+- `radii` - Border radius values
+- `shadows` - Box shadow definitions
+- `styles` - Styles for HTML elements and MDX components
+
+## Installation
+
+Presets are available in the `@theme-ui/presets` package:
+
+```bash
+npm install @theme-ui/presets
+```
+
+Or install individual preset packages:
+
+```bash
+npm install @theme-ui/preset-funk
+```
+
+## Viewing Presets
+
+You can view live examples of all presets in the [Theme UI Demo](https://theme-ui.com/demo).
+
+## Preset Details
+
+### Base
+
+The `base` preset provides a minimal, foundational theme with sensible defaults:
+
+```typescript
+import { base } from '@theme-ui/presets'
+
+const theme = {
+  ...base,
+}
+```
+
+Key features:
+- System font stack
+- Simple color palette (black text, white background, blue primary)
+- Standard spacing scale (4px base unit)
+- Clean, minimal styles
+
+### System
+
+The `system` preset uses system fonts and includes multiple color modes:
+
+```typescript
+import { system } from '@theme-ui/presets'
+
+const theme = {
+  ...system,
+}
+```
+
+Key features:
+- System font stack for optimal performance
+- Built-in color modes: light, dark, deep, and swiss
+- CSS custom properties enabled
+- `initialColorMode: 'system'` respects user preferences
+
+### Funk
+
+A vibrant preset that extends the base with Poppins font and purple accents:
+
+```typescript
+import { funk } from '@theme-ui/presets'
+
+const theme = {
+  ...funk,
+}
+```
+
+Key features:
+- Poppins font family
+- Purple color scheme (#609 primary)
+- Bold headings (font-weight: 900)
+- Relaxed line height (1.625)
+
+### Dark
+
+A dark theme with vibrant cyan and magenta accents:
+
+```typescript
+import { dark } from '@theme-ui/presets'
+
+const theme = {
+  ...dark,
+}
+```
+
+Key features:
+- Near-black background (#060606)
+- White text on dark background
+- Cyan primary color (#3cf)
+- Magenta secondary color (#e0f)
+- Includes Prism syntax highlighting styles
+
+### Deep
+
+A deep purple dark theme with HSL colors:
+
+```typescript
+import { deep } from '@theme-ui/presets'
+
+const theme = {
+  ...deep,
+}
+```
+
+Key features:
+- Deep blue-purple background (hsl(230, 25%, 18%))
+- Light purple accents
+- All colors defined using HSL
+- Includes Prism syntax highlighting
+
+### Swiss
+
+Swiss design inspired with warm, muted colors:
+
+```typescript
+import { swiss } from '@theme-ui/presets'
+
+const theme = {
+  ...swiss,
+}
+```
+
+Key features:
+- Warm red-orange primary color
+- Muted background tones
+- Clean, minimal aesthetic
+- HSL color values
+
+### Tailwind
+
+A comprehensive preset with the complete Tailwind CSS design system:
+
+```typescript
+import { tailwind } from '@theme-ui/presets'
+
+const theme = {
+  ...tailwind,
+}
+```
+
+Key features:
+- Complete Tailwind color palette (slate, gray, zinc, etc.)
+- Tailwind spacing scale
+- Multiple button and input variants
+- Extensive design tokens
+- Transform and transition utilities
+
+### Bootstrap
+
+Familiar Bootstrap design system adapted for Theme UI:
+
+```typescript
+import { bootstrap } from '@theme-ui/presets'
+
+const theme = {
+  ...bootstrap,
+}
+```
+
+Key features:
+- Bootstrap color palette
+- Bootstrap spacing scale (based on 1rem)
+- Bootstrap breakpoints (576px, 768px, 992px, 1200px)
+- Familiar component styles
+
+## Contributing New Presets
+
+We welcome contributions of new presets! If you'd like to add a preset or improve existing ones, please open an [issue](https://github.com/system-ui/theme-ui/issues) or [pull request](https://github.com/system-ui/theme-ui/pulls).
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Using Presets" icon="play" href="/presets/using-presets">
+    Learn how to install and customize presets
+  </Card>
+  <Card title="Theme Specification" icon="file-code" href="/theming">
+    Understand the Theme UI theme specification
+  </Card>
+</CardGroup>

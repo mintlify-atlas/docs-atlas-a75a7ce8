@@ -1,0 +1,162 @@
+---
+title: Button
+description: Primitive button component with theme variants and styling utilities
+---
+
+The Button component is a primitive button element with built-in variant support and theme-aware styling.
+
+## Import
+
+```jsx
+import { Button } from 'theme-ui'
+```
+
+## Usage
+
+```jsx
+<Button>Click Me</Button>
+```
+
+## Props
+
+<ParamField path="variant" type="string" default="'primary'">
+  Button variant from `theme.buttons`. The component uses the `primary` variant by default.
+
+  ```jsx
+  <Button variant="primary">Primary</Button>
+  <Button variant="secondary">Secondary</Button>
+  <Button variant="outline">Outline</Button>
+  ```
+</ParamField>
+
+<ParamField path="sx" type="ThemeUIStyleObject">
+  Theme-aware styles to customize the button appearance.
+
+  ```jsx
+  <Button sx={{ fontSize: 3, px: 4, py: 3 }}>
+    Large Button
+  </Button>
+  ```
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Disable the button.
+
+  ```jsx
+  <Button disabled>Disabled</Button>
+  ```
+</ParamField>
+
+<ParamField path="type" type="'button' | 'submit' | 'reset'">
+  HTML button type attribute.
+
+  ```jsx
+  <Button type="submit">Submit Form</Button>
+  ```
+</ParamField>
+
+<ParamField path="onClick" type="(event: React.MouseEvent) => void">
+  Click event handler.
+
+  ```jsx
+  <Button onClick={() => console.log('clicked')}>Click</Button>
+  ```
+</ParamField>
+
+### Inherited Props
+
+Button extends Box and accepts:
+- All standard HTML button attributes
+- Box spacing props (m, p, mx, my, px, py, etc.)
+- Box color props (color, bg, opacity)
+
+## Default Styles
+
+The Button component includes these base styles:
+
+```js
+{
+  appearance: 'none',
+  display: 'inline-block',
+  textAlign: 'center',
+  lineHeight: 'inherit',
+  textDecoration: 'none',
+  fontSize: 'inherit',
+  px: 3,
+  py: 2,
+  color: 'white',
+  bg: 'primary',
+  border: 0,
+  borderRadius: 4,
+}
+```
+
+## Examples
+
+### Basic Button
+
+```jsx
+<Button>Default Button</Button>
+```
+
+### Button Variants
+
+```jsx
+<Button variant="primary">Primary</Button>
+<Button variant="secondary">Secondary</Button>
+<Button variant="outline">Outline</Button>
+```
+
+### Custom Styling
+
+```jsx
+<Button
+  sx={{
+    bg: 'secondary',
+    color: 'text',
+    borderRadius: 8,
+    px: 4,
+    py: 3,
+    fontSize: 2,
+  }}
+>
+  Custom Button
+</Button>
+```
+
+### Responsive Button
+
+```jsx
+<Button
+  sx={{
+    fontSize: [1, 2, 3],
+    px: [2, 3, 4],
+  }}
+>
+  Responsive
+</Button>
+```
+
+### Full Width Button
+
+```jsx
+<Button sx={{ width: '100%' }}>
+  Full Width
+</Button>
+```
+
+### Icon Button
+
+```jsx
+<Button sx={{ p: 2 }}>
+  <svg width="24" height="24">...</svg>
+</Button>
+```
+
+### Loading State
+
+```jsx
+<Button disabled sx={{ opacity: 0.6 }}>
+  Loading...
+</Button>
+```

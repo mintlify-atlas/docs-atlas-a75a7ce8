@@ -1,0 +1,196 @@
+---
+title: Image
+description: Primitive image component with responsive sizing and theme variants
+---
+
+The Image component is a primitive for rendering responsive images with theme-aware styling.
+
+## Import
+
+```jsx
+import { Image } from 'theme-ui'
+```
+
+## Usage
+
+```jsx
+<Image src="/photo.jpg" alt="Description" />
+```
+
+## Props
+
+<ParamField path="src" type="string" required>
+  Image source URL.
+
+  ```jsx
+  <Image src="/images/photo.jpg" alt="Photo" />
+  ```
+</ParamField>
+
+<ParamField path="alt" type="string" required>
+  Alternative text for accessibility.
+
+  ```jsx
+  <Image src="/logo.png" alt="Company Logo" />
+  ```
+</ParamField>
+
+<ParamField path="variant" type="string">
+  Image variant from `theme.images`.
+
+  ```jsx
+  <Image src="/avatar.jpg" alt="Avatar" variant="avatar" />
+  <Image src="/hero.jpg" alt="Hero" variant="hero" />
+  ```
+</ParamField>
+
+<ParamField path="sx" type="ThemeUIStyleObject">
+  Theme-aware styles for custom image appearance.
+
+  ```jsx
+  <Image
+    src="/photo.jpg"
+    alt="Photo"
+    sx={{
+      borderRadius: 8,
+      boxShadow: 'lg',
+    }}
+  />
+  ```
+</ParamField>
+
+<ParamField path="width" type="string | number">
+  Image width.
+</ParamField>
+
+<ParamField path="height" type="string | number">
+  Image height.
+</ParamField>
+
+<ParamField path="loading" type="'lazy' | 'eager'">
+  Browser lazy loading behavior.
+
+  ```jsx
+  <Image src="/below-fold.jpg" alt="Image" loading="lazy" />
+  ```
+</ParamField>
+
+### Inherited Props
+
+Image extends Box and accepts:
+- All standard HTML img attributes
+- Box spacing props (m, p, mx, my, px, py, etc.)
+
+## Default Styles
+
+The Image component includes these base styles:
+
+```js
+{
+  maxWidth: '100%',
+  height: 'auto',
+}
+```
+
+This ensures images are responsive by default and don't overflow their containers.
+
+## Examples
+
+### Basic Image
+
+```jsx
+<Image src="/photo.jpg" alt="Photo description" />
+```
+
+### Rounded Image
+
+```jsx
+<Image
+  src="/avatar.jpg"
+  alt="User avatar"
+  sx={{
+    borderRadius: '50%',
+    width: 64,
+    height: 64,
+  }}
+/>
+```
+
+### Image with Shadow
+
+```jsx
+<Image
+  src="/card-image.jpg"
+  alt="Card"
+  sx={{
+    borderRadius: 4,
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+  }}
+/>
+```
+
+### Responsive Image Sizes
+
+```jsx
+<Image
+  src="/hero.jpg"
+  alt="Hero image"
+  sx={{
+    width: ['100%', '80%', '60%'],
+    mx: 'auto',
+  }}
+/>
+```
+
+### Image with Border
+
+```jsx
+<Image
+  src="/profile.jpg"
+  alt="Profile"
+  sx={{
+    border: '3px solid',
+    borderColor: 'primary',
+  }}
+/>
+```
+
+### Fixed Size Image
+
+```jsx
+<Image
+  src="/thumbnail.jpg"
+  alt="Thumbnail"
+  width={200}
+  height={200}
+  sx={{ objectFit: 'cover' }}
+/>
+```
+
+### Lazy Loaded Image
+
+```jsx
+<Image
+  src="/large-image.jpg"
+  alt="Large image"
+  loading="lazy"
+/>
+```
+
+### Image with Overlay
+
+```jsx
+<Box sx={{ position: 'relative' }}>
+  <Image src="/bg.jpg" alt="Background" />
+  <Box
+    sx={{
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      bg: 'rgba(0, 0, 0, 0.4)',
+    }}
+  />
+</Box>
+```

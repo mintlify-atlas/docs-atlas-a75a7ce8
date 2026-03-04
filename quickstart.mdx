@@ -1,80 +1,365 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quickstart
+description: Build your first themed component with Theme UI in minutes
 ---
 
-## Get started in three steps
+# Quickstart Guide
 
-Get your documentation site running locally and make your first customization.
-
-### Step 1: Set up your local environment
-
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 2: Deploy your changes
-
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
-
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
-
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 3: Go live
-
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
-
-<CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
-</CardGroup>
+This guide will walk you through creating a simple themed button component using Theme UI. You'll learn the fundamentals of the `sx` prop, theme values, and variant styling.
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+This guide assumes you've already [installed Theme UI](/installation) and set up the `ThemeUIProvider` in your application.
 </Note>
+
+## Create Your First Themed Component
+
+<Steps>
+
+<Step title="Create a theme file">
+
+First, let's create a theme with button styles. Create or update your `theme.js` file:
+
+```js theme.js
+export default {
+  // Font scales
+  fonts: {
+    body: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
+  },
+  fontSizes: [
+    12, 14, 16, 20, 24, 32, 48, 64
+  ],
+  fontWeights: {
+    body: 400,
+    bold: 700,
+  },
+  
+  // Spacing scale
+  space: [
+    0, 4, 8, 16, 32, 64, 128, 256
+  ],
+  
+  // Color palette
+  colors: {
+    text: '#000',
+    background: '#fff',
+    primary: '#07c',
+    secondary: '#639',
+    muted: '#f6f6f9',
+  },
+  
+  // Button variants
+  buttons: {
+    primary: {
+      color: 'white',
+      bg: 'primary',
+      fontWeight: 'bold',
+      '&:hover': {
+        bg: 'secondary',
+      },
+    },
+    secondary: {
+      color: 'text',
+      bg: 'muted',
+    },
+  },
+}
+```
+
+This theme defines:
+- Font and spacing scales that components can reference by index
+- A color palette with semantic names
+- Button variants with different styles
+
+</Step>
+
+<Step title="Add the ThemeUIProvider">
+
+Wrap your application with the provider. If you haven't done this yet:
+
+```jsx App.jsx
+import { ThemeUIProvider } from 'theme-ui'
+import theme from './theme'
+import Button from './Button'
+
+export default function App() {
+  return (
+    <ThemeUIProvider theme={theme}>
+      <div>
+        <h1>My Themed App</h1>
+        <Button />
+      </div>
+    </ThemeUIProvider>
+  )
+}
+```
+
+</Step>
+
+<Step title="Create a custom button component">
+
+Create a new file called `Button.jsx` and add the JSX pragma at the top:
+
+```jsx Button.jsx
+/** @jsxImportSource theme-ui */
+
+export default function Button() {
+  return (
+    <button
+      sx={{
+        // Reference theme values
+        color: 'white',
+        bg: 'primary',
+        border: 0,
+        borderRadius: 4,
+        
+        // Use spacing scale
+        px: 3,  // theme.space[3] = 16px
+        py: 2,  // theme.space[2] = 8px
+        
+        // Use font scale
+        fontSize: 2,  // theme.fontSizes[2] = 16px
+        fontWeight: 'bold',
+        
+        // Add interactivity
+        cursor: 'pointer',
+        '&:hover': {
+          bg: 'secondary',
+        },
+      }}
+    >
+      Click Me
+    </button>
+  )
+}
+```
+
+<Warning>
+Don't forget the `/** @jsxImportSource theme-ui */` pragma! Without it, the `sx` prop won't work.
+</Warning>
+
+</Step>
+
+<Step title="Use responsive styles">
+
+Make your button responsive by using arrays for style values:
+
+```jsx Button.jsx
+/** @jsxImportSource theme-ui */
+
+export default function Button() {
+  return (
+    <button
+      sx={{
+        color: 'white',
+        bg: 'primary',
+        border: 0,
+        borderRadius: 4,
+        
+        // Responsive padding: small on mobile, larger on desktop
+        px: [2, 3, 4],  // 8px, 16px, 32px
+        py: [1, 2, 3],  // 4px, 8px, 16px
+        
+        // Responsive font size
+        fontSize: [1, 2, 3],  // 14px, 16px, 20px
+        fontWeight: 'bold',
+        
+        cursor: 'pointer',
+        '&:hover': {
+          bg: 'secondary',
+        },
+      }}
+    >
+      Click Me
+    </button>
+  )
+}
+```
+
+The array syntax applies styles mobile-first:
+- First value: all viewports
+- Second value: first breakpoint and up (typically 40em/640px)
+- Third value: second breakpoint and up (typically 52em/832px)
+
+</Step>
+
+<Step title="Use theme variants">
+
+Instead of defining all styles inline, reference the button variant from your theme:
+
+```jsx Button.jsx
+/** @jsxImportSource theme-ui */
+
+export default function Button({ variant = 'primary', children }) {
+  return (
+    <button
+      sx={{
+        // Apply the variant from theme.buttons
+        variant: `buttons.${variant}`,
+        
+        // Add base styles
+        appearance: 'none',
+        display: 'inline-block',
+        textAlign: 'center',
+        lineHeight: 'inherit',
+        textDecoration: 'none',
+        fontSize: 'inherit',
+        px: 3,
+        py: 2,
+        border: 0,
+        borderRadius: 4,
+        cursor: 'pointer',
+      }}
+    >
+      {children || 'Click Me'}
+    </button>
+  )
+}
+```
+
+Now you can use different button styles:
+
+```jsx
+<Button variant="primary">Primary Button</Button>
+<Button variant="secondary">Secondary Button</Button>
+```
+
+</Step>
+
+</Steps>
+
+## Using Theme UI Components
+
+Theme UI also provides pre-built components. Here's how to use the built-in `Button` component:
+
+```jsx
+/** @jsxImportSource theme-ui */
+import { Button } from 'theme-ui'
+
+export default function App() {
+  return (
+    <div>
+      <Button>Primary Button</Button>
+      <Button variant="secondary" sx={{ ml: 2 }}>
+        Secondary Button
+      </Button>
+    </div>
+  )
+}
+```
+
+The built-in `Button` component:
+- Automatically references `theme.buttons` variants
+- Supports the `sx` prop for custom overrides
+- Includes default styles for common button properties
+- Uses `variant="primary"` by default
+
+<Note>
+You can use the `sx` prop on Theme UI components to override or extend variant styles.
+</Note>
+
+## Complete Example
+
+Here's a complete working example with a theme, provider, and themed button:
+
+<CodeGroup>
+
+```jsx theme.js
+export default {
+  fonts: {
+    body: 'system-ui, sans-serif',
+  },
+  fontSizes: [12, 14, 16, 20, 24, 32],
+  space: [0, 4, 8, 16, 32, 64],
+  colors: {
+    text: '#000',
+    background: '#fff',
+    primary: '#07c',
+    secondary: '#639',
+    muted: '#f6f6f9',
+  },
+  buttons: {
+    primary: {
+      color: 'white',
+      bg: 'primary',
+      '&:hover': {
+        bg: 'secondary',
+      },
+    },
+    secondary: {
+      color: 'text',
+      bg: 'muted',
+    },
+  },
+}
+```
+
+```jsx App.jsx
+import { ThemeUIProvider } from 'theme-ui'
+import theme from './theme'
+import MyButton from './MyButton'
+
+export default function App() {
+  return (
+    <ThemeUIProvider theme={theme}>
+      <div style={{ padding: '20px' }}>
+        <h1>Theme UI Quickstart</h1>
+        <MyButton variant="primary">Primary</MyButton>
+        <MyButton variant="secondary">Secondary</MyButton>
+      </div>
+    </ThemeUIProvider>
+  )
+}
+```
+
+```jsx MyButton.jsx
+/** @jsxImportSource theme-ui */
+
+export default function MyButton({ variant = 'primary', children }) {
+  return (
+    <button
+      sx={{
+        variant: `buttons.${variant}`,
+        px: 3,
+        py: 2,
+        fontSize: 2,
+        fontWeight: 'bold',
+        border: 0,
+        borderRadius: 4,
+        cursor: 'pointer',
+        mr: 2,
+      }}
+    >
+      {children}
+    </button>
+  )
+}
+```
+
+</CodeGroup>
+
+## Key Concepts Learned
+
+1. **The `sx` prop**: Apply styles that reference your theme
+2. **Theme values**: Use semantic names and scale indices instead of hard-coded values
+3. **Variants**: Define reusable style patterns in your theme
+4. **Responsive styles**: Use arrays for mobile-first responsive design
+5. **JSX pragma**: Enable the `sx` prop with `/** @jsxImportSource theme-ui */`
+
+## Next Steps
+
+Now that you've built your first themed component, explore more features:
+
+<CardGroup cols={2}>
+  <Card title="Color Modes" icon="moon">
+    Add dark mode support to your application
+  </Card>
+  <Card title="Components" icon="puzzle-piece">
+    Explore Theme UI's built-in components
+  </Card>
+  <Card title="Theming" icon="palette">
+    Learn about the theme specification
+  </Card>
+  <Card title="Responsive Styles" icon="mobile">
+    Master responsive design patterns
+  </Card>
+</CardGroup>

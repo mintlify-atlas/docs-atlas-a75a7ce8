@@ -1,0 +1,88 @@
+---
+title: Migrating to v0.14
+description: Guide for migrating from Theme UI v0.13 to v0.14
+---
+
+This guide covers breaking changes when upgrading from Theme UI v0.13 to v0.14.
+
+## Breaking Changes
+
+### @emotion/styled No Longer a Dependency
+
+<Warning>
+`theme-ui`, `@theme-ui/components` and `@theme-ui/mdx` packages no longer depend on `@emotion/styled`.
+</Warning>
+
+This change reduces bundle size and removes an unnecessary dependency. If your application code uses `@emotion/styled` directly, you'll need to install it as a separate dependency.
+
+```bash
+npm install @emotion/styled
+```
+
+### Component.withComponent API Removed
+
+<Warning>
+The previously deprecated `Component.withComponent` API has been removed.
+</Warning>
+
+This Emotion API was deprecated and is no longer available on Theme UI components.
+
+**Migration:** Use the `as` prop instead, or create new components using the `sx` prop.
+
+**Before:**
+```tsx
+const MyHeading = Button.withComponent('h1')
+```
+
+**After:**
+```tsx
+// Option 1: Use the 'as' prop
+<Button as="h1">Heading</Button>
+
+// Option 2: Create a new component
+import { Box } from 'theme-ui'
+
+const MyHeading = (props) => (
+  <Box as="h1" sx={{ variant: 'buttons.primary' }} {...props} />
+)
+```
+
+### 'as' Prop Removed from Themed.X Components
+
+<Warning>
+The `as` prop has been removed from `Themed.X` components from `@theme-ui/mdx`.
+</Warning>
+
+**Migration:** Replace uses of `<Themed.X as="element">` with `<element sx={t => t.styles.X} />`.
+
+**Before:**
+```tsx
+import { Themed } from '@theme-ui/mdx'
+
+<Themed.h1 as="h2">This is styled as h1 but renders as h2</Themed.h1>
+```
+
+**After:**
+```tsx
+<h2 sx={theme => theme.styles.h1}>
+  This is styled as h1 but renders as h2
+</h2>
+```
+
+Or use the `sx` prop with theme styles:
+
+```tsx
+<h2 sx={{ variant: 'styles.h1' }}>
+  This is styled as h1 but renders as h2
+</h2>
+```
+
+## Summary
+
+The v0.14 release focuses on removing deprecated APIs and reducing dependencies:
+
+1. Install `@emotion/styled` separately if your code uses it
+2. Replace `Component.withComponent` with the `as` prop or new components
+3. Remove `as` prop usage from `Themed.X` components and use `sx` prop instead
+
+These changes help keep Theme UI lean and aligned with modern React and Emotion patterns.

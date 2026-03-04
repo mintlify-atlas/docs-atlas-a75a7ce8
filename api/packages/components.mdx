@@ -1,0 +1,598 @@
+---
+title: '@theme-ui/components'
+description: Primitive layout, typographic, and UI components with built-in theme support
+---
+
+The `@theme-ui/components` package provides a complete set of primitive UI components that work seamlessly with your theme. All components support the `sx` prop and can be styled using theme values.
+
+## Installation
+
+```bash
+npm install @theme-ui/components @emotion/react
+```
+
+<Note>
+This package is included in the main `theme-ui` package, so a separate installation is not required if you're already using `theme-ui`.
+</Note>
+
+## When to Use
+
+Use `@theme-ui/components` when you:
+- Need pre-built, theme-aware UI components
+- Want consistent styling across your application
+- Are building with design system constraints
+- Need accessible, well-tested primitives
+
+Use the umbrella `theme-ui` package if you also need the provider and other utilities.
+
+## All Components
+
+### Layout Components
+
+#### `Box`
+
+The foundational layout component. All other components are built on top of Box.
+
+```jsx
+import { Box } from '@theme-ui/components'
+
+<Box sx={{ padding: 3, bg: 'muted' }}>
+  Content
+</Box>
+```
+
+[View Box documentation →](/components/box)
+
+#### `Flex`
+
+A Box with `display: flex`.
+
+```jsx
+import { Flex } from '@theme-ui/components'
+
+<Flex sx={{ alignItems: 'center', gap: 2 }}>
+  <div>Item 1</div>
+  <div>Item 2</div>
+</Flex>
+```
+
+[View Flex documentation →](/components/flex)
+
+#### `Grid`
+
+A Box with `display: grid`.
+
+```jsx
+import { Grid } from '@theme-ui/components'
+
+<Grid columns={[1, 2, 3]} gap={3}>
+  <div>Item 1</div>
+  <div>Item 2</div>
+  <div>Item 3</div>
+</Grid>
+```
+
+[View Grid documentation →](/components/grid)
+
+#### `Container`
+
+A centered container with max-width.
+
+```jsx
+import { Container } from '@theme-ui/components'
+
+<Container>
+  Centered content
+</Container>
+```
+
+[View Container documentation →](/components/container)
+
+### Typography Components
+
+#### `Text`
+
+General purpose text component.
+
+```jsx
+import { Text } from '@theme-ui/components'
+
+<Text sx={{ fontSize: 2, color: 'text' }}>
+  Body text
+</Text>
+```
+
+[View Text documentation →](/components/text)
+
+#### `Heading`
+
+Heading component with automatic variant mapping.
+
+```jsx
+import { Heading } from '@theme-ui/components'
+
+<Heading as="h1">Page Title</Heading>
+```
+
+[View Heading documentation →](/components/heading)
+
+#### `Paragraph`
+
+Paragraph component.
+
+```jsx
+import { Paragraph } from '@theme-ui/components'
+
+<Paragraph>Body paragraph text.</Paragraph>
+```
+
+[View Paragraph documentation →](/components/paragraph)
+
+#### `Link`
+
+Styled link component.
+
+```jsx
+import { Link } from '@theme-ui/components'
+
+<Link href="/about">About</Link>
+```
+
+[View Link documentation →](/components/link)
+
+### Form Components
+
+#### `Button`
+
+Button component with theme variants.
+
+```jsx
+import { Button } from '@theme-ui/components'
+
+<Button variant="primary">Click Me</Button>
+```
+
+[View Button documentation →](/components/button)
+
+#### `Input`
+
+Text input field.
+
+```jsx
+import { Input } from '@theme-ui/components'
+
+<Input placeholder="Enter text" />
+```
+
+[View Input documentation →](/components/input)
+
+#### `Textarea`
+
+Multi-line text input.
+
+```jsx
+import { Textarea } from '@theme-ui/components'
+
+<Textarea rows={4} placeholder="Enter text" />
+```
+
+[View Textarea documentation →](/components/textarea)
+
+#### `Select`
+
+Dropdown select component.
+
+```jsx
+import { Select } from '@theme-ui/components'
+
+<Select>
+  <option>Option 1</option>
+  <option>Option 2</option>
+</Select>
+```
+
+[View Select documentation →](/components/select)
+
+#### `Label`
+
+Form label component.
+
+```jsx
+import { Label } from '@theme-ui/components'
+
+<Label htmlFor="email">Email Address</Label>
+```
+
+[View Label documentation →](/components/label)
+
+#### `Checkbox`
+
+Checkbox input.
+
+```jsx
+import { Checkbox } from '@theme-ui/components'
+
+<Checkbox />
+```
+
+[View Checkbox documentation →](/components/checkbox)
+
+#### `Radio`
+
+Radio button input.
+
+```jsx
+import { Radio } from '@theme-ui/components'
+
+<Radio name="option" value="1" />
+```
+
+[View Radio documentation →](/components/radio)
+
+#### `Slider`
+
+Range slider input.
+
+```jsx
+import { Slider } from '@theme-ui/components'
+
+<Slider min={0} max={100} />
+```
+
+[View Slider documentation →](/components/slider)
+
+#### `Switch`
+
+Toggle switch component.
+
+```jsx
+import { Switch } from '@theme-ui/components'
+
+<Switch />
+```
+
+[View Switch documentation →](/components/switch)
+
+#### `Field`
+
+Combines Label and Input/Textarea/Select.
+
+```jsx
+import { Field } from '@theme-ui/components'
+
+<Field label="Email" name="email" />
+```
+
+[View Field documentation →](/components/field)
+
+### Interactive Components
+
+#### `IconButton`
+
+Button optimized for icons.
+
+```jsx
+import { IconButton } from '@theme-ui/components'
+
+<IconButton aria-label="Menu">
+  <MenuIcon />
+</IconButton>
+```
+
+[View IconButton documentation →](/components/icon-button)
+
+#### `MenuButton`
+
+Button with menu icon.
+
+```jsx
+import { MenuButton } from '@theme-ui/components'
+
+<MenuButton aria-label="Toggle Menu" />
+```
+
+[View MenuButton documentation →](/components/menu-button)
+
+#### `Close`
+
+Close button component.
+
+```jsx
+import { Close } from '@theme-ui/components'
+
+<Close onClick={handleClose} />
+```
+
+[View Close documentation →](/components/close)
+
+#### `NavLink`
+
+Navigation link with active state support.
+
+```jsx
+import { NavLink } from '@theme-ui/components'
+
+<NavLink href="/about">About</NavLink>
+```
+
+[View NavLink documentation →](/components/nav-link)
+
+### Display Components
+
+#### `Card`
+
+Card container component.
+
+```jsx
+import { Card } from '@theme-ui/components'
+
+<Card>
+  Card content
+</Card>
+```
+
+[View Card documentation →](/components/card)
+
+#### `Image`
+
+Image component.
+
+```jsx
+import { Image } from '@theme-ui/components'
+
+<Image src="photo.jpg" alt="Description" />
+```
+
+[View Image documentation →](/components/image)
+
+#### `Avatar`
+
+User avatar component.
+
+```jsx
+import { Avatar } from '@theme-ui/components'
+
+<Avatar src="avatar.jpg" />
+```
+
+[View Avatar documentation →](/components/avatar)
+
+#### `Badge`
+
+Badge component for labels and counts.
+
+```jsx
+import { Badge } from '@theme-ui/components'
+
+<Badge>New</Badge>
+```
+
+[View Badge documentation →](/components/badge)
+
+#### `Alert`
+
+Alert message component.
+
+```jsx
+import { Alert } from '@theme-ui/components'
+
+<Alert>Important message</Alert>
+```
+
+[View Alert documentation →](/components/alert)
+
+#### `Message`
+
+Message box component.
+
+```jsx
+import { Message } from '@theme-ui/components'
+
+<Message>Information message</Message>
+```
+
+[View Message documentation →](/components/message)
+
+#### `Divider`
+
+Horizontal divider.
+
+```jsx
+import { Divider } from '@theme-ui/components'
+
+<Divider />
+```
+
+[View Divider documentation →](/components/divider)
+
+### Media Components
+
+#### `Embed`
+
+Responsive iframe embed.
+
+```jsx
+import { Embed } from '@theme-ui/components'
+
+<Embed src="https://www.youtube.com/embed/..." />
+```
+
+[View Embed documentation →](/components/embed)
+
+#### `AspectRatio`
+
+Container that maintains aspect ratio.
+
+```jsx
+import { AspectRatio } from '@theme-ui/components'
+
+<AspectRatio ratio={16/9}>
+  Content
+</AspectRatio>
+```
+
+[View AspectRatio documentation →](/components/aspect-ratio)
+
+#### `AspectImage`
+
+Image with aspect ratio constraint.
+
+```jsx
+import { AspectImage } from '@theme-ui/components'
+
+<AspectImage ratio={4/3} src="photo.jpg" />
+```
+
+[View AspectImage documentation →](/components/aspect-image)
+
+### Feedback Components
+
+#### `Progress`
+
+Progress bar component.
+
+```jsx
+import { Progress } from '@theme-ui/components'
+
+<Progress max={100} value={75} />
+```
+
+[View Progress documentation →](/components/progress)
+
+#### `Donut`
+
+Circular progress indicator.
+
+```jsx
+import { Donut } from '@theme-ui/components'
+
+<Donut value={0.75} />
+```
+
+[View Donut documentation →](/components/donut)
+
+#### `Spinner`
+
+Loading spinner component.
+
+```jsx
+import { Spinner } from '@theme-ui/components'
+
+<Spinner />
+```
+
+[View Spinner documentation →](/components/spinner)
+
+## Complete Component List
+
+```javascript
+import {
+  // Layout
+  Box,
+  Flex,
+  Grid,
+  Container,
+  
+  // Typography
+  Text,
+  Heading,
+  Paragraph,
+  Link,
+  
+  // Forms
+  Button,
+  Input,
+  Textarea,
+  Select,
+  Label,
+  Checkbox,
+  Radio,
+  Slider,
+  Switch,
+  Field,
+  
+  // Interactive
+  IconButton,
+  MenuButton,
+  Close,
+  NavLink,
+  
+  // Display
+  Card,
+  Image,
+  Avatar,
+  Badge,
+  Alert,
+  Message,
+  Divider,
+  
+  // Media
+  Embed,
+  AspectRatio,
+  AspectImage,
+  
+  // Feedback
+  Progress,
+  Donut,
+  Spinner,
+} from '@theme-ui/components'
+```
+
+## Common Features
+
+All components support:
+
+### The `sx` Prop
+
+Style components with theme-aware values:
+
+```jsx
+<Box sx={{ 
+  color: 'primary',
+  padding: 3,
+  fontSize: [1, 2, 3],
+  bg: 'muted'
+}} />
+```
+
+### Variants
+
+Apply pre-defined style variants from your theme:
+
+```jsx
+<Button variant="primary">Primary Button</Button>
+<Button variant="secondary">Secondary Button</Button>
+```
+
+### Responsive Props
+
+Many components support responsive prop values:
+
+```jsx
+<Grid columns={[1, 2, 3]} gap={[2, 3, 4]}>
+  {/* Content */}
+</Grid>
+```
+
+## TypeScript Support
+
+All components are fully typed:
+
+```typescript
+import type { BoxProps, ButtonProps, GridProps } from '@theme-ui/components'
+```
+
+## Notes
+
+- All components use the `sx` prop for styling
+- Components forward refs correctly
+- Fully accessible with ARIA attributes
+- Built with styled-system for consistent API
+- Requires `@emotion/react` and `react` as peer dependencies
+- Requires `@theme-ui/theme-provider` as a peer dependency
+
+## Related
+
+- [@theme-ui/core](/api/packages/core) - Core Theme UI functionality
+- [Components](/components) - Full component documentation
+- [Theming](/theming) - Customizing component styles

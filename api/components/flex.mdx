@@ -1,0 +1,115 @@
+---
+title: Flex
+description: Flexbox layout component extending Box with display flex utilities
+---
+
+The Flex component extends Box with `display: flex` by default, making it easy to create flexbox layouts.
+
+## Import
+
+```jsx
+import { Flex } from 'theme-ui'
+```
+
+## Usage
+
+```jsx
+<Flex sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+  <div>Left</div>
+  <div>Right</div>
+</Flex>
+```
+
+## Props
+
+Flex accepts all Box props with `display: flex` applied by default.
+
+<ParamField path="as" type="React.ElementType">
+  Render as a different HTML element. Defaults to `'div'`.
+</ParamField>
+
+<ParamField path="sx" type="ThemeUIStyleObject">
+  Theme-aware styles. The `display: flex` is automatically applied, but can be overridden.
+
+  ```jsx
+  <Flex
+    sx={{
+      flexDirection: 'column',
+      gap: 3,
+    }}
+  >
+    Stacked items
+  </Flex>
+  ```
+</ParamField>
+
+<ParamField path="variant" type="string">
+  Apply a variant style from the theme.
+</ParamField>
+
+### Spacing Props
+
+Flex inherits all spacing props from Box (m, mt, mr, mb, ml, mx, my, p, pt, pr, pb, pl, px, py).
+
+### Color Props
+
+Flex inherits all color props from Box (color, bg, backgroundColor, opacity).
+
+## Examples
+
+### Horizontal Layout
+
+```jsx
+<Flex sx={{ gap: 3 }}>
+  <div>Item 1</div>
+  <div>Item 2</div>
+  <div>Item 3</div>
+</Flex>
+```
+
+### Centered Content
+
+```jsx
+<Flex
+  sx={{
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: '100vh',
+  }}
+>
+  Centered content
+</Flex>
+```
+
+### Column Layout
+
+```jsx
+<Flex sx={{ flexDirection: 'column', gap: 2 }}>
+  <div>Top</div>
+  <div>Middle</div>
+  <div>Bottom</div>
+</Flex>
+```
+
+### Space Between
+
+```jsx
+<Flex sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+  <span>Label</span>
+  <button>Action</button>
+</Flex>
+```
+
+### Responsive Direction
+
+```jsx
+<Flex
+  sx={{
+    flexDirection: ['column', 'row'],
+    gap: 3,
+  }}
+>
+  <div>Stacks on mobile, horizontal on desktop</div>
+  <div>Item 2</div>
+</Flex>
+```

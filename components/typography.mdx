@@ -1,0 +1,393 @@
+---
+title: 'Typography Components'
+description: 'Text, Heading, and Paragraph components for themeable typography'
+---
+
+Typography components provide semantic text elements with theme integration and variant support.
+
+## Text
+
+The Text component is a primitive typographic component that renders as a `<span>` by default. Use it for inline text elements.
+
+### Import
+
+```jsx
+import { Text } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Text>Default text</Text>
+<Text variant="caps">Uppercase text</Text>
+<Text sx={{ fontSize: 4, fontWeight: 'bold' }}>Large bold text</Text>
+```
+
+### Props
+
+Text accepts all Box props.
+
+<ParamField path="as" type="React.ElementType" default="'span'">
+  Render as a different HTML element
+</ParamField>
+
+<ParamField path="variant" type="string" default="'default'">
+  Text style variant from `theme.text`
+</ParamField>
+
+<ParamField path="sx" type="ThemeUIStyleObject">
+  Theme-aware style object
+</ParamField>
+
+### Theme Integration
+
+Text variants are defined in `theme.text`:
+
+```js
+// theme.js
+export default {
+  text: {
+    default: {
+      fontSize: 2,
+      lineHeight: 'body'
+    },
+    caps: {
+      textTransform: 'uppercase',
+      letterSpacing: '0.1em',
+      fontSize: 1
+    },
+    heading: {
+      fontFamily: 'heading',
+      fontWeight: 'heading',
+      lineHeight: 'heading'
+    }
+  }
+}
+```
+
+### Examples
+
+#### Basic Text
+
+```jsx
+<Text>This is basic text content.</Text>
+```
+
+#### Styled Text
+
+```jsx
+<Text sx={{ color: 'primary', fontSize: 3 }}>
+  Primary colored text
+</Text>
+```
+
+#### Text Variants
+
+```jsx
+<Box>
+  <Text variant="caps">Small Caps</Text>
+  <Text variant="heading">Heading Style Text</Text>
+</Box>
+```
+
+#### As Different Element
+
+```jsx
+<Text as="div" p={2}>
+  Text rendered as a div with padding
+</Text>
+```
+
+---
+
+## Heading
+
+The Heading component is used for headings and titles. It renders as an `<h2>` element by default.
+
+### Import
+
+```jsx
+import { Heading } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Heading>Default Heading</Heading>
+<Heading as="h1">Page Title</Heading>
+<Heading as="h3" variant="subheading">Subheading</Heading>
+```
+
+### Props
+
+Heading extends Box props and includes all heading element attributes.
+
+<ParamField path="as" type="'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'" default="'h2'">
+  HTML heading level
+</ParamField>
+
+<ParamField path="variant" type="string" default="'heading'">
+  Text style variant from `theme.text`
+</ParamField>
+
+<ParamField path="sx" type="ThemeUIStyleObject">
+  Theme-aware style object
+</ParamField>
+
+### Default Styles
+
+The Heading component applies these default styles:
+
+```js
+{
+  fontFamily: 'heading',
+  fontWeight: 'heading',
+  lineHeight: 'heading'
+}
+```
+
+### Theme Integration
+
+Define heading styles in your theme:
+
+```js
+// theme.js
+export default {
+  fonts: {
+    heading: 'system-ui, sans-serif'
+  },
+  fontWeights: {
+    heading: 700
+  },
+  lineHeights: {
+    heading: 1.25
+  },
+  text: {
+    heading: {
+      fontFamily: 'heading',
+      fontWeight: 'heading',
+      lineHeight: 'heading',
+      fontSize: 5
+    },
+    subheading: {
+      fontFamily: 'heading',
+      fontWeight: 'heading',
+      lineHeight: 'heading',
+      fontSize: 3,
+      color: 'secondary'
+    }
+  }
+}
+```
+
+### Examples
+
+#### Heading Levels
+
+```jsx
+<Box>
+  <Heading as="h1">Page Title</Heading>
+  <Heading as="h2">Section Heading</Heading>
+  <Heading as="h3">Subsection Heading</Heading>
+</Box>
+```
+
+#### Styled Heading
+
+```jsx
+<Heading
+  sx={{
+    color: 'primary',
+    fontSize: [4, 5, 6],
+    mb: 3
+  }}
+>
+  Responsive Heading
+</Heading>
+```
+
+#### Heading Variants
+
+```jsx
+<Box>
+  <Heading variant="heading">Main Heading</Heading>
+  <Heading variant="subheading">Subheading Style</Heading>
+</Box>
+```
+
+#### Heading with Gradient
+
+```jsx
+<Heading
+  sx={{
+    background: 'linear-gradient(45deg, #f06, #48f)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    fontSize: 6
+  }}
+>
+  Gradient Heading
+</Heading>
+```
+
+---
+
+## Paragraph
+
+The Paragraph component is a typographic component for body text that renders as a `<p>` element.
+
+### Import
+
+```jsx
+import { Paragraph } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Paragraph>
+  This is a paragraph of body text. It uses the paragraph variant from your theme.
+</Paragraph>
+```
+
+### Props
+
+Paragraph extends Box props and includes all paragraph element attributes.
+
+<ParamField path="as" type="React.ElementType" default="'p'">
+  Render as a different HTML element
+</ParamField>
+
+<ParamField path="variant" type="string" default="'paragraph'">
+  Text style variant from `theme.text`
+</ParamField>
+
+<ParamField path="sx" type="ThemeUIStyleObject">
+  Theme-aware style object
+</ParamField>
+
+### Default Styles
+
+The Paragraph component applies these default styles:
+
+```js
+{
+  fontFamily: 'body',
+  fontWeight: 'body',
+  lineHeight: 'body'
+}
+```
+
+### Theme Integration
+
+Define paragraph styles in your theme:
+
+```js
+// theme.js
+export default {
+  fonts: {
+    body: 'system-ui, sans-serif'
+  },
+  fontWeights: {
+    body: 400
+  },
+  lineHeights: {
+    body: 1.5
+  },
+  text: {
+    paragraph: {
+      fontSize: 2,
+      lineHeight: 'body',
+      mb: 3
+    },
+    small: {
+      fontSize: 1,
+      lineHeight: 'body'
+    }
+  }
+}
+```
+
+### Examples
+
+#### Basic Paragraph
+
+```jsx
+<Paragraph>
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+  Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+</Paragraph>
+```
+
+#### Styled Paragraph
+
+```jsx
+<Paragraph
+  sx={{
+    fontSize: 3,
+    lineHeight: 1.6,
+    color: 'text',
+    maxWidth: '65ch'
+  }}
+>
+  A paragraph with optimal reading width and custom styling.
+</Paragraph>
+```
+
+#### Lead Paragraph
+
+```jsx
+<Paragraph
+  sx={{
+    fontSize: [3, 4],
+    fontWeight: 300,
+    lineHeight: 1.6,
+    mb: 4
+  }}
+>
+  This is a lead paragraph with larger text to introduce an article.
+</Paragraph>
+```
+
+#### Multiple Paragraphs
+
+```jsx
+<Box>
+  <Paragraph>
+    First paragraph of content. This uses the default paragraph styling
+    from your theme.
+  </Paragraph>
+  
+  <Paragraph>
+    Second paragraph with consistent spacing and typography.
+  </Paragraph>
+  
+  <Paragraph variant="small">
+    A smaller paragraph variant for footnotes or additional details.
+  </Paragraph>
+</Box>
+```
+
+## Typography Combinations
+
+Combine typography components for structured content:
+
+```jsx
+<Box>
+  <Heading as="h1" mb={2}>Article Title</Heading>
+  
+  <Text sx={{ color: 'gray', fontSize: 1, mb: 4 }}>
+    Published on January 1, 2024
+  </Text>
+  
+  <Paragraph sx={{ fontSize: 3, mb: 3 }}>
+    Lead paragraph with larger text to introduce the article content.
+  </Paragraph>
+  
+  <Heading as="h2" mt={4} mb={2}>Section Heading</Heading>
+  
+  <Paragraph>
+    Regular paragraph text with proper spacing and typography.
+  </Paragraph>
+</Box>
+```

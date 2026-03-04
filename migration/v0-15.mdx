@@ -1,0 +1,112 @@
+---
+title: Migrating to v0.15
+description: Guide for migrating from Theme UI v0.14 to v0.15
+---
+
+This guide covers breaking changes and new features when upgrading from Theme UI v0.14 to v0.15.
+
+## MDX is Now Opt-In
+
+<Warning>
+MDX is no longer included by default in Theme UI. If you're using MDX, you'll need to set it up manually.
+</Warning>
+
+If your project is not using MDX or importing `Themed`, you shouldn't need to change anything.
+
+This change enables you to use Theme UI together with [MDX v2](https://mdxjs.com/blog/v2/).
+
+### MDXProvider Removed from ThemeProvider
+
+`MDXProvider` is no longer included in Theme UI's `ThemeProvider`, and has been removed in favor of a `useThemedStylesWithMdx` hook.
+
+**Migration:** Use `useThemedStylesWithMdx` together with `MDXProvider` and `useMDXComponents` from `@mdx-js/react`.
+
+**Before:**
+```tsx
+import { ThemeProvider } from 'theme-ui'
+
+function App() {
+  return (
+    <ThemeProvider theme={theme}>
+      {/* MDX components automatically styled */}
+    </ThemeProvider>
+  )
+}
+```
+
+**After:**
+```tsx
+import {
+  MDXProvider,
+  useMDXComponents,
+  Components as MDXComponents,
+  MergeComponents as MergeMDXComponents,
+} from '@mdx-js/react'
+import { useThemedStylesWithMdx } from '@theme-ui/mdx'
+import { ThemeProvider, Theme } from 'theme-ui'
+
+interface MyProviderProps {
+  theme: Theme
+  components?: MDXComponents | MergeMDXComponents
+  children: React.ReactNode
+}
+
+function MyProvider({ theme, components, children }: MyProviderProps) {
+  const componentsWithStyles = useThemedStylesWithMdx(
+    useMDXComponents(components)
+  )
+
+  return (
+    <ThemeProvider theme={theme}>
+      <MDXProvider components={componentsWithStyles}>{children}</MDXProvider>
+    </ThemeProvider>
+  )
+}
+```
+
+### Themed Export Moved
+
+<Warning>
+`Themed` components dict and other exports from `@theme-ui/mdx` are no longer reexported from `theme-ui`.
+</Warning>
+
+**Migration:** Import from `@theme-ui/mdx` instead.
+
+**Before:**
+```tsx
+import { Themed } from 'theme-ui'
+```
+
+**After:**
+```tsx
+import { Themed } from '@theme-ui/mdx'
+```
+
+## Themed Object is No Longer a Component
+
+<Warning>
+The `Themed` object itself is no longer a component. Previously, it was an alias for `Themed.div`.
+</Warning>
+
+**Migration:** Replace all uses of `<Themed />` with `<Themed.div />`.
+
+**Before:**
+```tsx
+<Themed>Content</Themed>
+```
+
+**After:**
+```tsx
+<Themed.div>Content</Themed.div>
+```
+
+## Summary of Changes
+
+If you're using MDX with Theme UI v0.15:
+
+1. Install `@mdx-js/react` if not already installed
+2. Create a custom provider using `useThemedStylesWithMdx`
+3. Update imports of `Themed` from `theme-ui` to `@theme-ui/mdx`
+4. Replace `<Themed />` with `<Themed.div />`
+
+If you're not using MDX, no changes are required.

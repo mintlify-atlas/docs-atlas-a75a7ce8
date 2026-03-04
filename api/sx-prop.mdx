@@ -1,0 +1,580 @@
+---
+title: 'sx prop'
+description: 'TypeScript type definitions for the sx prop with all supported CSS properties and theme-aware styling'
+---
+
+# sx prop
+
+The `sx` prop is the primary way to style components in Theme UI. It accepts all CSS properties with theme-aware values, shorthand aliases, and responsive arrays. This page documents the TypeScript types that power the `sx` prop.
+
+## Type Definition
+
+```typescript
+type ThemeUIStyleObject<TTheme = Theme> =
+  | ThemeUICSSObject
+  | ThemeDerivedStyles<TTheme>
+```
+
+The `sx` prop accepts a `ThemeUIStyleObject` which can be:
+- A plain style object (`ThemeUICSSObject`)
+- A function that receives the theme and returns a style object (`ThemeDerivedStyles`)
+
+## Core Types
+
+### ThemeUICSSObject
+
+```typescript
+interface ThemeUICSSObject
+  extends ThemeUICSSProperties,
+    CSSPseudoSelectorProps<Theme>,
+    CSSOthersObject,
+    VariantProperty,
+    Label {}
+```
+
+This is the main type for style objects. It includes:
+- All CSS properties with theme-aware values
+- Pseudo-selectors (`:hover`, `:focus`, etc.)
+- Custom CSS selectors
+- Variant references
+- Label for Emotion class names
+
+### ThemeDerivedStyles
+
+```typescript
+interface ThemeDerivedStyles<TTheme = Theme> {
+  (theme: TTheme): ThemeUICSSObject
+}
+```
+
+Allows styles to be defined as a function that receives the theme:
+
+```javascript
+<Box
+  sx={(theme) => ({
+    color: theme.colors.primary,
+    fontSize: theme.fontSizes[2]
+  })}
+/>
+```
+
+## CSS Properties
+
+### Standard Properties
+
+All standard CSS properties are supported with responsive and theme-aware values:
+
+```typescript
+interface CSSProperties
+  extends CSS.StandardProperties<number | string>,
+    CSS.SvgProperties<number | string>,
+    CSS.VendorProperties<number | string> {}
+```
+
+### Responsive Values
+
+Every CSS property accepts arrays for mobile-first responsive styling:
+
+```typescript
+type ResponsiveStyleValue<T> = T | ThemeUIEmpty | Array<T | ThemeUIEmpty>
+
+type ThemeUIEmpty = undefined | null | false
+```
+
+**Example:**
+
+```javascript
+<Box
+  sx={{
+    fontSize: [14, 16, 20, 24],
+    padding: [2, 3, 4],
+    display: ['block', null, 'flex']
+  }}
+/>
+```
+
+Values of `null`, `undefined`, or `false` are ignored:
+
+```javascript
+<Box
+  sx={{
+    // Only applies fontSize at first and third breakpoints
+    fontSize: [16, null, 24, null]
+  }}
+/>
+```
+
+## Shorthand Aliases
+
+The `sx` prop supports convenient shorthand properties:
+
+```typescript
+interface AliasesCSSProperties {
+  bg?: StandardCSSProperties['backgroundColor']
+  m?: StandardCSSProperties['margin']
+  mt?: StandardCSSProperties['marginTop']
+  mr?: StandardCSSProperties['marginRight']
+  mb?: StandardCSSProperties['marginBottom']
+  ml?: StandardCSSProperties['marginLeft']
+  mx?: StandardCSSProperties['marginLeft']
+  my?: StandardCSSProperties['marginTop']
+  p?: StandardCSSProperties['padding']
+  pt?: StandardCSSProperties['paddingTop']
+  pr?: StandardCSSProperties['paddingRight']
+  pb?: StandardCSSProperties['paddingBottom']
+  pl?: StandardCSSProperties['paddingLeft']
+  px?: StandardCSSProperties['paddingLeft']
+  py?: StandardCSSProperties['paddingTop']
+}
+```
+
+**Margin Aliases:**
+- `m` - margin
+- `mt` - marginTop
+- `mr` - marginRight
+- `mb` - marginBottom
+- `ml` - marginLeft
+- `mx` - marginLeft + marginRight
+- `my` - marginTop + marginBottom
+
+**Padding Aliases:**
+- `p` - padding
+- `pt` - paddingTop
+- `pr` - paddingRight
+- `pb` - paddingBottom
+- `pl` - paddingLeft
+- `px` - paddingLeft + paddingRight
+- `py` - paddingTop + paddingBottom
+
+**Other Aliases:**
+- `bg` - backgroundColor
+
+**Extended Aliases:**
+- `marginX` - marginLeft + marginRight
+- `marginY` - marginTop + marginBottom
+- `paddingX` - paddingLeft + paddingRight
+- `paddingY` - paddingTop + paddingBottom
+- `scrollMarginX` - scrollMarginLeft + scrollMarginRight
+- `scrollMarginY` - scrollMarginTop + scrollMarginBottom
+- `scrollPaddingX` - scrollPaddingLeft + scrollPaddingRight
+- `scrollPaddingY` - scrollPaddingTop + scrollPaddingBottom
+- `size` - width + height
+
+## Theme-Aware Properties
+
+Certain CSS properties automatically look up values from the theme. Here's the complete mapping:
+
+### Colors
+
+Maps to `theme.colors`:
+
+```typescript
+color: 'primary'           // → theme.colors.primary
+backgroundColor: 'muted'   // → theme.colors.muted
+borderColor: 'gray.2'      // → theme.colors.gray[2]
+```
+
+**All color properties:**
+- `color`
+- `backgroundColor`, `background`, `bg`
+- `borderColor`, `borderTopColor`, `borderBottomColor`, `borderLeftColor`, `borderRightColor`
+- `borderBlockColor`, `borderBlockEndColor`, `borderBlockStartColor`
+- `borderInlineColor`, `borderInlineEndColor`, `borderInlineStartColor`
+- `caretColor`
+- `columnRuleColor`
+- `outlineColor`
+- `textDecorationColor`
+- `accentColor`
+- `fill`, `stroke` (SVG properties)
+
+### Space
+
+Maps to `theme.space`:
+
+```typescript
+margin: 3              // → theme.space[3]
+padding: 4             // → theme.space[4]
+gap: 2                 // → theme.space[2]
+```
+
+**All space properties:**
+- All margin properties: `margin`, `marginTop`, `marginRight`, `marginBottom`, `marginLeft`, `marginX`, `marginY`
+- All margin logical properties: `marginBlock`, `marginBlockEnd`, `marginBlockStart`, `marginInline`, `marginInlineEnd`, `marginInlineStart`
+- All padding properties: `padding`, `paddingTop`, `paddingRight`, `paddingBottom`, `paddingLeft`, `paddingX`, `paddingY`
+- All padding logical properties: `paddingBlock`, `paddingBlockEnd`, `paddingBlockStart`, `paddingInline`, `paddingInlineEnd`, `paddingInlineStart`
+- Positioning: `top`, `right`, `bottom`, `left`
+- Inset properties: `inset`, `insetBlock`, `insetBlockEnd`, `insetBlockStart`, `insetInline`, `insetInlineEnd`, `insetInlineStart`
+- Scroll margins: `scrollMargin`, `scrollMarginTop`, `scrollMarginRight`, `scrollMarginBottom`, `scrollMarginLeft`, `scrollMarginX`, `scrollMarginY`
+- Scroll padding: `scrollPadding`, `scrollPaddingTop`, `scrollPaddingRight`, `scrollPaddingBottom`, `scrollPaddingLeft`, `scrollPaddingX`, `scrollPaddingY`
+- Gaps: `gap`, `gridGap`, `columnGap`, `gridColumnGap`, `rowGap`, `gridRowGap`
+
+### Typography
+
+```typescript
+fontFamily: 'body'     // → theme.fonts.body
+fontSize: 2            // → theme.fontSizes[2]
+fontWeight: 'bold'     // → theme.fontWeights.bold
+lineHeight: 'body'     // → theme.lineHeights.body
+letterSpacing: 'wide'  // → theme.letterSpacings.wide
+```
+
+**Typography mappings:**
+- `fontFamily` → `theme.fonts`
+- `fontSize` → `theme.fontSizes`
+- `fontWeight` → `theme.fontWeights`
+- `lineHeight` → `theme.lineHeights`
+- `letterSpacing` → `theme.letterSpacings`
+
+### Borders
+
+```typescript
+border: 'thin'              // → theme.borders.thin
+borderWidth: 2              // → theme.borderWidths[2]
+borderStyle: 'dashed'       // → theme.borderStyles.dashed
+borderRadius: 'medium'      // → theme.radii.medium
+```
+
+**Border mappings:**
+- `border`, `borderTop`, `borderRight`, `borderBottom`, `borderLeft` → `theme.borders`
+- All border block/inline properties → `theme.borders`
+- `borderWidth`, `borderTopWidth`, `borderBottomWidth`, etc. → `theme.borderWidths`
+- `borderStyle`, `borderTopStyle`, `borderBottomStyle`, etc. → `theme.borderStyles`
+- `borderRadius`, `borderTopLeftRadius`, `borderTopRightRadius`, etc. → `theme.radii`
+- `columnRuleWidth` → `theme.borderWidths`
+
+### Sizes
+
+```typescript
+width: 'container'     // → theme.sizes.container
+height: 'full'         // → theme.sizes.full
+maxWidth: 'prose'      // → theme.sizes.prose
+```
+
+**Size mappings:**
+- `width`, `minWidth`, `maxWidth` → `theme.sizes`
+- `height`, `minHeight`, `maxHeight` → `theme.sizes`
+- `flexBasis` → `theme.sizes`
+- `size` → `theme.sizes`
+- `blockSize`, `minBlockSize`, `maxBlockSize` → `theme.sizes`
+- `inlineSize`, `minInlineSize`, `maxInlineSize` → `theme.sizes`
+- `columnWidth` → `theme.sizes`
+
+### Other Scales
+
+```typescript
+boxShadow: 'elevated'      // → theme.shadows.elevated
+zIndex: 'modal'            // → theme.zIndices.modal
+opacity: 'disabled'        // → theme.opacities.disabled
+transition: 'smooth'       // → theme.transitions.smooth
+```
+
+**Other mappings:**
+- `boxShadow`, `textShadow` → `theme.shadows`
+- `zIndex` → `theme.zIndices`
+- `opacity` → `theme.opacities`
+- `transition` → `theme.transitions`
+
+## Pseudo-Selectors
+
+All CSS pseudo-selectors are supported:
+
+```typescript
+type CSSPseudoSelectorProps<TTheme> = {
+  [K in CSS.Pseudos]?: ThemeUIStyleObject<TTheme>
+}
+```
+
+**Example:**
+
+```javascript
+<Button
+  sx={{
+    color: 'text',
+    bg: 'primary',
+    ':hover': {
+      bg: 'primaryHover'
+    },
+    ':focus': {
+      outline: '2px solid',
+      outlineColor: 'primary'
+    },
+    ':disabled': {
+      opacity: 0.5,
+      cursor: 'not-allowed'
+    },
+    '::before': {
+      content: '"→"',
+      mr: 2
+    }
+  }}
+>
+  Submit
+</Button>
+```
+
+## CSS Selectors
+
+Custom CSS selectors are supported through an index signature:
+
+```typescript
+interface CSSOthersObject {
+  [k: string]: StylePropertyValue<string | number>
+}
+```
+
+**Example:**
+
+```javascript
+<Box
+  sx={{
+    color: 'text',
+    '& > *': {
+      margin: 0
+    },
+    '& a': {
+      color: 'primary',
+      textDecoration: 'none'
+    },
+    '@media print': {
+      display: 'none'
+    }
+  }}
+/>
+```
+
+## Variants
+
+Reference predefined variants from the theme:
+
+```typescript
+interface VariantProperty {
+  variant?: string
+}
+```
+
+**Example:**
+
+```javascript
+const theme = {
+  buttons: {
+    primary: {
+      color: 'white',
+      bg: 'primary',
+      padding: 3,
+      borderRadius: 2
+    },
+    secondary: {
+      color: 'text',
+      bg: 'secondary',
+      padding: 2
+    }
+  }
+}
+
+<Button sx={{ variant: 'buttons.primary' }}>Primary</Button>
+<Button sx={{ variant: 'buttons.secondary' }}>Secondary</Button>
+```
+
+You can extend variants with additional styles:
+
+```javascript
+<Button
+  sx={{
+    variant: 'buttons.primary',
+    fontSize: 4,  // Overrides or extends variant
+    textTransform: 'uppercase'
+  }}
+>
+  Large Primary
+</Button>
+```
+
+## Nested Theme Values
+
+Theme scales can be nested using the `__default` key:
+
+```typescript
+interface ObjectWithDefault<T> {
+  __default?: T
+}
+
+interface NestedScaleDict<T>
+  extends ScaleDict<T>,
+    ObjectWithDefault<T> {}
+```
+
+**Example:**
+
+```javascript
+const theme = {
+  colors: {
+    blue: {
+      __default: '#0066cc',
+      light: '#3399ff',
+      dark: '#003366'
+    }
+  }
+}
+
+<Box
+  sx={{
+    color: 'blue',        // Uses __default → '#0066cc'
+    bg: 'blue.light',     // → '#3399ff'
+    borderColor: 'blue.dark'  // → '#003366'
+  }}
+/>
+```
+
+## Special Properties
+
+### Label
+
+Emotional label for debugging:
+
+```typescript
+interface Label {
+  label?: string
+}
+```
+
+**Example:**
+
+```javascript
+<Box
+  sx={{
+    label: 'hero-section',
+    padding: 4,
+    bg: 'muted'
+  }}
+/>
+// Generates class name like: css-<hash>-hero-section
+```
+
+## Type Overrides
+
+Some CSS properties accept additional types for theme compatibility:
+
+```typescript
+interface OverwriteCSSProperties {
+  boxShadow?: CSS.Property.BoxShadow | number
+  fontWeight?: CSS.Property.FontWeight | string
+  borderTopStyle?: CSS.Property.BorderTopStyle | string
+  borderBottomStyle?: CSS.Property.BorderBottomStyle | string
+  borderRightStyle?: CSS.Property.BorderRightStyle | string
+  borderLeftStyle?: CSS.Property.BorderLeftStyle | string
+  borderRadius?: CSS.Property.BorderRadius<string | number>
+  zIndex?: CSS.Property.ZIndex | string
+}
+```
+
+This allows you to use theme keys or indices:
+
+```javascript
+<Box
+  sx={{
+    boxShadow: 0,              // theme.shadows[0]
+    fontWeight: 'bold',        // theme.fontWeights.bold or CSS 'bold'
+    zIndex: 'modal',           // theme.zIndices.modal
+    borderRadius: 2            // theme.radii[2]
+  }}
+/>
+```
+
+## Examples
+
+### Responsive Layout
+
+```javascript
+<Flex
+  sx={{
+    flexDirection: ['column', 'row'],
+    gap: [2, 3, 4],
+    padding: [3, 4, 5],
+    maxWidth: 'container',
+    mx: 'auto'
+  }}
+>
+  <Box sx={{ flex: ['1 1 100%', '1 1 50%'] }}>Column 1</Box>
+  <Box sx={{ flex: ['1 1 100%', '1 1 50%'] }}>Column 2</Box>
+</Flex>
+```
+
+### Component with Variants and States
+
+```javascript
+<Button
+  sx={{
+    variant: 'buttons.primary',
+    fontSize: [1, 2],
+    px: [3, 4],
+    py: 2,
+    ':hover': {
+      bg: 'primaryHover',
+      transform: 'translateY(-2px)',
+      boxShadow: 1
+    },
+    ':active': {
+      transform: 'translateY(0)'
+    },
+    ':disabled': {
+      opacity: 0.5,
+      cursor: 'not-allowed'
+    }
+  }}
+>
+  Click Me
+</Button>
+```
+
+### Nested Selectors
+
+```javascript
+<Box
+  sx={{
+    '& > h1': {
+      fontSize: [4, 5, 6],
+      mb: 3
+    },
+    '& p': {
+      fontSize: 2,
+      lineHeight: 'body',
+      color: 'text',
+      '&:first-of-type': {
+        fontSize: 3,
+        fontWeight: 'bold'
+      }
+    },
+    '& a': {
+      color: 'primary',
+      textDecoration: 'none',
+      ':hover': {
+        textDecoration: 'underline'
+      }
+    }
+  }}
+>
+  {content}
+</Box>
+```
+
+### Theme Function Form
+
+```javascript
+<Box
+  sx={(theme) => ({
+    padding: theme.space[3],
+    color: theme.colors.text,
+    backgroundColor: theme.colors.background,
+    borderRadius: theme.radii.medium,
+    boxShadow: theme.shadows.card,
+    [theme.mediaQueries?.lg]: {
+      padding: theme.space[4]
+    }
+  })}
+/>
+```
+
+## Related
+
+- [css](/api/css) - The underlying function that processes sx prop styles
+- [get](/api/get) - Function used to extract theme values

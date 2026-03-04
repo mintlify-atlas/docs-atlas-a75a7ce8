@@ -1,0 +1,659 @@
+---
+title: Gatsby Plugin
+description: Using gatsby-plugin-theme-ui for setup, configuration, and shadow files
+---
+
+The `gatsby-plugin-theme-ui` provides seamless Theme UI integration with Gatsby, including automatic color mode support and component shadowing.
+
+## Installation
+
+Install Theme UI and the Gatsby plugin:
+
+```bash
+npm install theme-ui @theme-ui/mdx gatsby-plugin-theme-ui @emotion/react @mdx-js/react
+```
+
+## Basic Setup
+
+Add the plugin to your `gatsby-config.js`:
+
+```js filename="gatsby-config.js"
+module.exports = {
+  plugins: ['gatsby-plugin-theme-ui'],
+}
+```
+
+That's it! The plugin automatically:
+- Wraps your app with `ThemeUIProvider`
+- Integrates MDX support
+- Prevents color mode flash on page load
+- Sets up the theme context
+
+## Creating Your Theme
+
+Create a theme file using [Gatsby's component shadowing](https://www.gatsbyjs.com/docs/how-to/plugins-and-themes/shadowing/):
+
+```js filename="src/gatsby-plugin-theme-ui/index.js"
+export default {
+  colors: {
+    text: '#000',
+    background: '#fff',
+    primary: '#0066cc',
+    secondary: '#cc0066',
+    muted: '#f6f6f6',
+  },
+  fonts: {
+    body: 'system-ui, sans-serif',
+    heading: 'Georgia, serif',
+  },
+  fontSizes: [12, 14, 16, 20, 24, 32, 48, 64],
+  space: [0, 4, 8, 16, 32, 64, 128, 256],
+  styles: {
+    root: {
+      fontFamily: 'body',
+      lineHeight: 'body',
+    },
+    h1: {
+      fontSize: 5,
+      fontFamily: 'heading',
+      fontWeight: 'bold',
+    },
+    h2: {
+      fontSize: 4,
+      fontFamily: 'heading',
+      fontWeight: 'bold',
+    },
+    p: {
+      fontSize: 2,
+      lineHeight: 'body',
+    },
+  },
+}
+```
+
+<Note>
+The theme must be the default export from `src/gatsby-plugin-theme-ui/index.js`.
+</Note>
+
+## Plugin Options
+
+Configure the plugin with options:
+
+```js filename="gatsby-config.js"
+module.exports = {
+  plugins: [
+    {
+      resolve: 'gatsby-plugin-theme-ui',
+      options: {
+        prismPreset: 'night-owl',
+        preset: '@theme-ui/preset-funk',
+        injectColorFlashScript: true,
+      },
+    },
+  ],
+}
+```
+
+### Available Options
+
+<ParamField path="prismPreset" type="string" default="null">
+  The name of the preset for styling code blocks in markdown files. Available presets: `'dracula'`, `'duotone-dark'`, `'duotone-light'`, `'github'`, `'night-owl'`, `'nightOwl'`, `'oceanicNext'`, `'okaidia'`, `'prism'`, `'shadesOfPurple'`, `'ultramin'`, `'vsDark'`, `'vsLight'`.
+</ParamField>
+
+<ParamField path="preset" type="string | object" default="null">
+  A theme preset to use as a base. Can be a package name (string) or a theme object. The preset is merged with your shadowed theme.
+</ParamField>
+
+<ParamField path="injectColorFlashScript" type="boolean" default="true">
+  Injects a script to prevent color mode flashing on page load. Set to `false` for AMP pages.
+</ParamField>
+
+## Using Presets
+
+### Install a Preset Package
+
+```bash
+npm install @theme-ui/preset-funk
+```
+
+### Configure with Preset
+
+```js filename="gatsby-config.js"
+module.exports = {
+  plugins: [
+    {
+      resolve: 'gatsby-plugin-theme-ui',
+      options: {
+        preset: '@theme-ui/preset-funk',
+      },
+    },
+  ],
+}
+```
+
+### Extend a Preset
+
+Combine a preset with custom styles:
+
+```js filename="src/gatsby-plugin-theme-ui/index.js"
+import { funk } from '@theme-ui/preset-funk'
+
+export default {
+  ...funk,
+  colors: {
+    ...funk.colors,
+    // Override specific colors
+    primary: '#0066cc',
+    secondary: '#cc0066',
+  },
+}
+```
+
+## Code Syntax Highlighting
+
+The plugin integrates with `@theme-ui/prism` for syntax highlighting.
+
+### Configure Prism Preset
+
+```js filename="gatsby-config.js"
+module.exports = {
+  plugins: [
+    {
+      resolve: 'gatsby-plugin-theme-ui',
+      options: {
+        prismPreset: 'night-owl',
+      },
+    },
+  ],
+}
+```
+
+### Available Prism Presets
+
+<Tabs>
+  <Tab title="Dark Themes">
+    - `'dracula'`
+    - `'night-owl'` or `'nightOwl'`
+    - `'okaidia'`
+    - `'duotone-dark'`
+    - `'vsDark'`
+    - `'shadesOfPurple'`
+  </Tab>
+  <Tab title="Light Themes">
+    - `'github'`
+    - `'duotone-light'`
+    - `'vsLight'`
+    - `'prism'` (default Prism theme)
+    - `'ultramin'`
+  </Tab>
+  <Tab title="Other">
+    - `'oceanicNext'`
+  </Tab>
+</Tabs>
+
+### Custom Prism Styles
+
+Override Prism styles in your theme:
+
+```js filename="src/gatsby-plugin-theme-ui/index.js"
+export default {
+  styles: {
+    pre: {
+      fontFamily: 'monospace',
+      fontSize: 1,
+      padding: 3,
+      backgroundColor: '#011627',
+      borderRadius: 2,
+      overflow: 'auto',
+    },
+    code: {
+      fontFamily: 'monospace',
+    },
+  },
+}
+```
+
+## Color Modes
+
+Add color modes to your theme:
+
+```js filename="src/gatsby-plugin-theme-ui/index.js"
+export default {
+  colors: {
+    text: '#000',
+    background: '#fff',
+    primary: '#0066cc',
+    modes: {
+      dark: {
+        text: '#fff',
+        background: '#000',
+        primary: '#3399ff',
+      },
+    },
+  },
+}
+```
+
+### Color Mode Toggle
+
+Create a color mode toggle component:
+
+```tsx filename="src/components/ColorModeToggle.tsx"
+import { useColorMode } from 'theme-ui'
+
+export function ColorModeToggle() {
+  const [colorMode, setColorMode] = useColorMode()
+  
+  return (
+    <button
+      onClick={() => {
+        setColorMode(colorMode === 'default' ? 'dark' : 'default')
+      }}
+      sx=
+        padding: 2,
+        bg: 'primary',
+        color: 'white',
+        border: 'none',
+        borderRadius: 2,
+        cursor: 'pointer',
+      }}
+    >
+      Toggle {colorMode === 'default' ? 'Dark' : 'Light'} Mode
+    </button>
+  )
+}
+```
+
+### Prevent Color Flash
+
+The plugin automatically injects a script to prevent color mode flashing. This script runs before React hydrates and sets the correct color mode.
+
+To disable this (e.g., for AMP pages):
+
+```js filename="gatsby-config.js"
+module.exports = {
+  plugins: [
+    {
+      resolve: 'gatsby-plugin-theme-ui',
+      options: {
+        injectColorFlashScript: false,
+      },
+    },
+  ],
+}
+```
+
+## Custom MDX Components
+
+Shadow the components file to customize MDX rendering:
+
+```js filename="src/gatsby-plugin-theme-ui/components.js"
+import React from 'react'
+
+const components = {
+  // Add linked headings
+  h1: (props) => (
+    <h1 {...props}>
+      <a href={`#${props.id}`}>{props.children}</a>
+    </h1>
+  ),
+  h2: (props) => (
+    <h2 {...props}>
+      <a href={`#${props.id}`}>{props.children}</a>
+    </h2>
+  ),
+  
+  // Custom image component
+  img: (props) => (
+    <img
+      {...props}
+      sx={{
+        maxWidth: '100%',
+        height: 'auto',
+        borderRadius: 2,
+      }}
+    />
+  ),
+}
+
+export default components
+```
+
+## Component Shadowing
+
+Gatsby's [component shadowing](https://www.gatsbyjs.com/docs/how-to/plugins-and-themes/shadowing/) allows you to override plugin files.
+
+### Shadow Files
+
+You can shadow these files:
+
+```
+src/
+└── gatsby-plugin-theme-ui/
+    ├── index.js       # Theme configuration
+    └── components.js  # MDX components
+```
+
+### Example: Complete Override
+
+```js filename="src/gatsby-plugin-theme-ui/index.js"
+import { merge } from 'theme-ui'
+import { base } from '@theme-ui/presets'
+
+const theme = merge(base, {
+  colors: {
+    primary: '#0066cc',
+    modes: {
+      dark: {
+        text: '#fff',
+        background: '#000',
+      },
+    },
+  },
+  styles: {
+    root: {
+      fontFamily: 'body',
+    },
+  },
+})
+
+export default theme
+```
+
+## Extending Gatsby Themes
+
+Extend a Gatsby theme that uses Theme UI:
+
+```js filename="src/gatsby-plugin-theme-ui/index.js"
+import baseTheme from 'gatsby-theme-blog/src/gatsby-plugin-theme-ui'
+
+export default {
+  ...baseTheme,
+  colors: {
+    ...baseTheme.colors,
+    text: '#111',
+    background: '#fff',
+    primary: '#0066cc',
+  },
+}
+```
+
+## Load Theme from Custom Path
+
+If you prefer a different location for your theme:
+
+```js filename="gatsby-config.js"
+module.exports = {
+  plugins: [
+    {
+      resolve: 'gatsby-plugin-theme-ui',
+      options: {
+        preset: require('./src/theme'),
+      },
+    },
+  ],
+}
+```
+
+```js filename="src/theme.js"
+// Note: Use module.exports for gatsby-config.js
+module.exports = {
+  colors: {
+    text: '#000',
+    background: '#fff',
+    primary: '#0066cc',
+  },
+}
+```
+
+<Warning>
+`gatsby-config.js` doesn't support ES6 modules. Use `module.exports` instead of `export default`.
+</Warning>
+
+## Plugin Implementation
+
+Here's how the plugin works internally:
+
+### gatsby-node.js
+
+The plugin processes theme presets and creates a Gatsby node:
+
+```js filename="packages/gatsby-plugin-theme-ui/gatsby-node.js"
+exports.onPreInit = ({ reporter }, options) => {
+  let { preset, prismPreset } = options
+
+  // Load preset if it's a string
+  if (typeof preset === 'string') {
+    try {
+      options.preset = require(preset)
+    } catch {
+      reporter.warn(
+        'Theme dependency not installed. Only local styles will appear.'
+      )
+    }
+  }
+
+  // Load Prism preset
+  if (prismPreset) {
+    try {
+      options.prismPreset = require(prismPreset)
+    } catch {
+      reporter.warn('Prism dependency not installed.')
+    }
+  }
+}
+
+exports.sourceNodes = (
+  { actions, createContentDigest },
+  { preset = {}, prismPreset = {} }
+) => {
+  const { createNode } = actions
+
+  // Create a node with theme config
+  createNode({
+    preset,
+    prismPreset,
+    id: 'gatsby-plugin-theme-ui-config',
+    parent: null,
+    children: [],
+    internal: {
+      type: 'ThemeUiConfig',
+      contentDigest: createContentDigest({ preset, prismPreset }),
+    },
+  })
+}
+```
+
+### Provider Component
+
+The plugin wraps your app with providers:
+
+```jsx filename="packages/gatsby-plugin-theme-ui/src/provider.js"
+import { ThemeUIProvider, merge } from 'theme-ui'
+import { useThemedStylesWithMdx } from '@theme-ui/mdx'
+import { MDXProvider, useMDXComponents } from '@mdx-js/react'
+import React from 'react'
+
+import localTheme from './index'
+import components from './components'
+import useThemeUiConfig from './hooks/configOptions'
+
+const Root = ({ children }) => {
+  const themeUiConfig = useThemeUiConfig()
+  const { preset, prismPreset } = themeUiConfig
+
+  const theme = preset.default || preset
+
+  // Merge with Prism preset
+  const themeWithPrism = merge(theme, {
+    styles: {
+      pre: prismPreset,
+    },
+  })
+
+  // Merge with local theme
+  const fullTheme = merge(themeWithPrism, localTheme)
+
+  return (
+    <ThemeUIProvider theme={fullTheme}>
+      <MDXProvider
+        components={useThemedStylesWithMdx(useMDXComponents(components))}
+      >
+        {children}
+      </MDXProvider>
+    </ThemeUIProvider>
+  )
+}
+
+export const WrapRootElement = ({ element }) => {
+  return <Root>{element}</Root>
+}
+```
+
+## Complete Example
+
+Here's a complete Gatsby site setup:
+
+<CodeGroup>
+```js gatsby-config.js
+module.exports = {
+  plugins: [
+    'gatsby-plugin-theme-ui',
+    {
+      resolve: 'gatsby-plugin-mdx',
+      options: {
+        extensions: ['.mdx', '.md'],
+      },
+    },
+  ],
+}
+```
+
+```js src/gatsby-plugin-theme-ui/index.js
+export default {
+  colors: {
+    text: '#000',
+    background: '#fff',
+    primary: '#0066cc',
+    secondary: '#cc0066',
+    muted: '#f6f6f6',
+    modes: {
+      dark: {
+        text: '#fff',
+        background: '#000',
+        primary: '#3399ff',
+        secondary: '#ff66cc',
+        muted: '#1a1a1a',
+      },
+    },
+  },
+  fonts: {
+    body: 'system-ui, sans-serif',
+    heading: 'Georgia, serif',
+  },
+  fontSizes: [12, 14, 16, 20, 24, 32, 48],
+  space: [0, 4, 8, 16, 32, 64],
+  styles: {
+    root: {
+      fontFamily: 'body',
+      lineHeight: 'body',
+    },
+    h1: {
+      fontSize: 5,
+      fontFamily: 'heading',
+      fontWeight: 'bold',
+      marginBottom: 3,
+    },
+    h2: {
+      fontSize: 4,
+      fontFamily: 'heading',
+      fontWeight: 'bold',
+      marginTop: 4,
+      marginBottom: 2,
+    },
+    p: {
+      fontSize: 2,
+      lineHeight: 'body',
+      marginBottom: 3,
+    },
+    a: {
+      color: 'primary',
+      ':hover': {
+        color: 'secondary',
+      },
+    },
+  },
+}
+```
+
+```js src/gatsby-plugin-theme-ui/components.js
+import React from 'react'
+
+const components = {
+  h1: (props) => (
+    <h1 id={props.id} {...props}>
+      <a href={`#${props.id}`} sx={{ color: 'inherit', textDecoration: 'none' }}>
+        {props.children}
+      </a>
+    </h1>
+  ),
+}
+
+export default components
+```
+</CodeGroup>
+
+## Troubleshooting
+
+### Theme Not Applying
+
+Make sure your theme file exports a default:
+
+```js
+// ✅ Correct
+export default { colors: { ... } }
+
+// ❌ Incorrect
+export const theme = { colors: { ... } }
+```
+
+### Color Flash on Load
+
+Ensure `injectColorFlashScript` is `true` (default):
+
+```js
+{
+  resolve: 'gatsby-plugin-theme-ui',
+  options: {
+    injectColorFlashScript: true, // default
+  },
+}
+```
+
+### Preset Not Loading
+
+Verify the preset package is installed:
+
+```bash
+npm install @theme-ui/preset-funk
+```
+
+## Resources
+
+<CardGroup cols={2}>
+  <Card title="Gatsby Shadowing" icon="moon" href="https://www.gatsbyjs.com/docs/how-to/plugins-and-themes/shadowing/">
+    Learn about component shadowing in Gatsby
+  </Card>
+  
+  <Card title="Theme UI Presets" icon="palette" href="/presets">
+    Browse available Theme UI presets
+  </Card>
+  
+  <Card title="MDX in Gatsby" icon="markdown" href="https://www.gatsbyjs.com/docs/how-to/routing/mdx/">
+    Using MDX with Gatsby
+  </Card>
+  
+  <Card title="Prism Themes" icon="code" href="/packages/prism">
+    Code syntax highlighting themes
+  </Card>
+</CardGroup>

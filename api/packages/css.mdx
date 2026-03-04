@@ -1,0 +1,372 @@
+---
+title: '@theme-ui/css'
+description: Framework-agnostic core styling utilities with theme-aware responsive shortcuts
+---
+
+The `@theme-ui/css` package contains the framework-agnostic core logic of Theme UI. It provides the `css` function and TypeScript types for writing style objects with responsive, theme-aware ergonomic shortcuts.
+
+## Installation
+
+```bash
+npm install @theme-ui/css @emotion/react
+```
+
+## When to Use
+
+Use `@theme-ui/css` when you:
+- Want to use Theme UI's styling logic without React
+- Need framework-agnostic styling utilities
+- Are integrating with other libraries or frameworks
+- Want to use the `css` function in vanilla JavaScript
+- Need TypeScript types for Theme UI themes
+
+If you're using the umbrella `theme-ui` package or `@theme-ui/core`, this package is already included.
+
+## Exports
+
+### Functions
+
+#### `css`
+
+Transforms a Theme UI style object into a standard CSS object, resolving theme values and responsive arrays.
+
+```javascript
+import { css } from '@theme-ui/css'
+
+const theme = {
+  colors: {
+    text: '#222',
+    primary: '#33e',
+  },
+  space: [0, 4, 8, 16, 32],
+  fontSizes: [12, 14, 16, 20, 24],
+}
+
+const styles = css({
+  color: 'primary',
+  padding: 3, // Uses theme.space[3] = 16
+  fontSize: [1, 2, 3], // Responsive: 14px, 16px, 20px
+  '&:hover': {
+    color: 'text',
+  },
+})(theme)
+```
+
+**Signature:**
+```typescript
+css<TTheme extends Theme>(
+  styles: ThemeUIStyleObject<TTheme>
+): (props: { theme: TTheme } | TTheme) => CSSObject
+```
+
+**Features:**
+- Theme value lookup from scales (colors, space, fontSizes, etc.)
+- Responsive array values mapped to breakpoints
+- Shorthand property aliases (e.g., `px`, `py`, `bg`)
+- Nested styles and pseudo-selectors
+- Variant references
+
+#### `get`
+
+Extracts a value from a deeply nested object using a dot-notation path.
+
+```javascript
+import { get } from '@theme-ui/css'
+
+const theme = {
+  colors: {
+    primary: { __default: '#33e', light: '#66f' }
+  }
+}
+
+get(theme, 'colors.primary') // '#33e'
+get(theme, 'colors.primary.light') // '#66f'
+get(theme, 'colors.notFound', 'fallback') // 'fallback'
+```
+
+**Signature:**
+```typescript
+get(
+  obj: object,
+  path: string | number | undefined,
+  fallback?: unknown
+): any
+```
+
+### Constants
+
+#### `THEME_UI_DEFAULT_KEY`
+
+The key used for default values in nested scales.
+
+```javascript
+import { THEME_UI_DEFAULT_KEY } from '@theme-ui/css'
+
+const theme = {
+  colors: {
+    primary: {
+      [THEME_UI_DEFAULT_KEY]: '#33e',
+      light: '#66f',
+      dark: '#00a'
+    }
+  }
+}
+```
+
+#### `defaultBreakpoints`
+
+Default breakpoint values used when no breakpoints are defined in the theme.
+
+```javascript
+import { defaultBreakpoints } from '@theme-ui/css'
+
+console.log(defaultBreakpoints) // ['40em', '52em', '64em']
+```
+
+#### `scales`
+
+Mapping of CSS properties to their corresponding theme scale.
+
+```javascript
+import { scales } from '@theme-ui/css'
+
+console.log(scales.color) // 'colors'
+console.log(scales.padding) // 'space'
+console.log(scales.fontSize) // 'fontSizes'
+```
+
+#### `aliases`
+
+Shorthand property aliases.
+
+```javascript
+import { aliases } from '@theme-ui/css'
+
+// Aliases include:
+// bg -> backgroundColor
+// m -> margin
+// mt -> marginTop
+// mr -> marginRight
+// mb -> marginBottom
+// ml -> marginLeft
+// mx -> marginX
+// my -> marginY
+// p -> padding
+// pt -> paddingTop
+// pr -> paddingRight
+// pb -> paddingBottom
+// pl -> paddingLeft
+// px -> paddingX
+// py -> paddingY
+```
+
+#### `multiples`
+
+Properties that map to multiple CSS properties.
+
+```javascript
+import { multiples } from '@theme-ui/css'
+
+// Examples:
+// marginX -> ['marginLeft', 'marginRight']
+// marginY -> ['marginTop', 'marginBottom']
+// paddingX -> ['paddingLeft', 'paddingRight']
+// paddingY -> ['paddingTop', 'paddingBottom']
+// size -> ['width', 'height']
+```
+
+## TypeScript Types
+
+The package exports comprehensive TypeScript types:
+
+```typescript
+import type {
+  // Core Types
+  Theme,
+  ThemeUIStyleObject,
+  ThemeUICSSObject,
+  CSSObject,
+  
+  // Property Types
+  CSSProperties,
+  ThemeUICSSProperties,
+  ThemeUIExtendedCSSProperties,
+  
+  // Utility Types
+  ResponsiveStyleValue,
+  Scale,
+  StylePropertyValue,
+  
+  // Color Mode Types
+  ColorMode,
+  ColorModesScale,
+  
+  // Advanced Types
+  CSSPseudoSelectorProps,
+  CSSOthersObject,
+  ThemeStyles,
+  ThemeDerivedStyles,
+  VariantProperty,
+  Label,
+  TLengthStyledSystem,
+} from '@theme-ui/css'
+```
+
+### Theme Type
+
+The main theme interface:
+
+```typescript
+interface Theme {
+  // Scales
+  colors?: ColorModesScale
+  space?: Scale
+  fontSizes?: Scale
+  fonts?: Scale
+  fontWeights?: Scale
+  lineHeights?: Scale
+  letterSpacings?: Scale
+  sizes?: Scale
+  borders?: Scale
+  borderWidths?: Scale
+  borderStyles?: Scale
+  radii?: Scale
+  shadows?: Scale
+  zIndices?: Scale
+  transitions?: Scale
+  
+  // Configuration
+  breakpoints?: Array<string>
+  config?: ThemeUIConfig
+  
+  // Styles
+  styles?: ThemeStyles
+  
+  // Custom properties
+  [key: string]: any
+}
+```
+
+## Entry Points
+
+### Main Entry Point
+
+```javascript
+import { css, get, scales, aliases, multiples } from '@theme-ui/css'
+import type { Theme, ThemeUIStyleObject } from '@theme-ui/css'
+```
+
+### `/utils`
+
+Utility functions for working with themes:
+
+```javascript
+import { ... } from '@theme-ui/css/utils'
+```
+
+## Standalone Usage
+
+You can use `@theme-ui/css` without React:
+
+```javascript
+import { css as transformStyleObject } from '@theme-ui/css'
+import { css as createClassName } from '@emotion/css'
+
+const theme = {
+  colors: {
+    text: '#222',
+    primary: '#33e',
+  },
+  space: {
+    sm: '1rem',
+    md: '2rem',
+  },
+}
+
+const styles = transformStyleObject({
+  padding: ['sm', 'md'],
+  color: 'primary',
+  '&:hover': {
+    color: 'text',
+  },
+})(theme)
+
+const className = createClassName(styles)
+```
+
+## Features
+
+### Responsive Values
+
+Use arrays for responsive styles:
+
+```javascript
+css({
+  fontSize: [1, 2, 3, 4], // Maps to breakpoints
+  padding: [2, 3, 4],
+})(theme)
+```
+
+### Negative Values
+
+Use negative numbers or strings with `-` prefix:
+
+```javascript
+css({
+  marginTop: -3, // Negative space value
+  marginLeft: '-1rem',
+})(theme)
+```
+
+### Nested Scales
+
+Support for nested color scales with default values:
+
+```javascript
+const theme = {
+  colors: {
+    primary: {
+      __default: '#33e',
+      light: '#66f',
+      dark: '#00a',
+    },
+  },
+}
+
+css({ color: 'primary' })(theme) // Uses '#33e'
+css({ color: 'primary.light' })(theme) // Uses '#66f'
+```
+
+### Variants
+
+Reference theme variants:
+
+```javascript
+const theme = {
+  buttons: {
+    primary: {
+      color: 'white',
+      bg: 'primary',
+      padding: 2,
+    },
+  },
+}
+
+css({
+  variant: 'buttons.primary',
+  borderRadius: 4,
+})(theme)
+```
+
+## Notes
+
+- Framework-agnostic - works with or without React
+- No side effects - safe for tree-shaking
+- Requires `@emotion/react` as a peer dependency
+- Fully typed with TypeScript
+
+## Related
+
+- [@theme-ui/core](/api/packages/core) - React integration
+- [Theme Specification](/theme-spec) - Theme object structure
+- [Responsive Styles](/guides/responsive-styles) - Working with responsive values

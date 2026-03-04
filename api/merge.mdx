@@ -1,0 +1,349 @@
+---
+title: merge
+description: Utility functions for deeply merging theme objects
+---
+
+The `merge` function and its `merge.all` variant are utilities for deeply merging Theme UI theme objects. They are used internally by `ThemeProvider` and can be used to combine themes manually.
+
+## Import
+
+```tsx
+import { merge } from 'theme-ui'
+```
+
+## Signature
+
+### merge
+
+```tsx
+function merge(a: Theme, b: Theme): Theme
+```
+
+<ParamField path="a" type="Theme" required>
+  The base theme object
+</ParamField>
+
+<ParamField path="b" type="Theme" required>
+  The theme object to merge into the base
+</ParamField>
+
+<ResponseField name="result" type="Theme">
+  A new theme object with deeply merged properties from both themes
+</ResponseField>
+
+### merge.all
+
+```tsx
+function merge.all<A, B>(a: A, b: B): A & B
+function merge.all<A, B, C>(a: A, b: B, c: C): A & B & C
+function merge.all<A, B, C, D>(a: A, b: B, c: C, d: D): A & B & C & D
+function merge.all<T = Theme>(...args: Partial<T>[]): T
+```
+
+<ParamField path="...args" type="Partial<Theme>[]" required>
+  Any number of theme objects to merge together
+</ParamField>
+
+<ResponseField name="result" type="Theme">
+  A new theme object with deeply merged properties from all themes
+</ResponseField>
+
+## Usage
+
+### Basic Merge
+
+Merge two theme objects together:
+
+```tsx
+import { merge } from 'theme-ui'
+
+const baseTheme = {
+  colors: {
+    primary: 'blue',
+    background: 'white',
+  },
+  fonts: {
+    body: 'system-ui, sans-serif',
+  },
+}
+
+const darkTheme = {
+  colors: {
+    background: 'black',
+    text: 'white',
+  },
+}
+
+const merged = merge(baseTheme, darkTheme)
+// Result:
+// {
+//   colors: {
+//     primary: 'blue',
+//     background: 'black',  // overridden
+//     text: 'white',        // added
+//   },
+//   fonts: {
+//     body: 'system-ui, sans-serif',
+//   },
+// }
+```
+
+### Merge Multiple Themes
+
+Use `merge.all` to combine three or more themes:
+
+```tsx
+import { merge } from 'theme-ui'
+
+const base = {
+  colors: { primary: 'blue' },
+}
+
+const dark = {
+  colors: { background: 'black' },
+}
+
+const custom = {
+  colors: { accent: 'purple' },
+}
+
+const result = merge.all(base, dark, custom)
+// Result:
+// {
+//   colors: {
+//     primary: 'blue',
+//     background: 'black',
+//     accent: 'purple',
+//   },
+// }
+```
+
+### Extending a Theme
+
+```tsx
+import { merge } from 'theme-ui'
+import { base } from '@theme-ui/presets'
+
+const myTheme = merge(base, {
+  colors: {
+    primary: 'tomato',
+    secondary: 'cyan',
+  },
+  buttons: {
+    custom: {
+      bg: 'primary',
+      color: 'white',
+    },
+  },
+})
+```
+
+## Merge Behavior
+
+### Deep Merging
+
+The function deeply merges nested objects:
+
+```tsx
+const result = merge(
+  {
+    colors: {
+      primary: 'blue',
+      modes: {
+        dark: { primary: 'lightblue' },
+      },
+    },
+  },
+  {
+    colors: {
+      secondary: 'green',
+      modes: {
+        dark: { secondary: 'lightgreen' },
+      },
+    },
+  }
+)
+// Result:
+// {
+//   colors: {
+//     primary: 'blue',
+//     secondary: 'green',
+//     modes: {
+//       dark: {
+//         primary: 'lightblue',
+//         secondary: 'lightgreen',
+//       },
+//     },
+//   },
+// }
+```
+
+### Array Handling
+
+Arrays in the second theme replace arrays in the first theme (not concatenated):
+
+```tsx
+const result = merge(
+  { fontSizes: [12, 14, 16, 20, 24] },
+  { fontSizes: [16, 18, 20] }
+)
+// Result: { fontSizes: [16, 18, 20] }
+```
+
+This also works when overriding arrays with primitives:
+
+```tsx
+const result = merge(
+  { fontSizes: [12, 14, 16] },
+  { fontSizes: 16 as any }
+)
+// Result: { fontSizes: 16 }
+```
+
+### React Components
+
+React components and elements are not merged, but replaced:
+
+```tsx
+const Button = (props) => <button {...props} />
+const CustomButton = forwardRef((props, ref) => (
+  <button ref={ref} {...props} />
+))
+
+const result = merge(
+  { components: { Button } },
+  { components: { Button: CustomButton } }
+)
+// Result: { components: { Button: CustomButton } }
+```
+
+## Internal Implementation
+
+From `packages/core/src/index.ts:96-122`:
+
+```tsx
+const deepmergeOptions: deepmerge.Options = {
+  isMergeableObject: (n) => {
+    return (
+      !!n &&
+      typeof n === 'object' &&
+      (n as React.ExoticComponent).$$typeof !== REACT_ELEMENT &&
+      (n as React.ExoticComponent).$$typeof !== FORWARD_REF
+    )
+  },
+  arrayMerge: (_leftArray, rightArray) => rightArray,
+}
+
+export const merge = (a: Theme, b: Theme): Theme =>
+  deepmerge(a, b, deepmergeOptions)
+
+function mergeAll<A, B>(a: A, B: B): A & B
+function mergeAll<A, B, C>(a: A, B: B, c: C): A & B & C
+function mergeAll<A, B, C, D>(a: A, B: B, c: C, d: D): A & B & C & D
+function mergeAll<T = Theme>(...args: Partial<T>[]) {
+  return deepmerge.all<T>(args, deepmergeOptions)
+}
+
+merge.all = mergeAll
+```
+
+## Examples from Tests
+
+### Deep Object Merge
+
+```tsx
+const result = merge(
+  {
+    beep: 'boop',
+    hello: {
+      hi: 'howdy',
+    },
+  },
+  {
+    bleep: 'bloop',
+    hello: {
+      ohaiyo: 'osu',
+    },
+  }
+)
+// Result:
+// {
+//   beep: 'boop',
+//   bleep: 'bloop',
+//   hello: {
+//     hi: 'howdy',
+//     ohaiyo: 'osu',
+//   },
+// }
+```
+
+### Merge All
+
+```tsx
+const result = merge.all(
+  { beep: 'boop' },
+  { bleep: 'bloop' },
+  { plip: 'plop' }
+)
+// Result:
+// {
+//   beep: 'boop',
+//   bleep: 'bloop',
+//   plip: 'plop',
+// }
+```
+
+## Use Cases
+
+### Theme Variants
+
+Create theme variants by merging a base with modifications:
+
+```tsx
+import { merge } from 'theme-ui'
+
+const baseTheme = { /* ... */ }
+
+export const lightTheme = merge(baseTheme, {
+  colors: { background: 'white', text: 'black' },
+})
+
+export const darkTheme = merge(baseTheme, {
+  colors: { background: 'black', text: 'white' },
+})
+```
+
+### Composing Preset Themes
+
+```tsx
+import { merge } from 'theme-ui'
+import { base } from '@theme-ui/presets'
+import { typographyTheme } from './typography'
+import { colorTheme } from './colors'
+
+export const theme = merge.all(
+  base,
+  typographyTheme,
+  colorTheme,
+  {
+    // Your custom overrides
+  }
+)
+```
+
+### Component Library Theming
+
+```tsx
+import { merge } from 'theme-ui'
+import { systemTheme } from './system'
+
+export function createTheme(userTheme: Theme) {
+  return merge(systemTheme, userTheme)
+}
+```
+
+## Related
+
+- [ThemeProvider](/api/theme-ui-provider) - Uses merge internally for nested themes
+- [Theme Specification](/theming/theme-spec) - Structure of theme objects
+- [Presets](/theming/presets) - Pre-built themes to extend

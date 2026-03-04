@@ -1,0 +1,261 @@
+---
+title: jsx
+description: Custom JSX pragma that adds sx prop support to all elements
+---
+
+The `jsx` function is Theme UI's custom JSX pragma that enables the `sx` prop on all elements. It wraps Emotion's JSX function and processes the `sx` and `css` props.
+
+## Import
+
+```tsx
+import { jsx } from 'theme-ui'
+```
+
+## Signature
+
+```tsx
+function jsx<P extends {}>(
+  type: React.FunctionComponent<P> | React.ComponentClass<P> | string,
+  props: React.Attributes & P,
+  ...children: React.ReactNode[]
+): React.ReactElement
+```
+
+<ParamField path="type" type="React.FunctionComponent<P> | React.ComponentClass<P> | string" required>
+  The component type or HTML element name (e.g., 'div', 'button', or a React component)
+</ParamField>
+
+<ParamField path="props" type="React.Attributes & P" required>
+  Props object that may include `sx` and `css` props
+</ParamField>
+
+<ParamField path="children" type="React.ReactNode[]">
+  Child elements to render
+</ParamField>
+
+## How It Works
+
+The `jsx` function performs the following steps:
+
+1. Receives JSX elements from the compiler
+2. Parses the `sx` prop using the Theme UI CSS function
+3. Transforms the `sx` prop into an Emotion `css` prop
+4. Passes the result to Emotion's JSX function for rendering
+
+This allows you to use the `sx` prop on any element:
+
+```tsx
+<div sx={{ color: 'primary', bg: 'background' }}>
+  Content
+</div>
+```
+
+## Usage
+
+### Classic Runtime (Manual Pragma)
+
+For the classic JSX runtime, add the pragma comment at the top of your file:
+
+```tsx
+/** @jsxImportSource theme-ui */
+
+function Component() {
+  return (
+    <div sx={{ color: 'primary' }}>
+      Hello
+    </div>
+  )
+}
+```
+
+Or with the older pragma syntax:
+
+```tsx
+/** @jsx jsx */
+import { jsx } from 'theme-ui'
+
+function Component() {
+  return (
+    <div sx={{ color: 'primary' }}>
+      Hello
+    </div>
+  )
+}
+```
+
+### Automatic Runtime (Recommended)
+
+Configure your build tool to use Theme UI's JSX runtime automatically:
+
+**TypeScript (`tsconfig.json`):**
+
+```json
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "theme-ui"
+  }
+}
+```
+
+**Babel (`.babelrc`):**
+
+```json
+{
+  "presets": [
+    [
+      "@babel/preset-react",
+      {
+        "runtime": "automatic",
+        "importSource": "theme-ui"
+      }
+    ]
+  ]
+}
+```
+
+With this configuration, you don't need pragma comments:
+
+```tsx
+function Component() {
+  return (
+    <div sx={{ color: 'primary' }}>
+      Hello
+    </div>
+  )
+}
+```
+
+### Direct Usage
+
+You can also call the `jsx` function directly:
+
+```tsx
+import { jsx } from 'theme-ui'
+
+function Component() {
+  return jsx(
+    'div',
+    {
+      sx: {
+        color: 'primary',
+        bg: 'background',
+      },
+    },
+    'Hello'
+  )
+}
+```
+
+## Props Processing
+
+The `jsx` function processes props through `parseProps`, which:
+
+1. Leaves props untouched if no `sx` or `css` prop is present
+2. Removes the `sx` prop from the final props
+3. Converts `sx` to Emotion's `css` prop using Theme UI's CSS function
+4. Preserves the existing `css` prop if present
+5. Both `sx` and `css` can be used together:
+
+```tsx
+<div
+  sx={{ bg: 'primary' }}
+  css={{ margin: 0 }}
+>
+  Content
+</div>
+```
+
+## Internal Implementation
+
+From `packages/core/src/index.ts:39-43`:
+
+```tsx
+export const jsx: typeof React.createElement = <P extends {}>(
+  type: React.FunctionComponent<P> | React.ComponentClass<P> | string,
+  props: React.Attributes & P,
+  ...children: React.ReactNode[]
+): any => emotionJsx(type, parseProps(props), ...children)
+```
+
+The `parseProps` function (`packages/core/src/parseProps.tsx:9-21`):
+
+```tsx
+export function parseProps(props: any) {
+  if (!props || (!props.sx && !props.css)) return props
+
+  const next: Record<string, unknown> = {}
+
+  for (let key in props) {
+    if (key === 'sx') continue
+    next[key] = props[key]
+  }
+
+  next.css = getCSS(props)
+  return next
+}
+```
+
+## TypeScript Support
+
+The `jsx` function includes full TypeScript definitions for JSX intrinsic elements and the `sx` prop.
+
+The JSX namespace is augmented to include:
+
+- `Element`
+- `ElementClass`
+- `IntrinsicElements` (with `sx` prop)
+- `IntrinsicAttributes`
+
+## Examples from Tests
+
+### Basic sx Prop
+
+```tsx
+jsx('div', {
+  sx: {
+    mx: 'auto',
+    p: 2,
+    bg: 'tomato',
+  },
+})
+// Renders with margin-left/right: auto, padding: 8px, background: tomato
+```
+
+### Raw CSS Prop
+
+```tsx
+jsx('div', {
+  css: {
+    margin: 4,
+  },
+})
+// Renders with margin: 4px
+```
+
+### CSS Prop with Function
+
+```tsx
+jsx('div', {
+  css: (theme: Theme) => ({
+    color: theme.colors?.primary,
+  }),
+})
+// Accesses theme at render time
+```
+
+### Combined sx and css
+
+```tsx
+jsx('div', {
+  css: { margin: 0 },
+  sx: { bg: 'tomato' },
+})
+// Both styles are applied
+```
+
+## Related
+
+- [sx prop](/sx-prop) - Using the sx prop in components
+- [ThemeUIProvider](/api/theme-ui-provider) - Setting up the theme context
+- [CSS Function](/api/css) - The underlying CSS transformation

@@ -1,122 +1,149 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Theme UI",
+  "theme": "willow",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#040404",
+    "light": "#040404",
+    "dark": "#040404"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "https://media.brand.dev/e7906d2e-8086-45ff-a721-c52349d47aa2.png",
+  "logo": {
+    "light": "https://media.brand.dev/e7906d2e-8086-45ff-a721-c52349d47aa2.png",
+    "dark": "https://media.brand.dev/e7906d2e-8086-45ff-a721-c52349d47aa2.png"
+  },
+  "navbar": {
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/system-ui/theme-ui"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/system-ui/theme-ui"
+    }
+  },
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Documentation",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Get Started",
             "pages": [
-              "index",
-              "quickstart",
-              "development"
+              "introduction",
+              "installation",
+              "quickstart"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Core Concepts",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "core-concepts/theming",
+              "core-concepts/sx-prop",
+              "core-concepts/theme-spec",
+              "core-concepts/color-modes",
+              "core-concepts/responsive-styles"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Guides",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
+              "guides/jsx-pragma",
+              "guides/variants",
+              "guides/typescript",
+              "guides/custom-components",
+              "guides/mdx",
+              "guides/gatsby-plugin"
             ]
           },
           {
-            "group": "AI tools",
+            "group": "Components",
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "components/overview",
+              "components/layout",
+              "components/typography",
+              "components/forms",
+              "components/ui-elements"
+            ]
+          },
+          {
+            "group": "Presets",
+            "pages": [
+              "presets/overview",
+              "presets/using-presets"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "API Reference",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Core",
             "pages": [
-              "api-reference/introduction"
+              "api/theme-ui-provider",
+              "api/use-theme-ui",
+              "api/jsx",
+              "api/merge"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Styling",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "api/css",
+              "api/get",
+              "api/sx-prop"
+            ]
+          },
+          {
+            "group": "Color Modes",
+            "pages": [
+              "api/use-color-mode",
+              "api/initialize-color-mode"
+            ]
+          },
+          {
+            "group": "Components",
+            "pages": [
+              "api/components/box",
+              "api/components/flex",
+              "api/components/grid",
+              "api/components/button",
+              "api/components/text",
+              "api/components/heading",
+              "api/components/link",
+              "api/components/image",
+              "api/components/card",
+              "api/components/forms"
+            ]
+          },
+          {
+            "group": "Packages",
+            "pages": [
+              "api/packages/core",
+              "api/packages/css",
+              "api/packages/components",
+              "api/packages/color-modes",
+              "api/packages/mdx",
+              "api/packages/theme-provider"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Migration",
+        "groups": [
+          {
+            "group": "Guides",
+            "pages": [
+              "migration/v0-16",
+              "migration/v0-15",
+              "migration/v0-14"
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
+    ]
   }
 }

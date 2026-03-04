@@ -1,0 +1,163 @@
+---
+title: 'InitializeColorMode'
+description: 'Component to prevent flash of unstyled content during SSR'
+---
+
+## Overview
+
+`InitializeColorMode` is a component that prevents a flash of unstyled content (FOUC) when using server-side rendering (SSR). It injects a small script that runs before React hydration to apply the correct color mode class immediately.
+
+## Import
+
+```tsx
+import { InitializeColorMode } from 'theme-ui'
+```
+
+## Usage
+
+### In a Custom Document (Next.js)
+
+For Next.js applications, add `InitializeColorMode` to your custom `_document.js` or `_document.tsx` file:
+
+```tsx pages/_document.tsx
+import Document, { Html, Head, Main, NextScript } from 'next/document'
+import { InitializeColorMode } from 'theme-ui'
+
+export default class MyDocument extends Document {
+  render() {
+    return (
+      <Html>
+        <Head>
+          <InitializeColorMode />
+        </Head>
+        <body>
+          <Main />
+          <NextScript />
+        </body>
+      </Html>
+    )
+  }
+}
+```
+
+### In a Custom HTML Template (Gatsby)
+
+For Gatsby applications, add it to your `html.js` file:
+
+```tsx html.js
+import React from 'react'
+import { InitializeColorMode } from 'theme-ui'
+
+export default function HTML(props) {
+  return (
+    <html {...props.htmlAttributes}>
+      <head>
+        <meta charSet="utf-8" />
+        <meta httpEquiv="x-ua-compatible" content="ie=edge" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
+        {props.headComponents}
+        <InitializeColorMode />
+      </head>
+      <body {...props.bodyAttributes}>
+        {props.preBodyComponents}
+        <div
+          key="body"
+          id="___gatsby"
+          dangerouslySetInnerHTML={{ __html: props.body }}
+        />
+        {props.postBodyComponents}
+      </body>
+    </html>
+  )
+}
+```
+
+### In a Custom HTML File
+
+For other frameworks, you can manually add the script to your HTML:
+
+```html index.html
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+      (function() {
+        try {
+          var mode = localStorage.getItem('theme-ui-color-mode');
+          if (!mode) return
+          document.documentElement.classList.add('theme-ui-' + mode);
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
+```
+
+## How It Works
+
+`InitializeColorMode` renders a `<script>` tag that:
+
+1. Reads the stored color mode from localStorage using the key `theme-ui-color-mode`
+2. Adds a class to the document element in the format `theme-ui-{mode}` (e.g., `theme-ui-dark`)
+3. Runs synchronously before React hydration to prevent visual flashing
+
+### The Injected Script
+
+The component injects the following script:
+
+```javascript
+(function() {
+  try {
+    var mode = localStorage.getItem('theme-ui-color-mode');
+    if (!mode) return
+    document.documentElement.classList.add('theme-ui-' + mode);
+  } catch (e) {}
+})();
+```
+
+## Why Is This Needed?
+
+Without `InitializeColorMode`, here's what happens during SSR:
+
+1. Server renders HTML with default color mode
+2. Browser displays the server-rendered HTML (default mode)
+3. React hydrates and reads the user's preferred mode from localStorage
+4. Color mode updates, causing a visible flash
+
+`InitializeColorMode` solves this by applying the correct color mode **before** the page renders, eliminating the flash.
+
+## Important Notes
+
+<Note>
+  Place `InitializeColorMode` in the `<head>` of your document for best results. It must run before the page renders.
+</Note>
+
+<Warning>
+  This component is only necessary for server-side rendered applications. Client-only applications (like Create React App) don't need it.
+</Warning>
+
+- The script is wrapped in a try-catch block to handle cases where localStorage is disabled
+- If no color mode is stored in localStorage, the script does nothing
+- The class added by this script is removed by the `ColorModeProvider` after React hydration
+- The script is minimal (< 200 bytes) and has no dependencies
+
+## When to Use
+
+Use `InitializeColorMode` when:
+
+- You're using server-side rendering (SSR)
+- You're using static site generation (SSG)
+- You want to prevent flash of unstyled content (FOUC)
+- You're using `useLocalStorage` in your theme config (enabled by default)
+
+**Don't use** `InitializeColorMode` when:
+
+- You're building a client-only application
+- You've disabled `useLocalStorage` in your theme config
+- You're not using color modes in your application

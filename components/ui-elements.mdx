@@ -1,0 +1,794 @@
+---
+title: 'UI Elements'
+description: 'Button, Link, Card, Badge, Alert, Avatar, Spinner, Progress, and other UI components'
+---
+
+Theme UI provides a variety of UI components for building complete interfaces.
+
+## Button
+
+The Button component is a primitive button with theme-aware variants.
+
+### Import
+
+```jsx
+import { Button } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Button>Click me</Button>
+```
+
+### Props
+
+<ParamField path="variant" type="string" default="'primary'">
+  Button variant from `theme.buttons`
+</ParamField>
+
+Button accepts all standard HTML button attributes and Box props.
+
+### Default Styles
+
+```js
+{
+  appearance: 'none',
+  display: 'inline-block',
+  textAlign: 'center',
+  lineHeight: 'inherit',
+  textDecoration: 'none',
+  fontSize: 'inherit',
+  px: 3,
+  py: 2,
+  color: 'white',
+  bg: 'primary',
+  border: 0,
+  borderRadius: 4
+}
+```
+
+### Examples
+
+```jsx
+<Button variant="primary">Primary</Button>
+<Button variant="secondary">Secondary</Button>
+<Button disabled>Disabled</Button>
+```
+
+---
+
+## Link
+
+The Link component is an anchor element with theme integration.
+
+### Import
+
+```jsx
+import { Link } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Link href="/about">About</Link>
+```
+
+### Props
+
+<ParamField path="variant" type="string" default="'styles.a'">
+  Link variant from `theme.links`
+</ParamField>
+
+Link accepts all standard HTML anchor attributes and Box props.
+
+### Examples
+
+```jsx
+<Link href="https://theme-ui.com">External Link</Link>
+<Link href="/docs" sx={{ color: 'primary' }}>Docs</Link>
+```
+
+---
+
+## NavLink
+
+The NavLink component is designed for navigation links with active states.
+
+### Import
+
+```jsx
+import { NavLink } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<NavLink href="/" className="active">Home</NavLink>
+```
+
+### Props
+
+<ParamField path="variant" type="string" default="'nav'">
+  Link variant from `theme.links`
+</ParamField>
+
+### Default Styles
+
+```js
+{
+  color: 'inherit',
+  textDecoration: 'none',
+  fontWeight: 'bold',
+  display: 'inline-block',
+  '&:hover, &:focus, &.active': {
+    color: 'primary'
+  }
+}
+```
+
+### Examples
+
+```jsx
+<Flex as="nav" sx={{ gap: 3 }}>
+  <NavLink href="/">Home</NavLink>
+  <NavLink href="/about">About</NavLink>
+  <NavLink href="/contact">Contact</NavLink>
+</Flex>
+```
+
+---
+
+## Card
+
+The Card component is a flexible container for content.
+
+### Import
+
+```jsx
+import { Card } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Card>
+  <Heading>Card Title</Heading>
+  <Text>Card content</Text>
+</Card>
+```
+
+### Props
+
+<ParamField path="variant" type="string" default="'primary'">
+  Card variant from `theme.cards`
+</ParamField>
+
+Card accepts all Box props.
+
+### Examples
+
+```jsx
+<Card p={4} bg="muted">
+  <Heading mb={2}>Feature Card</Heading>
+  <Paragraph>Description of the feature</Paragraph>
+  <Button mt={3}>Learn More</Button>
+</Card>
+```
+
+---
+
+## Badge
+
+The Badge component displays small labels or tags.
+
+### Import
+
+```jsx
+import { Badge } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Badge>New</Badge>
+```
+
+### Props
+
+<ParamField path="variant" type="string" default="'primary'">
+  Badge variant from `theme.badges`
+</ParamField>
+
+### Default Styles
+
+```js
+{
+  display: 'inline-block',
+  verticalAlign: 'baseline',
+  fontSize: 0,
+  fontWeight: 'bold',
+  whiteSpace: 'nowrap',
+  px: 1,
+  borderRadius: 2,
+  color: 'white',
+  bg: 'primary'
+}
+```
+
+### Examples
+
+```jsx
+<Badge>New</Badge>
+<Badge variant="secondary">Beta</Badge>
+<Badge sx={{ bg: 'accent' }}>Hot</Badge>
+```
+
+---
+
+## Alert
+
+The Alert component displays messages and notifications.
+
+### Import
+
+```jsx
+import { Alert } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Alert>This is an alert message</Alert>
+```
+
+### Props
+
+<ParamField path="variant" type="string" default="'primary'">
+  Alert variant from `theme.alerts`
+</ParamField>
+
+### Default Styles
+
+```js
+{
+  display: 'flex',
+  alignItems: 'center',
+  px: 3,
+  py: 2,
+  fontWeight: 'bold',
+  color: 'white',
+  bg: 'primary',
+  borderRadius: 4
+}
+```
+
+### Examples
+
+```jsx
+<Alert variant="primary">Info message</Alert>
+<Alert variant="success">Success message</Alert>
+<Alert variant="error">Error message</Alert>
+```
+
+---
+
+## Avatar
+
+The Avatar component displays user profile images.
+
+### Import
+
+```jsx
+import { Avatar } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Avatar src="/avatar.jpg" />
+```
+
+### Props
+
+<ParamField path="size" type="number | string" default="48">
+  Width and height of the avatar
+</ParamField>
+
+<ParamField path="variant" type="string" default="'avatar'">
+  Image variant from `theme.images`
+</ParamField>
+
+Avatar accepts all standard HTML img attributes and Box props.
+
+### Default Styles
+
+```js
+{
+  borderRadius: 9999
+}
+```
+
+### Examples
+
+```jsx
+<Avatar src="/user.jpg" size={64} />
+<Avatar src="/profile.jpg" size={32} />
+```
+
+---
+
+## Spinner
+
+The Spinner component displays a loading indicator.
+
+### Import
+
+```jsx
+import { Spinner } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Spinner />
+```
+
+### Props
+
+<ParamField path="size" type="number" default="48">
+  Size of the spinner in pixels
+</ParamField>
+
+<ParamField path="strokeWidth" type="number" default="4">
+  Width of the spinner stroke
+</ParamField>
+
+<ParamField path="title" type="string" default="'Loading'">
+  Accessible title for the spinner
+</ParamField>
+
+<ParamField path="duration" type="number" default="750">
+  Duration of the animation in milliseconds
+</ParamField>
+
+### Default Styles
+
+```js
+{
+  color: 'primary',
+  overflow: 'visible'
+}
+```
+
+### Examples
+
+```jsx
+<Spinner />
+<Spinner size={64} />
+<Spinner size={32} strokeWidth={2} />
+<Spinner title="Loading content" duration={1000} />
+```
+
+---
+
+## Progress
+
+The Progress component displays a horizontal progress bar.
+
+### Import
+
+```jsx
+import { Progress } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Progress max={100} value={75} />
+```
+
+### Props
+
+<ParamField path="max" type="number">
+  Maximum value
+</ParamField>
+
+<ParamField path="value" type="number">
+  Current value
+</ParamField>
+
+### Default Styles
+
+```js
+{
+  display: 'block',
+  width: '100%',
+  height: '4px',
+  margin: 0,
+  padding: 0,
+  overflow: 'hidden',
+  appearance: 'none',
+  color: 'primary',
+  bg: 'gray',
+  borderRadius: 9999,
+  border: 'none'
+}
+```
+
+### Examples
+
+```jsx
+<Progress max={100} value={50} />
+<Progress max={100} value={75} sx={{ color: 'success' }} />
+```
+
+---
+
+## Donut
+
+The Donut component displays a circular progress chart.
+
+### Import
+
+```jsx
+import { Donut } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Donut value={0.75} />
+```
+
+### Props
+
+<ParamField path="value" type="number" required>
+  Current value
+</ParamField>
+
+<ParamField path="min" type="number" default="0">
+  Minimum value
+</ParamField>
+
+<ParamField path="max" type="number" default="1">
+  Maximum value
+</ParamField>
+
+<ParamField path="size" type="string | number" default="128">
+  Size of the donut chart
+</ParamField>
+
+<ParamField path="strokeWidth" type="number" default="2">
+  Width of the donut stroke
+</ParamField>
+
+<ParamField path="title" type="string">
+  Accessible title for the chart
+</ParamField>
+
+### Default Styles
+
+```js
+{
+  color: 'primary'
+}
+```
+
+### Examples
+
+```jsx
+<Donut value={0.75} title="75% complete" />
+<Donut value={60} min={0} max={100} size={96} />
+<Donut value={0.5} sx={{ color: 'success' }} />
+```
+
+---
+
+## IconButton
+
+The IconButton component is a transparent button for SVG icons.
+
+### Import
+
+```jsx
+import { IconButton } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<IconButton aria-label="Menu">
+  <MenuIcon />
+</IconButton>
+```
+
+### Props
+
+<ParamField path="size" type="number | string" default="32">
+  Width and height of the button
+</ParamField>
+
+<ParamField path="variant" type="string" default="'icon'">
+  Button variant from `theme.buttons`
+</ParamField>
+
+### Default Styles
+
+```js
+{
+  appearance: 'none',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: 1,
+  width: 32,
+  height: 32,
+  color: 'inherit',
+  bg: 'transparent',
+  border: 'none',
+  borderRadius: 4
+}
+```
+
+### Examples
+
+```jsx
+<IconButton aria-label="Settings">
+  <SettingsIcon />
+</IconButton>
+
+<IconButton size={48} aria-label="Close">
+  <CloseIcon />
+</IconButton>
+```
+
+---
+
+## Close
+
+The Close component is a button with a close (×) icon.
+
+### Import
+
+```jsx
+import { Close } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Close />
+```
+
+### Props
+
+<ParamField path="size" type="number" default="32">
+  Size of the close button
+</ParamField>
+
+<ParamField path="variant" type="string" default="'close'">
+  Button variant from `theme.buttons`
+</ParamField>
+
+### Examples
+
+```jsx
+<Close onClick={handleClose} />
+<Close size={24} />
+```
+
+---
+
+## Message
+
+The Message component is a styled box for callouts and inline messages.
+
+### Import
+
+```jsx
+import { Message } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Message>This is an informational message</Message>
+```
+
+### Props
+
+<ParamField path="variant" type="string">
+  Message variant from `theme.messages`
+</ParamField>
+
+### Default Styles
+
+```js
+{
+  padding: 3,
+  paddingLeft: (t) => t.space[3] - t.space[1],
+  borderLeftWidth: (t) => t.space[1],
+  borderLeftStyle: 'solid',
+  borderLeftColor: 'primary',
+  borderRadius: 4,
+  bg: 'highlight'
+}
+```
+
+### Examples
+
+```jsx
+<Message>Info message with left border</Message>
+<Message variant="warning">Warning message</Message>
+```
+
+---
+
+## Divider
+
+The Divider component creates a horizontal rule.
+
+### Import
+
+```jsx
+import { Divider } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Divider />
+```
+
+### Props
+
+Divider accepts all Box props and uses `theme.styles.hr` by default.
+
+### Default Styles
+
+```js
+{
+  color: 'gray',
+  m: 0,
+  my: 2,
+  border: 0,
+  borderBottom: '1px solid'
+}
+```
+
+### Examples
+
+```jsx
+<Divider />
+<Divider my={4} />
+<Divider sx={{ borderColor: 'primary' }} />
+```
+
+---
+
+## Image
+
+The Image component is a responsive image element.
+
+### Import
+
+```jsx
+import { Image } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Image src="/photo.jpg" alt="Description" />
+```
+
+### Props
+
+<ParamField path="variant" type="string">
+  Image variant from `theme.images`
+</ParamField>
+
+Image accepts all standard HTML img attributes and Box props.
+
+### Default Styles
+
+```js
+{
+  maxWidth: '100%',
+  height: 'auto'
+}
+```
+
+### Examples
+
+```jsx
+<Image src="/photo.jpg" alt="Photo" />
+<Image src="/banner.jpg" sx={{ borderRadius: 4 }} />
+```
+
+---
+
+## Embed
+
+The Embed component creates a responsive iframe container.
+
+### Import
+
+```jsx
+import { Embed } from '@theme-ui/components'
+```
+
+### Usage
+
+```jsx
+<Embed src="https://www.youtube.com/embed/..." />
+```
+
+### Props
+
+<ParamField path="src" type="string">
+  URL of the embedded content
+</ParamField>
+
+<ParamField path="ratio" type="number" default="16 / 9">
+  Aspect ratio of the embed
+</ParamField>
+
+<ParamField path="frameBorder" type="number" default="0">
+  Frame border width
+</ParamField>
+
+<ParamField path="allowFullScreen" type="boolean" default="true">
+  Allow fullscreen mode
+</ParamField>
+
+### Examples
+
+```jsx
+<Embed src="https://www.youtube.com/embed/dQw4w9WgXcQ" />
+<Embed src="https://player.vimeo.com/video/..." ratio={4/3} />
+```
+
+## Complete UI Example
+
+```jsx
+<Container py={4}>
+  <Flex sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+    <Heading>Dashboard</Heading>
+    <Button>New Item</Button>
+  </Flex>
+  
+  <Alert mb={3}>Welcome back! You have 3 new notifications.</Alert>
+  
+  <Grid columns={[1, 2, 3]} gap={4}>
+    <Card p={4}>
+      <Flex sx={{ alignItems: 'center', mb: 3 }}>
+        <Avatar src="/user.jpg" size={48} />
+        <Box ml={3}>
+          <Heading as="h3">John Doe</Heading>
+          <Badge>Admin</Badge>
+        </Box>
+      </Flex>
+      <Divider />
+      <Progress max={100} value={75} my={3} />
+      <Text>Profile completion: 75%</Text>
+    </Card>
+    
+    <Card p={4}>
+      <Heading as="h3" mb={3}>Activity</Heading>
+      <Donut value={0.65} size={96} />
+    </Card>
+    
+    <Card p={4}>
+      <Flex sx={{ justifyContent: 'space-between', mb: 3 }}>
+        <Heading as="h3">Status</Heading>
+        <IconButton aria-label="Refresh">
+          <RefreshIcon />
+        </IconButton>
+      </Flex>
+      <Spinner />
+    </Card>
+  </Grid>
+</Container>
+```

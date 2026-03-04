@@ -1,0 +1,81 @@
+---
+title: Migrating to v0.16
+description: Guide for migrating from Theme UI v0.15 to v0.16
+---
+
+This guide covers breaking changes and new features when upgrading from Theme UI v0.15 to v0.16.
+
+## Breaking Changes
+
+### TypeScript 5.1+ Required
+
+<Warning>
+Theme UI v0.16 now requires TypeScript 5.1.2 or newer due to breaking changes in JSX types.
+</Warning>
+
+This change is necessary because of breaking changes to JSX types in TypeScript. See the [related GitHub issue](https://github.com/system-ui/theme-ui/issues/2430#issuecomment-1586197881) for more details.
+
+**Migration steps:**
+
+1. Update `@types/react` to a version published after June 1, 2023
+2. Enable JSX Automatic Runtime (highly encouraged to minimize friction and avoid type errors)
+
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "jsx": "react-jsx"
+  }
+}
+```
+
+### @theme-ui/sidenav Package Removed
+
+<Warning>
+The `@theme-ui/sidenav` package has been removed due to low usage and breaking changes in `@types/react`.
+</Warning>
+
+If you were using this package, you'll need to implement your own sidenav component or find an alternative solution.
+
+### ThemeProvider Renamed to ThemeUIProvider
+
+<Warning>
+The `ThemeProvider` component has been renamed to `ThemeUIProvider` to avoid naming conflicts.
+</Warning>
+
+Update all imports and usage of `ThemeProvider`:
+
+**Before:**
+```tsx
+import { ThemeProvider } from 'theme-ui'
+
+function App() {
+  return (
+    <ThemeProvider theme={theme}>
+      {/* Your app */}
+    </ThemeProvider>
+  )
+}
+```
+
+**After:**
+```tsx
+import { ThemeUIProvider } from 'theme-ui'
+
+function App() {
+  return (
+    <ThemeUIProvider theme={theme}>
+      {/* Your app */}
+    </ThemeUIProvider>
+  )
+}
+```
+
+<Note>
+The old `ThemeProvider` export is still available but deprecated. It will be removed in a future version.
+</Note>
+
+## Related Changes
+
+- [PR #2432](https://github.com/system-ui/theme-ui/pull/2432) - Dependency bumps for 0.16.0, support only new React and TypeScript versions
+- [PR #2360](https://github.com/system-ui/theme-ui/pull/2360) - Deprecate/rename ThemeProvider to ThemeUIProvider

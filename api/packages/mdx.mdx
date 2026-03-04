@@ -1,0 +1,397 @@
+---
+title: '@theme-ui/mdx'
+description: MDX integration utilities for applying theme styles to MDX content
+---
+
+The `@theme-ui/mdx` package provides utilities for integrating Theme UI with [MDX](https://mdxjs.com). It includes the `Themed` component dictionary and hooks for applying theme styles to MDX content.
+
+## Installation
+
+```bash
+npm install @theme-ui/mdx @emotion/react
+```
+
+## When to Use
+
+Use `@theme-ui/mdx` when you:
+- Are using MDX in your project
+- Want to style MDX content with theme styles
+- Need to use theme styles outside of MDX
+- Want to provide consistent typography throughout your app
+
+The main `theme-ui` package re-exports everything from this package.
+
+## Exports
+
+### Components
+
+#### `Themed`
+
+A dictionary of HTML components that automatically pick up styles from `theme.styles`.
+
+```jsx
+import { Themed } from '@theme-ui/mdx'
+
+function MyComponent() {
+  return (
+    <div>
+      <Themed.h1>This uses theme.styles.h1</Themed.h1>
+      <Themed.p>This uses theme.styles.p</Themed.p>
+      <Themed.a href="#">This uses theme.styles.a</Themed.a>
+    </div>
+  )
+}
+```
+
+**Available Components:**
+
+```javascript
+Themed.p          // <p> with theme.styles.p
+Themed.a          // <a> with theme.styles.a
+Themed.h1         // <h1> with theme.styles.h1
+Themed.h2         // <h2> with theme.styles.h2
+Themed.h3         // <h3> with theme.styles.h3
+Themed.h4         // <h4> with theme.styles.h4
+Themed.h5         // <h5> with theme.styles.h5
+Themed.h6         // <h6> with theme.styles.h6
+Themed.img        // <img> with theme.styles.img
+Themed.pre        // <pre> with theme.styles.pre
+Themed.code       // <code> with theme.styles.code
+Themed.ol         // <ol> with theme.styles.ol
+Themed.ul         // <ul> with theme.styles.ul
+Themed.li         // <li> with theme.styles.li
+Themed.blockquote // <blockquote> with theme.styles.blockquote
+Themed.hr         // <hr> with theme.styles.hr
+Themed.em         // <em> with theme.styles.em
+Themed.table      // <table> with theme.styles.table
+Themed.tr         // <tr> with theme.styles.tr
+Themed.th         // <th> with theme.styles.th
+Themed.td         // <td> with theme.styles.td
+Themed.strong     // <strong> with theme.styles.strong
+Themed.del        // <del> with theme.styles.del
+Themed.inlineCode // <code> with theme.styles.inlineCode
+Themed.thematicBreak // <hr> with theme.styles.hr
+Themed.div        // <div> with base styling
+Themed.root       // <div> with theme.styles.root
+```
+
+**With Custom Props:**
+
+```jsx
+<Themed.h1 sx={{ color: 'primary' }}>
+  Heading with additional styles
+</Themed.h1>
+```
+
+### Hooks
+
+#### `useThemedStylesWithMdx`
+
+A hook that wraps MDX components with styles from `theme.styles`.
+
+```jsx
+import { MDXProvider, useMDXComponents } from '@mdx-js/react'
+import { useThemedStylesWithMdx } from '@theme-ui/mdx'
+import { ThemeUIProvider } from 'theme-ui'
+
+function MyProvider({ theme, components, children }) {
+  const componentsWithStyles = useThemedStylesWithMdx(
+    useMDXComponents(components)
+  )
+  
+  return (
+    <ThemeUIProvider theme={theme}>
+      <MDXProvider components={componentsWithStyles}>
+        {children}
+      </MDXProvider>
+    </ThemeUIProvider>
+  )
+}
+```
+
+**Signature:**
+```typescript
+useThemedStylesWithMdx(
+  components: MDXProviderComponents
+): MDXProviderComponents
+```
+
+**Features:**
+- Applies styles from `theme.styles` to MDX components
+- Merges with custom components you provide
+- Preserves component functionality
+- Works with `@mdx-js/react` v2+
+
+### Utilities
+
+#### `themed`
+
+A utility function to create themed components.
+
+```jsx
+import { themed } from '@theme-ui/mdx'
+
+const ThemedDiv = themed('div')
+
+function MyComponent() {
+  return <ThemedDiv>Styled content</ThemedDiv>
+}
+```
+
+#### `defaultMdxComponents`
+
+The default set of MDX components used by Theme UI.
+
+```javascript
+import { defaultMdxComponents } from '@theme-ui/mdx'
+
+console.log(defaultMdxComponents)
+// {
+//   p: Themed.p,
+//   a: Themed.a,
+//   h1: Themed.h1,
+//   ...
+// }
+```
+
+## Usage with MDX
+
+### Basic Setup
+
+```jsx
+import { MDXProvider } from '@mdx-js/react'
+import { Themed } from '@theme-ui/mdx'
+import { ThemeUIProvider } from 'theme-ui'
+import theme from './theme'
+
+const components = {
+  h1: Themed.h1,
+  h2: Themed.h2,
+  p: Themed.p,
+  a: Themed.a,
+  // ... other components
+}
+
+function App({ children }) {
+  return (
+    <ThemeUIProvider theme={theme}>
+      <MDXProvider components={components}>
+        {children}
+      </MDXProvider>
+    </ThemeUIProvider>
+  )
+}
+```
+
+### With Custom Components
+
+```jsx
+import { useThemedStylesWithMdx } from '@theme-ui/mdx'
+import { useMDXComponents } from '@mdx-js/react'
+import CustomHeading from './CustomHeading'
+
+function MyMDXProvider({ children }) {
+  const components = useThemedStylesWithMdx(
+    useMDXComponents({
+      // Custom components merged with themed styles
+      h1: CustomHeading,
+      wrapper: ({ children }) => <article>{children}</article>,
+    })
+  )
+  
+  return (
+    <MDXProvider components={components}>
+      {children}
+    </MDXProvider>
+  )
+}
+```
+
+### Styling MDX Content
+
+Define styles in your theme:
+
+```javascript
+const theme = {
+  styles: {
+    // Base styles
+    root: {
+      fontFamily: 'body',
+      lineHeight: 'body',
+    },
+    
+    // MDX component styles
+    h1: {
+      fontSize: 5,
+      fontWeight: 'bold',
+      lineHeight: 'heading',
+      mt: 4,
+      mb: 3,
+    },
+    h2: {
+      fontSize: 4,
+      fontWeight: 'bold',
+      lineHeight: 'heading',
+      mt: 4,
+      mb: 3,
+    },
+    p: {
+      fontSize: 2,
+      lineHeight: 'body',
+      mb: 3,
+    },
+    a: {
+      color: 'primary',
+      textDecoration: 'none',
+      '&:hover': {
+        textDecoration: 'underline',
+      },
+    },
+    pre: {
+      fontFamily: 'monospace',
+      fontSize: 1,
+      p: 3,
+      bg: 'muted',
+      overflow: 'auto',
+      borderRadius: 4,
+    },
+    code: {
+      fontFamily: 'monospace',
+      fontSize: 1,
+    },
+    inlineCode: {
+      fontFamily: 'monospace',
+      color: 'secondary',
+      bg: 'muted',
+      px: 1,
+      borderRadius: 2,
+    },
+    // ... more styles
+  },
+}
+```
+
+## Use Cases
+
+### Outside MDX
+
+Use `Themed` components anywhere, not just in MDX:
+
+```jsx
+import { Themed } from '@theme-ui/mdx'
+
+function BlogPost({ title, content }) {
+  return (
+    <article>
+      <Themed.h1>{title}</Themed.h1>
+      <Themed.p>{content}</Themed.p>
+    </article>
+  )
+}
+```
+
+### Consistent Typography
+
+Ensure consistent typography across MDX and regular JSX:
+
+```jsx
+// In MDX files, these are styled automatically
+# Heading
+Paragraph text
+
+// In JSX, use Themed components
+<Themed.h1>Heading</Themed.h1>
+<Themed.p>Paragraph text</Themed.p>
+```
+
+### Custom Wrapper
+
+```jsx
+import { Themed } from '@theme-ui/mdx'
+
+function MDXLayout({ children }) {
+  return (
+    <Themed.root>
+      {children}
+    </Themed.root>
+  )
+}
+```
+
+## TypeScript Types
+
+```typescript
+import type {
+  MDXProviderComponents,
+  MdxAliases,
+  MdxProviderProps,
+  ThemedComponent,
+  MdxAliasesKeys,
+  ThemeUIMdxIntrinsics,
+  ThemedComponentsDict,
+  ThemedProps,
+} from '@theme-ui/mdx'
+```
+
+### Type Usage
+
+```typescript
+import type { ThemedComponent } from '@theme-ui/mdx'
+
+const CustomHeading: ThemedComponent<'h1'> = (props) => {
+  return <h1 {...props} />
+}
+```
+
+## Notes
+
+- Works with MDX v2 and later
+- Requires `@emotion/react` as a peer dependency
+- Requires `@types/mdx` for TypeScript support
+- The `Themed` components support the `sx` prop
+- All components forward refs properly
+- No side effects - safe for tree-shaking
+
+## Examples
+
+### Blog Post
+
+```jsx
+import { Themed } from '@theme-ui/mdx'
+
+function BlogPost({ post }) {
+  return (
+    <article>
+      <Themed.h1>{post.title}</Themed.h1>
+      <Themed.p sx={{ color: 'gray', fontSize: 1 }}>
+        {post.date}
+      </Themed.p>
+      <Themed.div>{post.content}</Themed.div>
+    </article>
+  )
+}
+```
+
+### Documentation Page
+
+```jsx
+import { Themed } from '@theme-ui/mdx'
+
+function DocPage({ frontmatter, children }) {
+  return (
+    <Themed.root>
+      <Themed.h1>{frontmatter.title}</Themed.h1>
+      <Themed.p>{frontmatter.description}</Themed.p>
+      <Themed.hr />
+      {children}
+    </Themed.root>
+  )
+}
+```
+
+## Related
+
+- [MDX Documentation](https://mdxjs.com)
+- [@theme-ui/core](/api/packages/core) - Core Theme UI functionality
+- [Theme Specification](/theme-spec) - Defining theme.styles
+- [MDX Guide](/guides/mdx) - Full MDX integration guide

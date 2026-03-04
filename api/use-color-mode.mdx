@@ -1,0 +1,185 @@
+---
+title: 'useColorMode'
+description: 'React hook for reading and updating the current color mode'
+---
+
+## Overview
+
+The `useColorMode` hook provides access to the current color mode state and a function to update it. It must be used within a `ColorModeProvider` component.
+
+## Import
+
+```tsx
+import { useColorMode } from 'theme-ui'
+```
+
+## Signature
+
+```typescript
+function useColorMode<T extends string = string>(): [
+  T,
+  Dispatch<SetStateAction<T>>
+]
+```
+
+## Return Value
+
+Returns a tuple with two elements:
+
+<ResponseField name="[0]" type="string" required>
+  The current color mode name (e.g., `'light'`, `'dark'`, or a custom mode name)
+</ResponseField>
+
+<ResponseField name="[1]" type="Dispatch<SetStateAction<string>>" required>
+  A function to update the color mode. Accepts either a color mode name string or a function that receives the current mode and returns the new mode.
+</ResponseField>
+
+## Usage
+
+### Basic Example
+
+```tsx
+import { useColorMode } from 'theme-ui'
+
+function ColorModeToggle() {
+  const [colorMode, setColorMode] = useColorMode()
+
+  return (
+    <button
+      onClick={() => {
+        setColorMode(colorMode === 'light' ? 'dark' : 'light')
+      }}
+    >
+      {colorMode === 'light' ? 'Dark' : 'Light'}
+    </button>
+  )
+}
+```
+
+### With Type Safety
+
+You can specify a narrower type for your color mode names:
+
+```tsx
+type ColorMode = 'light' | 'dark' | 'sepia'
+
+function ColorModeToggle() {
+  const [colorMode, setColorMode] = useColorMode<ColorMode>()
+
+  return (
+    <select
+      value={colorMode}
+      onChange={(e) => setColorMode(e.target.value as ColorMode)}
+    >
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+      <option value="sepia">Sepia</option>
+    </select>
+  )
+}
+```
+
+### With Functional Updates
+
+```tsx
+function toggleColorMode() {
+  const [colorMode, setColorMode] = useColorMode()
+
+  const toggle = () => {
+    setColorMode((prevMode) => {
+      if (prevMode === 'light') return 'dark'
+      if (prevMode === 'dark') return 'sepia'
+      return 'light'
+    })
+  }
+
+  return <button onClick={toggle}>Toggle</button>
+}
+```
+
+## Configuration
+
+The behavior of `useColorMode` is controlled by settings in your theme configuration:
+
+```js
+export default {
+  config: {
+    // Set the initial color mode (default)
+    initialColorModeName: 'light',
+    
+    // Enable/disable localStorage persistence
+    useLocalStorage: true,
+    
+    // Use system color scheme preference
+    // false: disabled
+    // true: only on initial load
+    // 'system': always follow system preference
+    useColorSchemeMediaQuery: true,
+  },
+  colors: {
+    text: '#000',
+    background: '#fff',
+    modes: {
+      dark: {
+        text: '#fff',
+        background: '#000',
+      },
+    },
+  },
+}
+```
+
+### Configuration Options
+
+<ParamField path="config.initialColorModeName" type="string">
+  The default color mode to use. Should be a unique name and **not** reference a key in `theme.colors.modes`.
+</ParamField>
+
+<ParamField path="config.useLocalStorage" type="boolean" default={true}>
+  Whether to persist the color mode selection in localStorage.
+</ParamField>
+
+<ParamField path="config.useColorSchemeMediaQuery" type="boolean | 'system'" default={true}>
+  Controls system color scheme integration:
+  - `false`: Disabled
+  - `true`: Use system preference on initial load only
+  - `'system'`: Always follow system preference (overrides user selection)
+</ParamField>
+
+## Error Handling
+
+<Warning>
+  `useColorMode` throws an error if called outside of a `ColorModeProvider`. Make sure your component tree is wrapped with `ColorModeProvider` or use the main `ThemeProvider` from `theme-ui` which includes color mode support.
+</Warning>
+
+```tsx
+// ❌ This will throw an error
+function App() {
+  const [colorMode, setColorMode] = useColorMode() // Error!
+  return <div>...</div>
+}
+
+// ✅ This works
+import { ThemeProvider } from 'theme-ui'
+import theme from './theme'
+
+function App() {
+  return (
+    <ThemeProvider theme={theme}>
+      <MyComponent />
+    </ThemeProvider>
+  )
+}
+
+function MyComponent() {
+  const [colorMode, setColorMode] = useColorMode() // Works!
+  return <div>...</div>
+}
+```
+
+## Notes
+
+- Color mode changes are automatically persisted to localStorage (unless disabled)
+- The selected color mode is stored with the key `theme-ui-color-mode`
+- If localStorage is disabled in the browser, a warning will be logged to the console
+- When `useColorSchemeMediaQuery` is set to `'system'`, the hook will automatically update when the system color scheme changes

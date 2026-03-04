@@ -1,0 +1,185 @@
+---
+title: useThemeUI
+description: React hook to access the theme and color mode context
+---
+
+The `useThemeUI` hook provides access to the Theme UI context, including the current theme and color mode functions.
+
+## Import
+
+```tsx
+import { useThemeUI } from 'theme-ui'
+```
+
+## Signature
+
+```tsx
+function useThemeUI(): ThemeUIContextValue
+```
+
+## Return Value
+
+<ResponseField name="context" type="ThemeUIContextValue">
+  The Theme UI context object
+  
+  <ResponseField name="theme" type="Theme">
+    The current theme object with all merged values
+  </ResponseField>
+  
+  <ResponseField name="colorMode" type="string">
+    The current color mode (e.g., 'default', 'dark'). Available when using ThemeUIProvider.
+  </ResponseField>
+  
+  <ResponseField name="setColorMode" type="(mode: string) => void">
+    Function to change the current color mode. Available when using ThemeUIProvider.
+  </ResponseField>
+  
+  <ResponseField name="__EMOTION_VERSION__" type="string">
+    Internal version string for Emotion compatibility checking
+  </ResponseField>
+</ResponseField>
+
+## Usage
+
+### Accessing Theme Values
+
+```tsx
+import { useThemeUI } from 'theme-ui'
+
+function Component() {
+  const { theme } = useThemeUI()
+  
+  return (
+    <div>
+      <p>Primary color: {theme.colors?.primary}</p>
+      <p>Body font: {theme.fonts?.body}</p>
+    </div>
+  )
+}
+```
+
+### Accessing Color Mode
+
+```tsx
+import { useThemeUI } from 'theme-ui'
+
+function DarkModeToggle() {
+  const { colorMode, setColorMode } = useThemeUI()
+  
+  return (
+    <button
+      onClick={() => {
+        setColorMode?.(colorMode === 'default' ? 'dark' : 'default')
+      }}
+    >
+      {colorMode === 'dark' ? 'Light' : 'Dark'} Mode
+    </button>
+  )
+}
+```
+
+### Reading Nested Theme Values
+
+```tsx
+import { useThemeUI } from 'theme-ui'
+
+function Component() {
+  const { theme } = useThemeUI()
+  
+  // Access nested scale values
+  const spacing = theme.space?.[3]
+  const fontSize = theme.fontSizes?.[2]
+  const buttonVariant = theme.buttons?.primary
+  
+  return (
+    <div style={{ padding: spacing, fontSize }}>
+      Content
+    </div>
+  )
+}
+```
+
+### Using with TypeScript
+
+The hook is fully typed and will provide autocomplete for your theme:
+
+```tsx
+import { useThemeUI } from 'theme-ui'
+
+function Component() {
+  const context = useThemeUI()
+  
+  // TypeScript knows the shape of your theme
+  const primary: string | undefined = context.theme.colors?.primary
+  const colorMode: string = context.colorMode || 'default'
+  
+  return <div>Component</div>
+}
+```
+
+## Example: Theme-Aware Component
+
+```tsx
+import { useThemeUI } from 'theme-ui'
+
+function ThemedButton({ children }: { children: React.ReactNode }) {
+  const { theme } = useThemeUI()
+  
+  return (
+    <button
+      style={{
+        backgroundColor: theme.colors?.primary,
+        color: theme.colors?.background,
+        padding: `${theme.space?.[2]}px ${theme.space?.[3]}px`,
+        borderRadius: theme.radii?.[1],
+        fontFamily: theme.fonts?.body,
+      }}
+    >
+      {children}
+    </button>
+  )
+}
+```
+
+## Example: Using in Tests
+
+```tsx
+import { renderJSON } from '@theme-ui/test-utils'
+import { ThemeProvider, useThemeUI } from '@theme-ui/core'
+
+test('returns theme context', () => {
+  let context: ThemeUIContextValue | undefined
+  
+  const GetContext = () => {
+    context = useThemeUI()
+    return null
+  }
+  
+  renderJSON(
+    <ThemeProvider
+      theme={{
+        colors: {
+          text: 'tomato',
+        },
+      }}
+    >
+      <GetContext />
+    </ThemeProvider>
+  )
+  
+  expect(context).toBeTruthy()
+  expect(context?.theme.colors?.text).toBe('tomato')
+})
+```
+
+## Notes
+
+- This hook must be used within a `ThemeUIProvider` or `ThemeProvider` component
+- The `colorMode` and `setColorMode` properties are only available when using `ThemeUIProvider` (not the core `ThemeProvider`)
+- The returned `theme` object is the fully merged theme, including any nested provider themes
+
+## Related
+
+- [ThemeUIProvider](/api/theme-ui-provider) - Root theme provider component
+- [Theme Specification](/theming/theme-spec) - Theme object structure
+- [Color Modes](/theming/color-modes) - Working with color modes

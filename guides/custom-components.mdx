@@ -1,0 +1,610 @@
+---
+title: Custom Components
+description: Creating custom themed components with the sx prop and component composition
+---
+
+Learn how to build custom components that integrate seamlessly with Theme UI's theming system.
+
+## Using the sx Prop
+
+The simplest way to create themed components is using the `sx` prop on standard HTML elements.
+
+### Basic Example
+
+```tsx
+/** @jsxImportSource theme-ui */
+
+function Alert({ children }) {
+  return (
+    <div
+      sx={{
+        padding: 3,
+        borderRadius: 2,
+        bg: 'muted',
+        borderLeft: '4px solid',
+        borderColor: 'primary',
+      }}
+    >
+      {children}
+    </div>
+  )
+}
+```
+
+### Accepting sx as a Prop
+
+Allow consumers to customize your component:
+
+```tsx
+import type { SxProp } from 'theme-ui'
+
+interface AlertProps extends SxProp {
+  children: React.ReactNode
+}
+
+function Alert({ children, sx }: AlertProps) {
+  return (
+    <div
+      sx={{
+        padding: 3,
+        borderRadius: 2,
+        bg: 'muted',
+        borderLeft: '4px solid',
+        borderColor: 'primary',
+        // Merge with custom styles
+        ...sx,
+      }}
+    >
+      {children}
+    </div>
+  )
+}
+
+// Usage - override background
+<Alert sx={{ bg: 'highlight' }}>Custom alert</Alert>
+```
+
+<Note>
+The `sx` prop merges styles, with later styles overriding earlier ones.
+</Note>
+
+## Using the Box Component
+
+The `Box` component is a versatile primitive for building themed components.
+
+### Box as a Building Block
+
+```tsx
+import { Box } from 'theme-ui'
+
+function Card({ title, children, ...props }) {
+  return (
+    <Box
+      {...props}
+      sx={{
+        padding: 4,
+        borderRadius: 2,
+        bg: 'background',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+      }}
+    >
+      <Box as="h3" sx={{ fontSize: 3, mb: 2 }}>
+        {title}
+      </Box>
+      {children}
+    </Box>
+  )
+}
+```
+
+### Box Props
+
+The Box component accepts several useful props:
+
+```tsx
+import { Box } from 'theme-ui'
+
+// 'as' prop - render as different element
+<Box as="section">Section element</Box>
+<Box as="article">Article element</Box>
+
+// System props - shorthand for common styles
+<Box
+  m={3}        // margin: theme.space[3]
+  p={2}        // padding: theme.space[2]
+  bg="primary" // background: theme.colors.primary
+  color="white"
+>
+  Content
+</Box>
+
+// Variant prop - apply theme variants
+<Box variant="cards.primary">
+  Styled like a card
+</Box>
+```
+
+### Available System Props
+
+Box supports these shorthand props:
+
+```tsx
+// Margin
+m, mt, mr, mb, ml, mx, my
+margin, marginTop, marginRight, marginBottom, marginLeft, marginX, marginY
+
+// Padding
+p, pt, pr, pb, pl, px, py
+padding, paddingTop, paddingRight, paddingBottom, paddingLeft, paddingX, paddingY
+
+// Color
+color, backgroundColor, bg, opacity
+```
+
+## Component Composition
+
+Build complex components by composing simpler ones.
+
+### Example: Feature Card
+
+```tsx
+import { Box, Heading, Text, Button } from 'theme-ui'
+
+interface FeatureCardProps {
+  icon: React.ReactNode
+  title: string
+  description: string
+  action: () => void
+}
+
+function FeatureCard({ icon, title, description, action }: FeatureCardProps) {
+  return (
+    <Box
+      sx={{
+        padding: 4,
+        borderRadius: 2,
+        bg: 'background',
+        boxShadow: 'medium',
+        transition: 'transform 0.2s',
+        '&:hover': {
+          transform: 'translateY(-4px)',
+          boxShadow: 'large',
+        },
+      }}
+    >
+      <Box sx={{ fontSize: 5, mb: 3 }}>
+        {icon}
+      </Box>
+      
+      <Heading as="h3" sx={{ mb: 2 }}>
+        {title}
+      </Heading>
+      
+      <Text sx={{ mb: 3, color: 'text', lineHeight: 'body' }}>
+        {description}
+      </Text>
+      
+      <Button onClick={action} variant="primary">
+        Learn More
+      </Button>
+    </Box>
+  )
+}
+```
+
+### Polymorphic Components
+
+Create components that can render as different elements:
+
+```tsx
+import { Box, BoxProps } from 'theme-ui'
+import { ComponentProps, ElementType } from 'react'
+
+interface PolymorphicBoxProps<T extends ElementType> extends BoxProps {
+  as?: T
+}
+
+type Props<T extends ElementType> = PolymorphicBoxProps<T> &
+  Omit<ComponentProps<T>, keyof PolymorphicBoxProps<T>>
+
+function Container<T extends ElementType = 'div'>({
+  as,
+  ...props
+}: Props<T>) {
+  return (
+    <Box
+      as={as || 'div'}
+      sx={{
+        maxWidth: 1024,
+        mx: 'auto',
+        px: 3,
+      }}
+      {...props}
+    />
+  )
+}
+
+// Usage
+<Container>Div container</Container>
+<Container as="section">Section container</Container>
+<Container as="main">Main container</Container>
+```
+
+## Using Variants
+
+Create components that support theme variants.
+
+### Component with Variants
+
+```tsx
+import { Box } from 'theme-ui'
+
+interface BadgeProps {
+  variant?: 'success' | 'warning' | 'error' | 'info'
+  children: React.ReactNode
+}
+
+function Badge({ variant = 'info', children }: BadgeProps) {
+  return (
+    <Box
+      __themeKey="badges"
+      variant={variant}
+      sx={{
+        display: 'inline-block',
+        px: 2,
+        py: 1,
+        fontSize: 0,
+        borderRadius: 1,
+        fontWeight: 'bold',
+      }}
+    >
+      {children}
+    </Box>
+  )
+}
+
+// Theme configuration
+const theme = {
+  badges: {
+    success: { bg: 'green', color: 'white' },
+    warning: { bg: 'yellow', color: 'black' },
+    error: { bg: 'red', color: 'white' },
+    info: { bg: 'blue', color: 'white' },
+  },
+}
+
+// Usage
+<Badge variant="success">Success</Badge>
+<Badge variant="error">Error</Badge>
+```
+
+### Custom Variant Keys
+
+Define your own variant location in the theme:
+
+```tsx
+import { Box } from 'theme-ui'
+
+interface PanelProps {
+  variant?: string
+  children: React.ReactNode
+}
+
+function Panel({ variant, children }: PanelProps) {
+  return (
+    <Box
+      __themeKey="panels" // Custom theme key
+      variant={variant}
+    >
+      {children}
+    </Box>
+  )
+}
+
+// Theme
+const theme = {
+  panels: {
+    default: {
+      padding: 3,
+      bg: 'background',
+    },
+    highlighted: {
+      padding: 3,
+      bg: 'primary',
+      color: 'white',
+    },
+  },
+}
+```
+
+## Accessing the Theme
+
+Use the `useThemeUI` hook to access theme values in your components.
+
+### Basic Usage
+
+```tsx
+import { useThemeUI } from 'theme-ui'
+
+function ThemedComponent() {
+  const { theme } = useThemeUI()
+  
+  return (
+    <div
+      style={{
+        // Access raw theme values
+        color: theme.colors?.primary as string,
+        padding: theme.space?.[3] as number,
+      }}
+    >
+      Themed content
+    </div>
+  )
+}
+```
+
+<Warning>
+Theme color values are CSS custom properties. Use `theme.rawColors` if you need raw color values (e.g., for Canvas or WebGL).
+</Warning>
+
+### Using Raw Colors
+
+```tsx
+import { useThemeUI } from 'theme-ui'
+
+function CanvasComponent() {
+  const { theme } = useThemeUI()
+  const { rawColors } = theme
+  
+  // Use rawColors for contexts that don't support CSS variables
+  const primaryColor = rawColors?.primary
+  
+  // Use in canvas, chart libraries, etc.
+  return <canvas ref={ref => {
+    const ctx = ref?.getContext('2d')
+    if (ctx) {
+      ctx.fillStyle = primaryColor as string
+    }
+  }} />
+}
+```
+
+### Color Mode
+
+Access and control color mode:
+
+```tsx
+import { useColorMode } from 'theme-ui'
+
+function ColorModeToggle() {
+  const [colorMode, setColorMode] = useColorMode()
+  
+  return (
+    <button
+      onClick={() => {
+        setColorMode(colorMode === 'light' ? 'dark' : 'light')
+      }}
+      sx={{
+        padding: 2,
+        bg: 'primary',
+        color: 'white',
+        border: 'none',
+        borderRadius: 2,
+        cursor: 'pointer',
+      }}
+    >
+      Toggle {colorMode === 'light' ? 'Dark' : 'Light'} Mode
+    </button>
+  )
+}
+```
+
+## Forwarding Refs
+
+Create components that support React refs:
+
+```tsx
+import { forwardRef } from 'react'
+import type { BoxProps } from 'theme-ui'
+
+interface InputProps extends Omit<BoxProps, 'as'> {
+  label: string
+  error?: string
+}
+
+const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ label, error, ...props }, ref) => {
+    return (
+      <div>
+        <label
+          sx={{
+            display: 'block',
+            mb: 1,
+            fontSize: 1,
+            fontWeight: 'bold',
+          }}
+        >
+          {label}
+        </label>
+        
+        <input
+          ref={ref}
+          sx={{
+            width: '100%',
+            padding: 2,
+            fontSize: 2,
+            borderRadius: 1,
+            border: '1px solid',
+            borderColor: error ? 'error' : 'muted',
+            '&:focus': {
+              outline: 'none',
+              borderColor: 'primary',
+            },
+            ...props.sx,
+          }}
+          {...props}
+        />
+        
+        {error && (
+          <div sx={{ mt: 1, fontSize: 0, color: 'error' }}>
+            {error}
+          </div>
+        )}
+      </div>
+    )
+  }
+)
+
+Input.displayName = 'Input'
+```
+
+## Using the css Helper
+
+For more complex styling needs, use the `css` helper directly:
+
+```tsx
+import { css, useThemeUI } from 'theme-ui'
+
+function ComplexComponent() {
+  const { theme } = useThemeUI()
+  
+  const styles = css({
+    position: 'relative',
+    '&::before': {
+      content: '""',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      bg: 'primary',
+      opacity: 0.1,
+    },
+  })(theme)
+  
+  return <div css={styles}>Content</div>
+}
+```
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Accept sx Prop" icon="sliders">
+    Always accept an `sx` prop to allow consumers to customize your components.
+  </Card>
+  
+  <Card title="Use Box Component" icon="cube">
+    Build on top of the Box component for consistent theming and system props.
+  </Card>
+  
+  <Card title="Leverage Variants" icon="palette">
+    Use theme variants for common style variations instead of multiple props.
+  </Card>
+  
+  <Card title="TypeScript Types" icon="code">
+    Export proper TypeScript types for your components' props.
+  </Card>
+</CardGroup>
+
+## Complete Example
+
+Here's a complete example combining all concepts:
+
+```tsx
+import { forwardRef } from 'react'
+import { Box, BoxProps, useThemeUI } from 'theme-ui'
+import type { SxProp } from 'theme-ui'
+
+interface CardProps extends SxProp {
+  variant?: 'default' | 'elevated' | 'outlined'
+  title?: string
+  footer?: React.ReactNode
+  children: React.ReactNode
+}
+
+export const Card = forwardRef<HTMLDivElement, CardProps>(
+  ({ variant = 'default', title, footer, children, sx }, ref) => {
+    const { theme } = useThemeUI()
+    
+    return (
+      <Box
+        ref={ref}
+        __themeKey="cards"
+        variant={variant}
+        sx={{
+          padding: 4,
+          borderRadius: 2,
+          bg: 'background',
+          ...sx,
+        }}
+      >
+        {title && (
+          <Box
+            as="h3"
+            sx={{
+              fontSize: 3,
+              fontWeight: 'bold',
+              mb: 3,
+              pb: 2,
+              borderBottom: '1px solid',
+              borderColor: 'muted',
+            }}
+          >
+            {title}
+          </Box>
+        )}
+        
+        <Box sx={{ mb: footer ? 3 : 0 }}>
+          {children}
+        </Box>
+        
+        {footer && (
+          <Box
+            sx={{
+              pt: 3,
+              borderTop: '1px solid',
+              borderColor: 'muted',
+            }}
+          >
+            {footer}
+          </Box>
+        )}
+      </Box>
+    )
+  }
+)
+
+Card.displayName = 'Card'
+
+// Theme configuration
+export const theme = {
+  cards: {
+    default: {
+      boxShadow: 'none',
+    },
+    elevated: {
+      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.12)',
+      transition: 'transform 0.2s',
+      '&:hover': {
+        transform: 'translateY(-2px)',
+        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.16)',
+      },
+    },
+    outlined: {
+      border: '1px solid',
+      borderColor: 'muted',
+      boxShadow: 'none',
+    },
+  },
+}
+
+// Usage
+<Card
+  variant="elevated"
+  title="Card Title"
+  footer={<button>Action</button>}
+  sx={{ maxWidth: 400 }}
+>
+  Card content goes here
+</Card>
+```

@@ -1,0 +1,191 @@
+---
+title: '@theme-ui/core'
+description: Minimal React support for Theme UI with the sx prop and ThemeProvider
+---
+
+The `@theme-ui/core` package provides minimal React support for lightweight usage of Theme UI. It includes the essential features for styling React components with the `sx` prop and accessing theme values.
+
+## Installation
+
+```bash
+npm install @theme-ui/core @emotion/react
+```
+
+## When to Use
+
+Use `@theme-ui/core` when you:
+- Want a minimal, lightweight version of Theme UI
+- Don't need the full component library
+- Are building your own component library on top of Theme UI
+- Want to minimize bundle size
+
+If you're using the umbrella `theme-ui` package, you don't need to install `@theme-ui/core` separately—it's already included and re-exported.
+
+## Exports
+
+### Components
+
+#### `ThemeProvider`
+
+A React context provider that makes your theme available to all components.
+
+```jsx
+import { ThemeProvider } from '@theme-ui/core'
+
+function App() {
+  return (
+    <ThemeProvider theme={{ colors: { primary: '#33e' } }}>
+      <YourApp />
+    </ThemeProvider>
+  )
+}
+```
+
+**Props:**
+- `theme`: `Theme | ((outerTheme: Theme) => Theme)` - Your theme object or a function that receives the outer theme and returns a new theme
+- `children`: `React.ReactNode` - Child components
+
+### Hooks
+
+#### `useThemeUI`
+
+A hook to access the current theme and Theme UI context.
+
+```jsx
+import { useThemeUI } from '@theme-ui/core'
+
+function MyComponent() {
+  const context = useThemeUI()
+  const { theme } = context
+  
+  return <div>Primary color: {theme.colors.primary}</div>
+}
+```
+
+**Returns:**
+- `__EMOTION_VERSION__`: `string` - The version of Emotion being used
+- `theme`: `Theme` - The current theme object
+- `colorMode`: `string` (when using ColorModeProvider) - The current color mode
+- `setColorMode`: `Function` (when using ColorModeProvider) - Function to change color mode
+
+### Utilities
+
+#### `merge`
+
+Deeply merges theme objects together.
+
+```jsx
+import { merge } from '@theme-ui/core'
+
+const baseTheme = {
+  colors: { primary: 'blue' }
+}
+
+const customTheme = {
+  colors: { secondary: 'red' }
+}
+
+const mergedTheme = merge(baseTheme, customTheme)
+// Result: { colors: { primary: 'blue', secondary: 'red' } }
+```
+
+**Signature:**
+```typescript
+merge(a: Theme, b: Theme): Theme
+merge.all<T>(...themes: Partial<T>[]): T
+```
+
+### JSX Runtime
+
+#### `jsx`
+
+The JSX function that creates React elements with support for the `sx` prop.
+
+```jsx
+/** @jsxImportSource @theme-ui/core */
+
+export function MyComponent() {
+  return <div sx={{ color: 'primary', p: 3 }}>Styled with sx</div>
+}
+```
+
+#### `createElement`
+
+An alias for `jsx` for Babel JSX pragma support.
+
+### Entry Points
+
+#### Main Entry Point
+
+```javascript
+import { ThemeProvider, useThemeUI, merge, jsx } from '@theme-ui/core'
+```
+
+#### `/jsx-runtime`
+
+For the new JSX transform:
+
+```javascript
+// In your tsconfig.json or jsconfig.json:
+{
+  "compilerOptions": {
+    "jsxImportSource": "@theme-ui/core"
+  }
+}
+```
+
+Exports:
+- `jsx`
+- `jsxs`
+
+#### `/jsx-dev-runtime`
+
+Development version of the JSX runtime:
+
+```javascript
+// Automatically used in development mode
+```
+
+Exports:
+- `jsxDEV`
+
+## TypeScript Types
+
+All types from `@theme-ui/css` are re-exported:
+
+```typescript
+import type {
+  CSSObject,
+  CSSOthersObject,
+  CSSProperties,
+  CSSPseudoSelectorProps,
+  ColorMode,
+  ColorModesScale,
+  Label,
+  ResponsiveStyleValue,
+  Scale,
+  StylePropertyValue,
+  TLengthStyledSystem,
+  ThemeDerivedStyles,
+  ThemeStyles,
+  ThemeUICSSObject,
+  ThemeUICSSProperties,
+  ThemeUIExtendedCSSProperties,
+  ThemeUIStyleObject,
+  VariantProperty,
+  ThemeUIJSX,
+} from '@theme-ui/core'
+```
+
+## Notes
+
+- `@theme-ui/core` does not add global styles to `<html>` or `<body>`. For global styles, see the [Global Styles guide](/guides/global-styles).
+- Requires `@emotion/react` as a peer dependency
+- Requires React 18 or higher
+- No side effects - safe for tree-shaking
+
+## Related
+
+- [@theme-ui/css](/api/packages/css) - Framework-agnostic styling utilities
+- [@theme-ui/components](/api/packages/components) - Pre-built UI components
+- [@theme-ui/color-modes](/api/packages/color-modes) - Color mode utilities

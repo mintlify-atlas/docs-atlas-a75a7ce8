@@ -1,0 +1,399 @@
+---
+title: '@theme-ui/color-modes'
+description: Color mode utilities for managing light/dark themes and user preferences
+---
+
+The `@theme-ui/color-modes` package provides utilities for managing color modes in Theme UI applications. It handles color mode state, localStorage persistence, and system preference detection.
+
+## Installation
+
+```bash
+npm install @theme-ui/color-modes @emotion/react
+```
+
+<Note>
+This package is included in the main `theme-ui` package and generally should not be used on its own. It's automatically imported when you use `theme-ui`.
+</Note>
+
+## When to Use
+
+This package is used internally by Theme UI. You would only install it directly if you're:
+- Building a custom Theme UI setup
+- Using `@theme-ui/core` without the full `theme-ui` package
+- Need fine-grained control over color mode behavior
+
+For most use cases, use the `theme-ui` package which includes this package.
+
+## Exports
+
+### Components
+
+#### `ColorModeProvider`
+
+A React component that provides color mode functionality to your application.
+
+```jsx
+import { ThemeProvider } from '@theme-ui/core'
+import { ColorModeProvider } from '@theme-ui/color-modes'
+
+function App({ children }) {
+  return (
+    <ThemeProvider theme={theme}>
+      <ColorModeProvider>
+        {children}
+      </ColorModeProvider>
+    </ThemeProvider>
+  )
+}
+```
+
+**Features:**
+- Manages color mode state
+- Persists selection to localStorage
+- Syncs with system color scheme preferences
+- Applies color mode colors to theme
+- Generates CSS custom properties for color modes
+
+**Props:**
+- `children`: `React.ReactNode` - Child components
+
+#### `InitializeColorMode`
+
+A script component that prevents flash of unstyled content (FOUC) when loading the page.
+
+```jsx
+import { InitializeColorMode } from '@theme-ui/color-modes'
+
+function Document() {
+  return (
+    <html>
+      <head>
+        <InitializeColorMode />
+      </head>
+      <body>
+        <App />
+      </body>
+    </html>
+  )
+}
+```
+
+This component injects a small script that:
+- Reads the color mode from localStorage
+- Applies it to the document before React hydrates
+- Prevents flashing between color modes on page load
+
+### Hooks
+
+#### `useColorMode`
+
+A React hook to access and control the current color mode.
+
+```jsx
+import { useColorMode } from '@theme-ui/color-modes'
+
+function ThemeToggle() {
+  const [colorMode, setColorMode] = useColorMode()
+  
+  return (
+    <button
+      onClick={() => {
+        setColorMode(colorMode === 'light' ? 'dark' : 'light')
+      }}
+    >
+      Toggle {colorMode === 'light' ? 'Dark' : 'Light'} Mode
+    </button>
+  )
+}
+```
+
+**Returns:**
+```typescript
+[
+  colorMode: string,
+  setColorMode: Dispatch<SetStateAction<string>>
+]
+```
+
+**TypeScript:**
+```typescript
+// You can specify a narrower type for color mode names
+const [colorMode, setColorMode] = useColorMode<'light' | 'dark'>()
+```
+
+**Error:**
+Throws an error if used outside of a `ColorModeProvider`.
+
+### Context Extensions
+
+The package extends the Theme UI context with color mode properties:
+
+```typescript
+interface ThemeUIContextValue {
+  colorMode?: string
+  setColorMode?: (colorMode: SetStateAction<string | undefined>) => void
+}
+```
+
+Access these through `useThemeUI()` from `@theme-ui/core`:
+
+```jsx
+import { useThemeUI } from '@theme-ui/core'
+
+function MyComponent() {
+  const { colorMode, setColorMode } = useThemeUI()
+  // ...
+}
+```
+
+## Configuration
+
+Configure color modes in your theme:
+
+```javascript
+const theme = {
+  // Define your base colors (light mode by default)
+  colors: {
+    text: '#000',
+    background: '#fff',
+    primary: '#07c',
+    
+    // Define alternate color modes
+    modes: {
+      dark: {
+        text: '#fff',
+        background: '#000',
+        primary: '#0cf',
+      },
+      // Add more modes as needed
+      sepia: {
+        text: '#433422',
+        background: '#f5deb3',
+        primary: '#b8860b',
+      },
+    },
+  },
+  
+  // Optional: Configure color mode behavior
+  config: {
+    // The name of the initial/default color mode
+    initialColorModeName: 'light',
+    
+    // Use CSS custom properties for colors
+    useCustomProperties: true,
+    
+    // Store color mode preference in localStorage
+    useLocalStorage: true,
+    
+    // Follow system color scheme preference
+    // 'system' - always follow system preference
+    // true - use system preference as initial value
+    // false - don't use system preference
+    useColorSchemeMediaQuery: true,
+  },
+}
+```
+
+## Features
+
+### localStorage Persistence
+
+By default, color mode selection is persisted to localStorage:
+
+```javascript
+// Automatically stored when color mode changes
+setColorMode('dark')
+
+// Disable with:
+const theme = {
+  config: {
+    useLocalStorage: false,
+  },
+}
+```
+
+### System Preference Detection
+
+Automatically detect and follow system color scheme:
+
+```javascript
+const theme = {
+  config: {
+    // Use system preference as initial value
+    useColorSchemeMediaQuery: true,
+    
+    // Or always follow system preference (dynamic)
+    useColorSchemeMediaQuery: 'system',
+  },
+}
+```
+
+### CSS Custom Properties
+
+Colors are converted to CSS custom properties for efficient switching:
+
+```css
+:root {
+  --theme-ui-colors-text: #000;
+  --theme-ui-colors-background: #fff;
+  --theme-ui-colors-primary: #07c;
+}
+
+[data-theme="dark"] {
+  --theme-ui-colors-text: #fff;
+  --theme-ui-colors-background: #000;
+  --theme-ui-colors-primary: #0cf;
+}
+```
+
+Disable with:
+
+```javascript
+const theme = {
+  config: {
+    useCustomProperties: false,
+  },
+}
+```
+
+### Multiple Color Modes
+
+Support more than just light and dark:
+
+```javascript
+const theme = {
+  colors: {
+    text: '#000',
+    background: '#fff',
+    modes: {
+      dark: { /* ... */ },
+      sepia: { /* ... */ },
+      highContrast: { /* ... */ },
+    },
+  },
+}
+
+// Switch between them:
+setColorMode('sepia')
+setColorMode('highContrast')
+```
+
+### Nested Color Modes
+
+Nested `ColorModeProvider` components are supported for section-specific color modes.
+
+## Implementation Details
+
+### Storage Key
+
+Color mode is stored in localStorage under the key:
+
+```javascript
+'theme-ui-color-mode'
+```
+
+### Media Queries
+
+The package uses these media queries for system preference:
+
+```javascript
+'(prefers-color-scheme: dark)'
+'(prefers-color-scheme: light)'
+```
+
+### FOUC Prevention
+
+The `InitializeColorMode` component injects this script:
+
+```javascript
+(function() { 
+  try {
+    var mode = localStorage.getItem('theme-ui-color-mode');
+    if (!mode) return
+    document.documentElement.classList.add('theme-ui-' + mode);
+  } catch (e) {} 
+})();
+```
+
+This runs before React hydration to apply the correct color mode immediately.
+
+## TypeScript Types
+
+```typescript
+import type {
+  ColorMode,
+  ColorModesScale,
+} from '@theme-ui/color-modes'
+
+// Or from @theme-ui/css:
+import type { ColorMode, ColorModesScale } from '@theme-ui/css'
+```
+
+## Notes
+
+- Requires `@theme-ui/core` and `@theme-ui/css` as dependencies
+- Requires `@emotion/react` and React 18+ as peer dependencies
+- No side effects - safe for tree-shaking
+- Supports server-side rendering with FOUC prevention
+- Works with nested theme providers
+
+## Examples
+
+### Basic Toggle
+
+```jsx
+import { useColorMode } from '@theme-ui/color-modes'
+
+function ColorModeToggle() {
+  const [colorMode, setColorMode] = useColorMode()
+  
+  return (
+    <button onClick={() => setColorMode(colorMode === 'default' ? 'dark' : 'default')}>
+      {colorMode === 'default' ? 'Dark' : 'Light'}
+    </button>
+  )
+}
+```
+
+### Multiple Mode Selector
+
+```jsx
+import { useColorMode } from '@theme-ui/color-modes'
+
+function ColorModeSelector() {
+  const [colorMode, setColorMode] = useColorMode()
+  
+  return (
+    <select value={colorMode} onChange={e => setColorMode(e.target.value)}>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+      <option value="sepia">Sepia</option>
+    </select>
+  )
+}
+```
+
+### With Icon
+
+```jsx
+import { useColorMode, IconButton } from 'theme-ui'
+
+function ColorModeButton() {
+  const [colorMode, setColorMode] = useColorMode()
+  
+  return (
+    <IconButton
+      onClick={() => setColorMode(colorMode === 'light' ? 'dark' : 'light')}
+      aria-label="Toggle color mode"
+    >
+      {colorMode === 'light' ? '🌙' : '☀️'}
+    </IconButton>
+  )
+}
+```
+
+## Related
+
+- [@theme-ui/core](/api/packages/core) - Core Theme UI functionality
+- [Color Modes guide](/guides/color-modes) - Full color modes documentation
+- [Theming](/theming) - Theme configuration

@@ -1,0 +1,164 @@
+---
+title: 'Components Overview'
+description: 'A comprehensive library of primitive React components built with Theme UI for building themeable user interfaces'
+---
+
+Theme UI Components is a library of primitive React components that are built with the Theme UI styling system. These components provide a solid foundation for building themeable, accessible user interfaces.
+
+## Installation
+
+Install the components package:
+
+```bash
+npm install @theme-ui/components
+```
+
+Or with yarn:
+
+```bash
+yarn add @theme-ui/components
+```
+
+## Importing Components
+
+You can import individual components from the package:
+
+```jsx
+import { Button, Box, Flex } from '@theme-ui/components'
+```
+
+Or import everything:
+
+```jsx
+import * as Components from '@theme-ui/components'
+```
+
+## Component Categories
+
+The Theme UI component library is organized into several categories:
+
+### Layout Components
+
+Layout primitives for structuring your UI:
+
+- **Box** - The foundational component with system props for styling
+- **Flex** - Flexbox container
+- **Grid** - CSS Grid layout component
+- **Container** - Centered, max-width container
+
+[View Layout Components →](/components/layout)
+
+### Typography Components
+
+Text and heading components:
+
+- **Text** - Generic text element
+- **Heading** - Heading component (h1-h6)
+- **Paragraph** - Paragraph element
+
+[View Typography Components →](/components/typography)
+
+### Form Components
+
+Form controls and inputs:
+
+- **Input** - Text input
+- **Textarea** - Multi-line text input
+- **Select** - Dropdown select
+- **Label** - Form label
+- **Checkbox** - Checkbox input with custom icon
+- **Radio** - Radio input with custom icon
+- **Switch** - Toggle switch
+- **Slider** - Range slider
+- **Field** - Labeled form field wrapper
+
+[View Form Components →](/components/forms)
+
+### UI Elements
+
+Interface components:
+
+- **Button** - Button element
+- **Link** - Anchor link
+- **NavLink** - Navigation link
+- **Card** - Container card
+- **Badge** - Inline badge
+- **Alert** - Alert message box
+- **Avatar** - User avatar image
+- **Spinner** - Loading spinner
+- **Progress** - Progress bar
+- **Donut** - Donut chart
+- **IconButton** - Icon button
+- **Close** - Close button
+- **Message** - Message callout
+- **Divider** - Horizontal divider
+- **Embed** - Responsive iframe embed
+- **Image** - Image element
+
+[View UI Elements →](/components/ui-elements)
+
+## Theme-Aware Styling
+
+All components support the `sx` prop for adding theme-aware styles:
+
+```jsx
+<Box
+  sx={{
+    bg: 'primary',
+    color: 'white',
+    p: 3,
+    borderRadius: 4,
+  }}
+>
+  Themed Box
+</Box>
+```
+
+## Component Variants
+
+Most components support variants defined in your theme:
+
+```jsx
+// Button variants from theme.buttons
+<Button variant="primary">Primary</Button>
+<Button variant="secondary">Secondary</Button>
+
+// Card variants from theme.cards
+<Card variant="compact">Compact Card</Card>
+```
+
+## System Props
+
+The Box component (and all components built on Box) supports system props for common CSS properties:
+
+```jsx
+<Box
+  m={2}        // margin
+  p={3}        // padding
+  bg="primary" // background
+  color="white"
+>
+  Content
+</Box>
+```
+
+## Accessibility
+
+Theme UI components are built with accessibility in mind:
+
+- Semantic HTML elements by default
+- Proper ARIA attributes where needed
+- Keyboard navigation support
+- Screen reader friendly
+
+## TypeScript Support
+
+All components include TypeScript type definitions:
+
+```tsx
+import { ButtonProps, BoxProps } from '@theme-ui/components'
+
+const MyButton: React.FC<ButtonProps> = (props) => {
+  return <Button {...props} />
+}
+```

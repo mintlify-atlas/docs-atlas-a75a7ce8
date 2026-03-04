@@ -1,0 +1,564 @@
+---
+title: MDX Integration
+description: Using Theme UI with MDX, the @theme-ui/mdx package, Themed components, and useThemedStylesWithMdx hook
+---
+
+Theme UI provides first-class support for MDX, allowing you to style markdown content with your theme.
+
+## Installation
+
+Install the required packages:
+
+```bash
+npm install theme-ui @theme-ui/mdx @mdx-js/react @emotion/react
+```
+
+<Note>
+As of Theme UI v0.15, MDX support is opt-in. You must explicitly install and configure `@theme-ui/mdx`.
+</Note>
+
+## Basic Setup
+
+Theme UI works with both MDX v2 (recommended) and MDX v1.
+
+### With MDX v2
+
+```tsx filename="app.tsx"
+import {
+  MDXProvider,
+  useMDXComponents,
+  type Components as MDXComponents,
+} from '@mdx-js/react'
+import { useThemedStylesWithMdx } from '@theme-ui/mdx'
+import { ThemeUIProvider, type Theme } from 'theme-ui'
+import { theme } from './theme'
+
+interface AppProps {
+  children: React.ReactNode
+  components?: MDXComponents
+}
+
+function App({ children, components }: AppProps) {
+  const componentsWithStyles = useThemedStylesWithMdx(
+    useMDXComponents(components)
+  )
+
+  return (
+    <ThemeUIProvider theme={theme}>
+      <MDXProvider components={componentsWithStyles}>
+        {children}
+      </MDXProvider>
+    </ThemeUIProvider>
+  )
+}
+```
+
+### Configuration Explained
+
+Here's what each part does:
+
+1. **`useMDXComponents`** - Merges custom components with context
+2. **`useThemedStylesWithMdx`** - Wraps components with theme styles
+3. **`MDXProvider`** - Provides components to MDX content
+4. **`ThemeUIProvider`** - Provides the theme context
+
+## useThemedStylesWithMdx Hook
+
+The `useThemedStylesWithMdx` hook applies theme styles to MDX components.
+
+### Implementation
+
+```tsx filename="packages/mdx/src/useThemeStylesWithMdx.tsx"
+import { useMemo } from 'react'
+import type { MDXComponents } from 'mdx/types'
+import { defaultMdxComponents } from './Themed'
+import { wrapComponentsWithThemeStyles } from './wrapComponentsWithThemeStyles'
+
+export function useThemedStylesWithMdx(outerComponents: MDXComponents) {
+  return useMemo(
+    () =>
+      wrapComponentsWithThemeStyles({
+        ...defaultMdxComponents,
+        ...outerComponents,
+      }),
+    [outerComponents]
+  )
+}
+```
+
+### Usage
+
+```tsx
+import { MDXProvider, useMDXComponents } from '@mdx-js/react'
+import { useThemedStylesWithMdx } from '@theme-ui/mdx'
+
+function MyMdxProvider({ children }) {
+  const components = useThemedStylesWithMdx(useMDXComponents())
+  return <MDXProvider components={components}>{children}</MDXProvider>
+}
+```
+
+## Themed Components
+
+The `Themed` object provides components that automatically use styles from `theme.styles`.
+
+### Available Components
+
+```tsx
+import { Themed } from '@theme-ui/mdx'
+
+// All HTML elements used in MDX
+<Themed.h1>Heading 1</Themed.h1>
+<Themed.h2>Heading 2</Themed.h2>
+<Themed.h3>Heading 3</Themed.h3>
+<Themed.p>Paragraph</Themed.p>
+<Themed.a href="/">Link</Themed.a>
+<Themed.ul>
+  <Themed.li>List item</Themed.li>
+</Themed.ul>
+<Themed.pre><Themed.code>Code</Themed.code></Themed.pre>
+<Themed.blockquote>Quote</Themed.blockquote>
+<Themed.table>
+  <Themed.tr>
+    <Themed.th>Header</Themed.th>
+  </Themed.tr>
+</Themed.table>
+```
+
+<Warning>
+In Theme UI v0.15+, `Themed` is no longer a component itself (previously it was an alias for `Themed.div`). Use `Themed.div` explicitly if needed.
+</Warning>
+
+### Using Themed Outside MDX
+
+`Themed` components can be used in regular JSX to match MDX styling:
+
+```tsx
+import { Themed } from '@theme-ui/mdx'
+
+function BlogPost({ title, content }) {
+  return (
+    <article>
+      <Themed.h1>{title}</Themed.h1>
+      <Themed.div>{content}</Themed.div>
+    </article>
+  )
+}
+```
+
+### sx Prop Support
+
+`Themed` components accept the `sx` prop for customization:
+
+```tsx
+import { Themed } from '@theme-ui/mdx'
+
+<Themed.h2 sx={{ color: 'secondary', mb: 4 }}>
+  Custom Heading
+</Themed.h2>
+```
+
+## Styling MDX Elements
+
+Define styles for MDX elements in `theme.styles`:
+
+```tsx filename="theme.ts"
+export const theme = {
+  styles: {
+    // Headings
+    h1: {
+      fontSize: 5,
+      fontWeight: 'bold',
+      lineHeight: 'heading',
+      marginTop: 0,
+      marginBottom: 3,
+    },
+    h2: {
+      fontSize: 4,
+      fontWeight: 'bold',
+      lineHeight: 'heading',
+      marginTop: 4,
+      marginBottom: 2,
+    },
+    h3: {
+      fontSize: 3,
+      fontWeight: 'bold',
+      marginTop: 3,
+      marginBottom: 2,
+    },
+    
+    // Text elements
+    p: {
+      fontSize: 2,
+      lineHeight: 'body',
+      marginTop: 0,
+      marginBottom: 3,
+    },
+    
+    // Links
+    a: {
+      color: 'primary',
+      textDecoration: 'none',
+      ':hover': {
+        textDecoration: 'underline',
+        color: 'secondary',
+      },
+    },
+    
+    // Code
+    pre: {
+      fontFamily: 'monospace',
+      fontSize: 1,
+      padding: 3,
+      backgroundColor: 'muted',
+      borderRadius: 2,
+      overflow: 'auto',
+    },
+    code: {
+      fontFamily: 'monospace',
+    },
+    inlineCode: {
+      fontFamily: 'monospace',
+      fontSize: '0.9em',
+      backgroundColor: 'muted',
+      paddingX: 1,
+      borderRadius: 1,
+    },
+    
+    // Lists
+    ul: {
+      paddingLeft: 4,
+      marginBottom: 3,
+    },
+    ol: {
+      paddingLeft: 4,
+      marginBottom: 3,
+    },
+    li: {
+      marginBottom: 1,
+    },
+    
+    // Blockquote
+    blockquote: {
+      borderLeft: '4px solid',
+      borderColor: 'primary',
+      paddingLeft: 3,
+      marginLeft: 0,
+      marginRight: 0,
+      fontStyle: 'italic',
+    },
+    
+    // Horizontal rule
+    hr: {
+      border: 0,
+      borderBottom: '2px solid',
+      borderColor: 'muted',
+      marginY: 4,
+    },
+    
+    // Table
+    table: {
+      width: '100%',
+      borderCollapse: 'collapse',
+      marginBottom: 3,
+    },
+    th: {
+      textAlign: 'left',
+      borderBottom: '2px solid',
+      borderColor: 'muted',
+      paddingY: 2,
+      paddingX: 2,
+      fontWeight: 'bold',
+    },
+    td: {
+      borderBottom: '1px solid',
+      borderColor: 'muted',
+      paddingY: 2,
+      paddingX: 2,
+    },
+  },
+}
+```
+
+## Custom MDX Components
+
+Provide custom components to replace default MDX elements:
+
+```tsx
+import { MDXProvider, useMDXComponents } from '@mdx-js/react'
+import { useThemedStylesWithMdx } from '@theme-ui/mdx'
+import { Image } from './Image'
+import { CodeBlock } from './CodeBlock'
+
+const customComponents = {
+  // Replace img with custom component
+  img: Image,
+  
+  // Replace pre with custom code block
+  pre: CodeBlock,
+  
+  // Add custom components
+  YouTube: ({ id }) => (
+    <iframe
+      src={`https://www.youtube.com/embed/${id}`}
+      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+      sx={{
+        width: '100%',
+        aspectRatio: '16 / 9',
+        border: 'none',
+        borderRadius: 2,
+      }}
+    />
+  ),
+}
+
+function App({ children }) {
+  const components = useThemedStylesWithMdx(
+    useMDXComponents(customComponents)
+  )
+  
+  return (
+    <MDXProvider components={components}>
+      {children}
+    </MDXProvider>
+  )
+}
+```
+
+### Using Custom Components in MDX
+
+```mdx
+# My Blog Post
+
+This is a paragraph with an image:
+
+![Alt text](/image.jpg)
+
+Here's a YouTube video:
+
+<YouTube id="dQw4w9WgXcQ" />
+
+And a code block:
+
+```js
+console.log('Hello World')
+```
+```
+
+## MDX Aliases
+
+Theme UI provides aliases for MDX-specific components:
+
+```tsx
+const aliases = {
+  inlineCode: 'code',    // Maps to <code> element
+  thematicBreak: 'hr',   // Maps to <hr> element
+  root: 'div',           // Maps to <div> element
+}
+```
+
+Style these in your theme:
+
+```tsx
+const theme = {
+  styles: {
+    inlineCode: {
+      // Styles for inline code
+      fontFamily: 'monospace',
+      bg: 'muted',
+    },
+    thematicBreak: {
+      // Styles for ---
+      borderColor: 'primary',
+    },
+  },
+}
+```
+
+## Helper Functions
+
+### themed() Helper
+
+Extract styles from `theme.styles`:
+
+```tsx
+import { themed } from '@theme-ui/mdx'
+
+// Get styles for a specific element
+const h1Styles = themed('h1')
+
+// Use in a component
+function CustomH1({ theme, ...props }) {
+  return <h1 css={h1Styles(theme)} {...props} />
+}
+```
+
+### defaultMdxComponents
+
+Access the default component mapping:
+
+```tsx
+import { defaultMdxComponents } from '@theme-ui/mdx'
+
+const components = {
+  ...defaultMdxComponents,
+  // Override specific components
+  h1: CustomH1,
+}
+```
+
+## Migration from v0.14
+
+Theme UI v0.15 made MDX opt-in. Here's how to migrate:
+
+<CodeGroup>
+```tsx Before (v0.14)
+import { ThemeProvider } from 'theme-ui'
+import { Themed } from 'theme-ui' // ❌ No longer exported
+
+function App({ children }) {
+  return (
+    <ThemeProvider theme={theme}>
+      {children} {/* MDX automatically styled */}
+    </ThemeProvider>
+  )
+}
+```
+
+```tsx After (v0.15+)
+import { ThemeUIProvider } from 'theme-ui'
+import { Themed, useThemedStylesWithMdx } from '@theme-ui/mdx' // ✅ Import from @theme-ui/mdx
+import { MDXProvider, useMDXComponents } from '@mdx-js/react'
+
+function App({ children }) {
+  const components = useThemedStylesWithMdx(useMDXComponents())
+  
+  return (
+    <ThemeUIProvider theme={theme}>
+      <MDXProvider components={components}>
+        {children}
+      </MDXProvider>
+    </ThemeUIProvider>
+  )
+}
+```
+</CodeGroup>
+
+### Key Changes
+
+1. Import `Themed` from `@theme-ui/mdx`, not `theme-ui`
+2. Use `useThemedStylesWithMdx` hook
+3. Wrap your app with `MDXProvider`
+4. `Themed` is no longer a component (was alias for `Themed.div`)
+
+## Complete Example
+
+Here's a complete setup with custom components and theming:
+
+```tsx filename="app.tsx"
+import {
+  MDXProvider,
+  useMDXComponents,
+  type Components,
+} from '@mdx-js/react'
+import { useThemedStylesWithMdx } from '@theme-ui/mdx'
+import { ThemeUIProvider } from 'theme-ui'
+
+const theme = {
+  colors: {
+    text: '#000',
+    background: '#fff',
+    primary: '#0066cc',
+    secondary: '#cc0066',
+    muted: '#f6f6f6',
+  },
+  styles: {
+    h1: {
+      fontSize: 5,
+      fontWeight: 'bold',
+      color: 'primary',
+      marginBottom: 3,
+    },
+    h2: {
+      fontSize: 4,
+      fontWeight: 'bold',
+      marginTop: 4,
+      marginBottom: 2,
+    },
+    p: {
+      fontSize: 2,
+      lineHeight: 1.6,
+      marginBottom: 3,
+    },
+    a: {
+      color: 'primary',
+      ':hover': {
+        color: 'secondary',
+      },
+    },
+    pre: {
+      padding: 3,
+      bg: 'muted',
+      borderRadius: 2,
+      overflow: 'auto',
+    },
+    inlineCode: {
+      bg: 'muted',
+      px: 1,
+      py: 0,
+      borderRadius: 1,
+    },
+  },
+}
+
+const customComponents: Components = {
+  // Custom wrapper for code blocks
+  pre: ({ children, ...props }) => (
+    <div sx={{ position: 'relative' }}>
+      <pre {...props}>{children}</pre>
+    </div>
+  ),
+}
+
+export function App({ children }: { children: React.ReactNode }) {
+  const components = useThemedStylesWithMdx(
+    useMDXComponents(customComponents)
+  )
+
+  return (
+    <ThemeUIProvider theme={theme}>
+      <MDXProvider components={components}>
+        <main sx={{ maxWidth: 768, mx: 'auto', px: 3, py: 4 }}>
+          {children}
+        </main>
+      </MDXProvider>
+    </ThemeUIProvider>
+  )
+}
+```
+
+## Framework Integration
+
+See the [Gatsby Plugin guide](/guides/gatsby-plugin) for Gatsby-specific setup.
+
+For Next.js with MDX, combine the above setup with `@next/mdx`:
+
+```tsx filename="pages/_app.tsx"
+import { MDXProvider, useMDXComponents } from '@mdx-js/react'
+import { useThemedStylesWithMdx } from '@theme-ui/mdx'
+import { ThemeUIProvider } from 'theme-ui'
+import type { AppProps } from 'next/app'
+import { theme } from '../theme'
+
+export default function App({ Component, pageProps }: AppProps) {
+  const components = useThemedStylesWithMdx(useMDXComponents())
+  
+  return (
+    <ThemeUIProvider theme={theme}>
+      <MDXProvider components={components}>
+        <Component {...pageProps} />
+      </MDXProvider>
+    </ThemeUIProvider>
+  )
+}
+```
